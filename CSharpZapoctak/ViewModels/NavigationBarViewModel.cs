@@ -1,0 +1,69 @@
+﻿using CSharpZapoctak.Commands;
+using CSharpZapoctak.Stores;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Input;
+
+namespace CSharpZapoctak.ViewModels
+{
+    class NavigationBarViewModel : ViewModelBase
+    {
+        public Dictionary<string, bool> AreButtonsChecked { get; set; } = new Dictionary<string, bool>() {
+            { "CompetitionsSelection", false },
+            { "Competition", false },
+            { "SeasonsSelection", false },
+            { "Season", false },
+            { "Standings", false },
+            { "Matches", false },
+            { "Teams", false },
+            { "Players", false },
+            { "Goalies", false }
+        };
+
+        public Dictionary<string, Visibility> ButtonsVisibilities { get; set; } = new Dictionary<string, Visibility>() {
+            { "Competition", Visibility.Visible },
+            { "Season", Visibility.Visible },
+            { "Standings", Visibility.Visible },
+            { "Teams", Visibility.Visible },
+            { "Goalies", Visibility.Visible }
+        };
+
+        public string CurrentCompetition { get; set; }
+        public string CurrentSeason { get; set; }
+
+        public ICommand NavigateSportsCommand { get; }
+        public ICommand NavigateCompetitionsCommand { get; }
+        public ICommand NavigateCompetitionDetailCommand { get; }
+        public ICommand NavigateSeasonsCommand { get; }
+        public ICommand NavigateSeasonDetailCommand { get; }
+        public ICommand NavigateStandingsCommand { get; }
+        public ICommand NavigateMatchesCommand { get; }
+        public ICommand NavigateTeamsCommand { get; }
+        public ICommand NavigatePlayersCommand { get; }
+        public ICommand NavigateGoaliesCommand { get; }
+
+        public NavigationBarViewModel(NavigationStore navigationStore, string buttonName, Dictionary<string, Visibility> buttonsVisibilities)
+        {
+            /*
+            if (SportsData.sport.name == "tennis")
+            {
+                //tennis player view = navigate command
+            }*/
+            NavigateSportsCommand = new NavigateCommand<SportsSelectionViewModel>(navigationStore, () => new SportsSelectionViewModel(navigationStore));
+            NavigateCompetitionsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionsSelectionViewModel(navigationStore)));
+            NavigateCompetitionDetailCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionViewModel(navigationStore)));
+            NavigateSeasonsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonsSelectionViewModel(navigationStore)));
+            NavigateSeasonDetailCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonViewModel(navigationStore)));
+            //NavigateStandingsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+            //NavigateMatchesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+            //NavigateTeamsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+            //NavigatePlayersCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+            //NavigateGoaliesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+
+            AreButtonsChecked[buttonName] = true;
+            ButtonsVisibilities = buttonsVisibilities;
+            CurrentCompetition = "- " + SportsData.competition.Name;
+            CurrentSeason = "- " + SportsData.season.Name;
+        }
+    }
+}

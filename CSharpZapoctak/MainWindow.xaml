@@ -1,0 +1,23 @@
+﻿<Window x:Class="CSharpZapoctak.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:CSharpZapoctak.ViewModels"
+        xmlns:views="clr-namespace:CSharpZapoctak.Views"
+        mc:Ignorable="d"
+        Title="Sports manager" Height="650" Width="1024"
+        FontFamily="Ebrima"
+        MinHeight="640" MinWidth="695"
+        RenderOptions.EdgeMode="Aliased">
+    <ContentControl Content="{Binding CurrentViewModel}">
+        <ContentControl.Resources>
+            <DataTemplate DataType="{x:Type viewmodels:SportsSelectionViewModel}">
+                <views:SportsSelectionView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:SportViewModel}">
+                <views:SportView/>
+            </DataTemplate>
+        </ContentControl.Resources>
+    </ContentControl>
+</Window>
