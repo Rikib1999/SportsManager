@@ -317,6 +317,26 @@ namespace CSharpZapoctak.ViewModels
             set
             {
                 groupsSet = value;
+                if (groupsSet == false)
+                {
+                    GroupsVisibility = Visibility.Collapsed;
+                    GroupsCount = 0;
+                }
+                else
+                {
+                    GroupsVisibility = Visibility.Visible;
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility groupsVisibility = Visibility.Collapsed;
+        public Visibility GroupsVisibility
+        {
+            get { return groupsVisibility; }
+            set
+            {
+                groupsVisibility = value;
                 OnPropertyChanged();
             }
         }

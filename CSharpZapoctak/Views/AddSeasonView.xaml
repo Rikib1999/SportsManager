@@ -181,24 +181,27 @@
             </CheckBox>
             <TextBlock FontSize="28" Text="{Binding GroupsHeader}" Margin="10,20,0,15" TextAlignment="Left"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="0,20,0,15">
-            <TextBlock Text="Count:" TextAlignment="Left"  Margin="0,0,8,0"/>
-            <Grid>
-                <TextBox Text="{Binding GroupsCount}" HorizontalAlignment="Left" x:Name="GroupCountTextBox" Width="75" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
-                <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="75" Text="1-16" Margin="10,0,0,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=GroupCountTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
-        </StackPanel>
+
+        <Grid Visibility="{Binding GroupsVisibility}">
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,15">
+                <TextBlock Text="Count:" TextAlignment="Left"  Margin="0,0,8,0"/>
+                <Grid>
+                    <TextBox Text="{Binding GroupsCount}" HorizontalAlignment="Left" x:Name="GroupCountTextBox" Width="75" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="75" Text="1-16" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=GroupCountTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+        </Grid>
 
         <ItemsControl ItemsSource="{Binding Groups}" Name="gSource" Tag="{Binding .}">
             <ItemsControl.ItemsPanel>
@@ -230,8 +233,7 @@
                                                     <Button.CommandParameter>
                                                         <MultiBinding Converter="{StaticResource ObjectsConverter}">
                                                             <Binding Path="."/>
-                                                            <Binding Path="Parent"/>
-                                                            <Binding Path="DataContext.AddSeasonViewModel.Groups" RelativeSource="{RelativeSource  AncestorType=ItemsControl}"/>
+                                                            <Binding Path="DataContext" ElementName="tSource"/>
                                                         </MultiBinding>
                                                     </Button.CommandParameter>
                                                 </Button>
