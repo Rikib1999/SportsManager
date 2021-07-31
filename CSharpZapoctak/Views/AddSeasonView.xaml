@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CSharpZapoctak.Views"
+             xmlns:zoomborder="clr-namespace:CSharpZapoctak.Others"
              xmlns:converters="clr-namespace:CSharpZapoctak.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -11,10 +12,17 @@
         <converters:ObjectsConverter x:Key="ObjectsConverter"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="20">
-
         <!--.................SEASON..................-->
         <TextBlock FontSize="28" Text="New season" Margin="0,0,0,15" TextAlignment="Left"/>
-        <TextBlock Text="Logo:" Margin="0,20,0,15" TextAlignment="Left"/>
+        <Grid Margin="0,20,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Competition:" TextAlignment="Left" Margin="0,0,15,0"/>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding Competitions}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCompetition}" HorizontalAlignment="Stretch" IsEditable="True"/>
+        </Grid>
+        <TextBlock Text="Logo:" Margin="0,15,0,15" TextAlignment="Left"/>
         <Button Command="{Binding LoadSeasonImageCommand}" MaxHeight="500" MaxWidth="500" MinHeight="300" MinWidth="150">
             <Image Source="{Binding BitmapSeason}" MaxHeight="500" MaxWidth="500" MinHeight="300" MinWidth="150"/>
         </Button>
@@ -97,7 +105,7 @@
         <!--..............QUALIFICATION..............-->
         <Border Background="Black" Width="auto" Height="2" Margin="0,40,0,0"/>
         <StackPanel Orientation="Horizontal">
-            <CheckBox IsChecked="{Binding QualificationSet}" Margin="0,20,0,15" VerticalContentAlignment="Bottom">
+            <CheckBox IsEnabled="{Binding QualificationEnabled}" IsChecked="{Binding QualificationSet}" Margin="0,20,0,15" VerticalContentAlignment="Bottom">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="2" ScaleY="2" />
                 </CheckBox.LayoutTransform>
@@ -105,76 +113,198 @@
             <TextBlock FontSize="28" Text="{Binding QualificationHeader}" Margin="10,20,0,15" TextAlignment="Left"/>
         </StackPanel>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="165"/>
-                <ColumnDefinition MinWidth="85"/>
-                <ColumnDefinition Width="115"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="10"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical" Visibility="{Binding QualificationVisibility}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="165"/>
+                    <ColumnDefinition MinWidth="85"/>
+                    <ColumnDefinition Width="115"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Grid.Row="0" Text="Bracket count:" TextAlignment="Left" Margin="0,0,8,0"/>
-            <Grid Grid.Column="1" Grid.Row="0">
-                <TextBox HorizontalAlignment="Left" x:Name="QualificationCountTextBox" Width="75" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
-                <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="75" Text="1-16" Margin="10,0,0,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=QualificationCountTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="Bracket count:" TextAlignment="Left" Margin="0,0,8,0"/>
+                <Grid Grid.Column="1" Grid.Row="0">
+                    <TextBox Text="{Binding QualificationCount}" HorizontalAlignment="Left" x:Name="QualificationCountTextBox" Width="85" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="85" Text="1-16" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=QualificationCountTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="Rounds:" TextAlignment="Left" Margin="0,0,8,0"/>
+                <Grid Grid.Column="3" Grid.Row="0">
+                    <TextBox Text="{Binding QualificationRoundsCount}" HorizontalAlignment="Left" x:Name="QualificationRoundsTextBox" Width="100" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="100" Text="1-6" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=QualificationRoundsTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <TextBlock Grid.Column="2" Grid.Row="2" Text="Round of:" TextAlignment="Left" Margin="0,0,8,0"/>
+                <Grid Grid.Column="3" Grid.Row="2">
+                    <TextBox Text="{Binding QualificationRoundOf}" HorizontalAlignment="Left" x:Name="QualificationRoundOfTextBox" Width="100" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="100" Text="1-64" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=QualificationRoundOfTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
             </Grid>
 
-            <TextBlock Grid.Column="2" Grid.Row="0" Text="Rounds:" TextAlignment="Left" Margin="0,0,8,0"/>
-            <Grid Grid.Column="3" Grid.Row="0">
-                <TextBox HorizontalAlignment="Left" x:Name="QualificationRoundsTextBox" Width="100" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
-                <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="100" Text="1-10" Margin="10,0,0,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=QualificationRoundsTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
+            <StackPanel Orientation="Horizontal" Margin="0,15,0,20">
+                <Button Content="Auto-fill" Width="120" Command="{Binding AutoFillQualificationCommand}" Margin="0,0,20,0"/>
+                <Button Content="Auto-complete" Width="190" Command="{Binding AutoCompleteQualificationCommand}"/>
+            </StackPanel>
 
-            <TextBlock Grid.Column="2" Grid.Row="2" Text="Round of:" TextAlignment="Left" Margin="0,0,8,0"/>
-            <Grid Grid.Column="3" Grid.Row="2">
-                <TextBox HorizontalAlignment="Left" x:Name="QualificationRoundOfTextBox" Width="100" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
-                <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="100" Text="1-1024" Margin="10,0,0,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=QualificationRoundOfTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
+            <ItemsControl ItemsSource="{Binding QualificationBrackets}" Name="bracketSource">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
 
-        </Grid>
+                        <StackPanel Orientation="Vertical" Margin="0,10">
+                            <TextBlock Text="{Binding Name}" Margin="0,0,0,10"/>
+                            <Border HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="1">
+                                <Viewbox StretchDirection="DownOnly" Stretch="UniformToFill" MaxHeight="600">
+                                    <zoomborder:ZoomBorder x:Name="border" ClipToBounds="True" Background="LightSteelBlue">
+                                        <ItemsControl ItemsSource="{Binding Series}" Name="roundSource">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+
+                                                    <ItemsControl ItemsSource="{Binding}" Name="matchSource">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <UniformGrid Columns="1"/>
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal" Margin="0,20">
+                                                                    <Grid Visibility="{Binding PreLineVisibility}" Margin="0,-20">
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="1*"/>
+                                                                            <RowDefinition Height="1*"/>
+                                                                            <RowDefinition Height="1*"/>
+                                                                            <RowDefinition Height="1*"/>
+                                                                        </Grid.RowDefinitions>
+
+                                                                        <Border Grid.Row="1" Grid.RowSpan="2" BorderBrush="Black" BorderThickness="3" Width="3"/>
+                                                                    </Grid>
+                                                                    <Border Visibility="{Binding PreLineVisibility}" BorderBrush="Black" BorderThickness="3" Width="200" Height="3"/>
+                                                                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                                        <Grid IsEnabled="{Binding FirstIsEnabled}">
+                                                                            <StackPanel Visibility="{Binding FirstSelectedVisibility}" Orientation="Horizontal">
+                                                                                <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding FirstTeam.Name}"/>
+                                                                                <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=bracketSource}">
+                                                                                    <Button.CommandParameter>
+                                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                            <Binding Path="."/>
+                                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                        </MultiBinding>
+                                                                                    </Button.CommandParameter>
+                                                                                </Button>
+                                                                            </StackPanel>
+
+                                                                            <StackPanel Visibility="{Binding FirstNotSelectedVisibility}" Orientation="Horizontal">
+                                                                                <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=bracketSource}" SelectedItem="{Binding FirstSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
+                                                                                <Button Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddFirstTeamToSerieCommand, ElementName=bracketSource}">
+                                                                                    <Button.CommandParameter>
+                                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                            <Binding Path="."/>
+                                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                        </MultiBinding>
+                                                                                    </Button.CommandParameter>
+                                                                                </Button>
+                                                                            </StackPanel>
+                                                                        </Grid>
+
+                                                                        <Grid IsEnabled="{Binding SecondIsEnabled}">
+                                                                            <StackPanel Visibility="{Binding SecondSelectedVisibility}" Orientation="Horizontal">
+                                                                                <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding SecondTeam.Name}"/>
+                                                                                <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=bracketSource}">
+                                                                                    <Button.CommandParameter>
+                                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                            <Binding Path="."/>
+                                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                        </MultiBinding>
+                                                                                    </Button.CommandParameter>
+                                                                                </Button>
+                                                                            </StackPanel>
+
+                                                                            <StackPanel Visibility="{Binding SecondNotSelectedVisibility}" Orientation="Horizontal">
+                                                                                <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=bracketSource}" SelectedItem="{Binding SecondSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
+                                                                                <Button Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddSecondTeamToSerieCommand, ElementName=bracketSource}">
+                                                                                    <Button.CommandParameter>
+                                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                            <Binding Path="."/>
+                                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                        </MultiBinding>
+                                                                                    </Button.CommandParameter>
+                                                                                </Button>
+                                                                            </StackPanel>
+                                                                        </Grid>
+                                                                    </StackPanel>
+                                                                    <Border Visibility="{Binding PostLineVisibility}" BorderBrush="Black" BorderThickness="3" Width="200" Height="3"/>
+
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </zoomborder:ZoomBorder>
+                                </Viewbox>
+                            </Border>
+                        </StackPanel>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
 
         <!--.................GROUPS..................-->
         <Border Background="Black" Width="auto" Height="2" Margin="0,40,0,0"/>
         <StackPanel Orientation="Horizontal">
-            <CheckBox IsChecked="{Binding GroupsSet}" Margin="0,20,0,15" VerticalContentAlignment="Bottom">
+            <CheckBox IsEnabled="{Binding GroupsEnabled}" IsChecked="{Binding GroupsSet}" Margin="0,20,0,15" VerticalContentAlignment="Bottom">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="2" ScaleY="2" />
                 </CheckBox.LayoutTransform>
@@ -182,7 +312,7 @@
             <TextBlock FontSize="28" Text="{Binding GroupsHeader}" Margin="10,20,0,15" TextAlignment="Left"/>
         </StackPanel>
 
-        <Grid Visibility="{Binding GroupsVisibility}">
+        <StackPanel Orientation="Vertical" Visibility="{Binding GroupsVisibility}" Margin="0,0,0,30">
             <StackPanel Orientation="Horizontal" Margin="0,20,0,15">
                 <TextBlock Text="Count:" TextAlignment="Left"  Margin="0,0,8,0"/>
                 <Grid>
@@ -201,9 +331,91 @@
                     </TextBlock>
                 </Grid>
             </StackPanel>
-        </Grid>
+            <TextBlock Text="Points for:" TextAlignment="Left"/>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,15">
+                <Grid>
+                    <TextBox Margin="0,0,10,0" Text="{Binding CurrentSeason.PointsForWin}" HorizontalAlignment="Left" x:Name="PointsForWinTextBox" Width="60" PreviewTextInput="IntegerValidationTextBox" TextChanged="IntegerTextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="60" Text="win" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PointsForWinTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+                <Grid>
+                    <TextBox Margin="0,0,10,0" Text="{Binding CurrentSeason.PointsForOTWin}" HorizontalAlignment="Left" x:Name="PointsForOTWinTextBox" Width="100" PreviewTextInput="IntegerValidationTextBox" TextChanged="IntegerTextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="100" Text="OT win" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PointsForOTWinTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+                <Grid>
+                    <TextBox Margin="0,0,10,0" Text="{Binding CurrentSeason.PointsForTie}" HorizontalAlignment="Left" x:Name="PointsForTieTextBox" Width="60" PreviewTextInput="IntegerValidationTextBox" TextChanged="IntegerTextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="60" Text="tie" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PointsForTieTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+                <Grid>
+                    <TextBox Margin="0,0,10,0" Text="{Binding CurrentSeason.PointsForOTLoss}" HorizontalAlignment="Left" x:Name="PointsForOTLossTextBox" Width="100" PreviewTextInput="IntegerValidationTextBox" TextChanged="IntegerTextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="100" Text="OT loss" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PointsForOTLossTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+                <Grid>
+                    <TextBox Margin="0,0,10,0" Text="{Binding CurrentSeason.PointsForLoss}" HorizontalAlignment="Left" x:Name="PointsForLossTextBox" Width="60" PreviewTextInput="IntegerValidationTextBox" TextChanged="IntegerTextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="60" Text="loss" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PointsForLossTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Auto-fill" Width="120" Command="{Binding AutoFillGroupsCommand}" Margin="0,0,20,0"/>
+                <Button Content="Auto-complete" Width="190" Command="{Binding AutoCompleteGroupsCommand}"/>
+            </StackPanel>
+        </StackPanel>
 
-        <ItemsControl ItemsSource="{Binding Groups}" Name="gSource" Tag="{Binding .}">
+        <ItemsControl ItemsSource="{Binding Groups}" Name="gSource">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -216,7 +428,7 @@
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBox Background="CornflowerBlue" FontWeight="Bold" Width="180" TextWrapping="Wrap" Text="{Binding Name}"/>
-                                    <Button Content="X" Width="40" FontWeight="Bold"  Command="{Binding Path=DataContext.RemoveGroupCommand, ElementName=gSource}" CommandParameter="{Binding}"/>
+                                    <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveGroupCommand, ElementName=gSource}" CommandParameter="{Binding}"/>
                                 </StackPanel>
 
                                 <ItemsControl ItemsSource="{Binding Teams}" Name="tSource">
@@ -228,8 +440,8 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBox Width="180" TextWrapping="Wrap" Text="{Binding Name}"/>
-                                                <Button Content="X" Width="40" FontWeight="Bold"  Command="{Binding Path=DataContext.RemoveTeamFromGroupCommand, ElementName=gSource}">
+                                                <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding Name}"/>
+                                                <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveTeamFromGroupCommand, ElementName=gSource}">
                                                     <Button.CommandParameter>
                                                         <MultiBinding Converter="{StaticResource ObjectsConverter}">
                                                             <Binding Path="."/>
@@ -271,88 +483,193 @@
             <TextBlock FontSize="28" Text="Play-off" Margin="10,20,0,15" TextAlignment="Left"/>
         </StackPanel>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="115"/>
-                <ColumnDefinition MinWidth="115"/>
-                <ColumnDefinition Width="155"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="10"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical" Visibility="{Binding PlayOffVisibility}">
+            <Grid Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="115"/>
+                    <ColumnDefinition MinWidth="115"/>
+                    <ColumnDefinition Width="155"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Grid.Row="0" Text="Rounds:" TextAlignment="Left" Margin="0,0,8,0"/>
-            <Grid Grid.Column="1" Grid.Row="0">
-                <TextBox HorizontalAlignment="Left" x:Name="PlayOffRoundsTextBox" Width="100" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
-                <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="100" Text="1-10" Margin="10,0,0,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=PlayOffRoundsTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="Rounds:" TextAlignment="Left" Margin="0,0,8,0"/>
+                <Grid Grid.Column="1" Grid.Row="0">
+                    <TextBox Text="{Binding PlayOffRoundsCount}" HorizontalAlignment="Left" x:Name="PlayOffRoundsTextBox" Width="90" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="90" Text="1-8" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PlayOffRoundsTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="Round of:" TextAlignment="Left" Margin="0,0,8,0"/>
+                <Grid Grid.Column="1" Grid.Row="2">
+                    <TextBox Text="{Binding PlayOffRoundOf}" HorizontalAlignment="Left" x:Name="PlayOffRoundOfTextBox" Width="90" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="90" Text="2-256" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PlayOffRoundOfTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="Serie best of:" TextAlignment="Left" Margin="0,0,8,0"/>
+                <Grid Grid.Column="3" Grid.Row="0">
+                    <TextBox Text="{Binding PlayOffBestOf}" HorizontalAlignment="Left" x:Name="PlayOffBestOfTextBox" Width="95" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="95" Text="1,3,5,7,9" Margin="3,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PlayOffBestOfTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <TextBlock Grid.Column="2" Grid.Row="2" Text="First to:" TextAlignment="Left" Margin="0,0,8,0"/>
+                <Grid Grid.Column="3" Grid.Row="2">
+                    <TextBox Text="{Binding PlayOffFirstTo}" HorizontalAlignment="Left" x:Name="PlayOffFirstToTextBox" Width="95" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="95" Text="1-5" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PlayOffFirstToTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
             </Grid>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,30">
+                <Button Content="Auto-fill" Width="120" Command="{Binding AutoFillPlayOffCommand}" Margin="0,0,20,0"/>
+                <Button Content="Auto-complete" Width="190" Command="{Binding AutoCompletePlayOffCommand}"/>
+            </StackPanel>
 
-            <TextBlock Grid.Column="0" Grid.Row="2" Text="Round of:" TextAlignment="Left" Margin="0,0,8,0"/>
-            <Grid Grid.Column="1" Grid.Row="2">
-                <TextBox HorizontalAlignment="Left" x:Name="PlayOffRoundOfTextBox" Width="100" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
-                <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="100" Text="1-1024" Margin="10,0,0,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=PlayOffRoundOfTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
+            <Border HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="1">
+                <Viewbox StretchDirection="DownOnly" Stretch="UniformToFill" MaxHeight="600">
+                    <zoomborder:ZoomBorder x:Name="border" ClipToBounds="True" Background="LightSteelBlue">
+                        <ItemsControl ItemsSource="{Binding PlayOff.Series}" Name="roundSource">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
 
-            <TextBlock Grid.Column="2" Grid.Row="0" Text="Serie best of:" TextAlignment="Left" Margin="0,0,8,0"/>
-            <Grid Grid.Column="3" Grid.Row="0">
-                <TextBox HorizontalAlignment="Left" x:Name="PlayOffBestOfTextBox" Width="95" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
-                <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="95" Text="1,3,5,7,9" Margin="3,0,0,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=PlayOffBestOfTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
+                                    <ItemsControl ItemsSource="{Binding}" Name="matchSource">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="1"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="0,20">
+                                                    <Grid Visibility="{Binding PreLineVisibility}" Margin="0,-20">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="1*"/>
+                                                            <RowDefinition Height="1*"/>
+                                                            <RowDefinition Height="1*"/>
+                                                            <RowDefinition Height="1*"/>
+                                                        </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="2" Grid.Row="2" Text="First to:" TextAlignment="Left" Margin="0,0,8,0"/>
-            <Grid Grid.Column="3" Grid.Row="2">
-                <TextBox HorizontalAlignment="Left" x:Name="PlayOffFirstToTextBox" Width="95" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
-                <TextBlock HorizontalAlignment="Left" IsHitTestVisible="False" Width="95" Text="1-5" Margin="10,0,0,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=PlayOffFirstToTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
+                                                        <Border Grid.Row="1" Grid.RowSpan="2" BorderBrush="Black" BorderThickness="3" Width="3"/>
+                                                    </Grid>
+                                                    <Border Visibility="{Binding PreLineVisibility}" BorderBrush="Black" BorderThickness="3" Width="200" Height="3"/>
+                                                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                        <Grid IsEnabled="{Binding FirstIsEnabled}">
+                                                            <StackPanel Visibility="{Binding FirstSelectedVisibility}" Orientation="Horizontal">
+                                                                <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding FirstTeam.Name}"/>
+                                                                <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=roundSource}">
+                                                                    <Button.CommandParameter>
+                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                            <Binding Path="."/>
+                                                                            <Binding Path="DataContext.PlayOff" ElementName="roundSource"/>
+                                                                        </MultiBinding>
+                                                                    </Button.CommandParameter>
+                                                                </Button>
+                                                            </StackPanel>
 
-        </Grid>
+                                                            <StackPanel Visibility="{Binding FirstNotSelectedVisibility}" Orientation="Horizontal">
+                                                                <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=roundSource}" SelectedItem="{Binding FirstSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
+                                                                <Button Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddFirstTeamToSerieCommand, ElementName=roundSource}">
+                                                                    <Button.CommandParameter>
+                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                            <Binding Path="."/>
+                                                                            <Binding Path="DataContext.PlayOff" ElementName="roundSource"/>
+                                                                        </MultiBinding>
+                                                                    </Button.CommandParameter>
+                                                                </Button>
+                                                            </StackPanel>
+                                                        </Grid>
+
+                                                        <Grid IsEnabled="{Binding SecondIsEnabled}">
+                                                            <StackPanel Visibility="{Binding SecondSelectedVisibility}" Orientation="Horizontal">
+                                                                <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding SecondTeam.Name}"/>
+                                                                <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=roundSource}">
+                                                                    <Button.CommandParameter>
+                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                            <Binding Path="."/>
+                                                                            <Binding Path="DataContext.PlayOff" ElementName="roundSource"/>
+                                                                        </MultiBinding>
+                                                                    </Button.CommandParameter>
+                                                                </Button>
+                                                            </StackPanel>
+
+                                                            <StackPanel Visibility="{Binding SecondNotSelectedVisibility}" Orientation="Horizontal">
+                                                                <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=roundSource}" SelectedItem="{Binding SecondSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
+                                                                <Button Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddSecondTeamToSerieCommand, ElementName=roundSource}">
+                                                                    <Button.CommandParameter>
+                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                            <Binding Path="."/>
+                                                                            <Binding Path="DataContext.PlayOff" ElementName="roundSource"/>
+                                                                        </MultiBinding>
+                                                                    </Button.CommandParameter>
+                                                                </Button>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </StackPanel>
+                                                    <Border Visibility="{Binding PostLineVisibility}" BorderBrush="Black" BorderThickness="3" Width="200" Height="3"/>
+
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </zoomborder:ZoomBorder>
+                </Viewbox>
+            </Border>
+        </StackPanel>
 
         <!--..................SAVE...................-->
         <Border Background="Black" Width="auto" Height="2" Margin="0,40,0,0"/>

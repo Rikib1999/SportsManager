@@ -90,9 +90,9 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private int pointsForWin;
+        private int? pointsForWin;
 
-        public int PointsForWin
+        public int? PointsForWin
         {
             get { return pointsForWin; }
             set
@@ -102,9 +102,9 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private int pointsForOTWin;
+        private int? pointsForOTWin;
 
-        public int PointsForOTWin
+        public int? PointsForOTWin
         {
             get { return pointsForOTWin; }
             set
@@ -114,9 +114,9 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private int pointsForTie;
+        private int? pointsForTie;
 
-        public int PointsForTie
+        public int? PointsForTie
         {
             get { return pointsForTie; }
             set
@@ -126,9 +126,9 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private int pointsForLoss;
+        private int? pointsForLoss;
 
-        public int PointsForLoss
+        public int? PointsForLoss
         {
             get { return pointsForLoss; }
             set
@@ -138,9 +138,9 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private int pointsForOTLoss;
+        private int? pointsForOTLoss;
 
-        public int PointsForOTLoss
+        public int? PointsForOTLoss
         {
             get { return pointsForOTLoss; }
             set

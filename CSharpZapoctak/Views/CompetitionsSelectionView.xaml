@@ -17,7 +17,7 @@
                 <Border BorderBrush="Black" BorderThickness="1" Margin="10" VerticalAlignment="Top" Height="230" Width="180">
                     <Button Command="{Binding Path=DataContext.NavigateCompetitionCommand, ElementName=iSource}" CommandParameter="{Binding}"  Background="White" Padding="5">
                         <StackPanel Orientation="Vertical">
-                            <Viewbox MaxHeight="40" StretchDirection="DownOnly" Stretch="Uniform"  Margin="0,0,0,10">
+                            <Viewbox MaxHeight="40" StretchDirection="DownOnly" Stretch="Uniform" Margin="0,0,0,10">
                                 <TextBlock TextWrapping="Wrap" Text="{Binding Name}" TextAlignment="Center"/>
                             </Viewbox>
                             <Image Source="{Binding LogoPath}" Height="150" Width="150"/>
