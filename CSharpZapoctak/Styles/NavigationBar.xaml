@@ -12,6 +12,7 @@
                     <Grid x:Name="gridMain" Background="{TemplateBinding Background}">
                         <TextBlock Text="{TemplateBinding Content}" 
                                    Padding="{TemplateBinding Padding}"
+                                   MaxWidth="140"
                                    VerticalAlignment="Center"/>
                     </Grid>
                     <ControlTemplate.Triggers>

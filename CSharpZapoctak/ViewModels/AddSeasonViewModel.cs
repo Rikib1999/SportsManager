@@ -885,7 +885,7 @@ namespace CSharpZapoctak.ViewModels
             CurrentSeason = new Season();
             CurrentSeason.id = (int)EntityState.AddNew;
             NewTeam = new Team();
-            NewTeam.id = (int)EntityState.AddNew;
+            NewTeam.id = (int)EntityState.NotSelected;
             ExistingTeam = new Team();
             Countries = SportsData.countries;
             LoadExistingTeams();
@@ -1588,7 +1588,7 @@ namespace CSharpZapoctak.ViewModels
                 }
 
                 //new teams insertion
-                foreach (Team t in Teams.Where(x => x.id == (int)EntityState.AddNew))
+                foreach (Team t in Teams.Where(x => x.id == (int)EntityState.NotSelected))
                 {
                     string teamInsertQuerry = "INSERT INTO team(name, info, status, country, date_of_creation) " +
                                               "VALUES ('" + t.Name + "', '" + t.Info + "', " + Convert.ToInt32(t.Status) + ", '" + t.Country.CodeTwo + "', '" + t.DateOfCreation.ToString() + "')";
