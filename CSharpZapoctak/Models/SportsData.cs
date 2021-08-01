@@ -92,7 +92,6 @@ namespace CSharpZapoctak
                     connection.Open();
                     DataTable dataTable = new DataTable();
                     dataTable.Load(cmd.ExecuteReader());
-                    connection.Close();
 
                     Competition c = new Competition
                     {
@@ -110,6 +109,10 @@ namespace CSharpZapoctak
                 catch (Exception)
                 {
                     MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
                 }
             }
         }

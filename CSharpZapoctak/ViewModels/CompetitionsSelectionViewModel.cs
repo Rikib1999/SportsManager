@@ -31,7 +31,6 @@ namespace CSharpZapoctak.ViewModels
                 connection.Open();
                 DataTable dataTable = new DataTable();
                 dataTable.Load(cmd.ExecuteReader());
-                connection.Close();
 
                 Competitions = new ObservableCollection<Competition>();
                 Competition c = new Competition
@@ -61,6 +60,10 @@ namespace CSharpZapoctak.ViewModels
             catch (System.Exception)
             {
                 MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
             }
         }
     }

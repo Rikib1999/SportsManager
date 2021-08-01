@@ -134,9 +134,8 @@ namespace CSharpZapoctak.ViewModels
                 try
                 {
                     connection.Open();
-                    cmd.ExecuteReader();
+                    cmd.ExecuteNonQuery();
                     currentCompetition.id = (int)cmd.LastInsertedId;
-                    connection.Close();
 
                     if (string.IsNullOrWhiteSpace(CurrentCompetition.LogoPath))
                     {
@@ -155,6 +154,10 @@ namespace CSharpZapoctak.ViewModels
                 {
                     MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+                finally
+                {
+                    connection.Close();
+                }
             }
             else
             {
@@ -166,8 +169,7 @@ namespace CSharpZapoctak.ViewModels
                 try
                 {   //execute querry
                     connection.Open();
-                    cmd.ExecuteReader();
-                    connection.Close();
+                    cmd.ExecuteNonQuery();
 
                     //SAVE LOGO
                     //if logo is not selected return
@@ -201,6 +203,10 @@ namespace CSharpZapoctak.ViewModels
                 catch (Exception)
                 {
                     MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
                 }
             }
         }

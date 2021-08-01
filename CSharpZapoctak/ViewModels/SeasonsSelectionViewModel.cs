@@ -75,7 +75,6 @@ namespace CSharpZapoctak.ViewModels
                 connection.Open();
                 DataTable dataTable = new DataTable();
                 dataTable.Load(cmd.ExecuteReader());
-                connection.Close();
 
                 Seasons = new ObservableCollection<Season>();
 
@@ -132,6 +131,10 @@ namespace CSharpZapoctak.ViewModels
             catch (Exception)
             {
                 MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
             }
         }
 

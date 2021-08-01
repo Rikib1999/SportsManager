@@ -21,6 +21,8 @@ namespace CSharpZapoctak.ViewModels
         #region Properties
 
         #region Variables
+        private NavigationStore ns;
+
         private int groupLetterCounter = 0;
 
         private Random r = new Random();
@@ -879,6 +881,7 @@ namespace CSharpZapoctak.ViewModels
         #region Constructor
         public AddSeasonViewModel(NavigationStore navigationStore)
         {
+            ns = navigationStore;
             CurrentSeason = new Season();
             CurrentSeason.id = (int)EntityState.AddNew;
             NewTeam = new Team();
@@ -968,7 +971,10 @@ namespace CSharpZapoctak.ViewModels
                         t.LogoPath = imgPath.First();
                     }
 
-                    ExistingTeams.Add(t);
+                    if (t.id != -1)
+                    {
+                        ExistingTeams.Add(t);
+                    }
                 }
             }
             catch (Exception)
@@ -1018,6 +1024,11 @@ namespace CSharpZapoctak.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewTeam.Name))
             {
+                return;
+            }
+            if (NewTeam.Country == null)
+            {
+                MessageBox.Show("Please select country.", "Country not selected", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             Team t = new Team(NewTeam);
@@ -1492,33 +1503,244 @@ namespace CSharpZapoctak.ViewModels
 
         private void Save()
         {
+            //validation
+            if (SelectedCompetition == null || SelectedCompetition.id == (int)EntityState.AddNew || SelectedCompetition.id == (int)EntityState.NotSelected)
+            {
+                MessageBox.Show("Please select competition.", "Competition not selected", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             if (string.IsNullOrWhiteSpace(CurrentSeason.Name))
             {
+                MessageBox.Show("Season name is required.", "Season name missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
+            }
+            if (Teams.Count < 2)
+            {
+                MessageBox.Show("At least two teams are needed.", "Too few teams", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (!QualificationSet && !GroupsSet && !PlayOffSet)
+            {
+                MessageBox.Show("Please select a format.", "Format not selected", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (PlayOffSet && PlayOffRoundsCount < 1)
+            {
+                MessageBox.Show("Please set the number of rounds of play-off.", "Play-off not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (PlayOffSet && PlayOffBestOf < 1)
+            {
+                MessageBox.Show("Please set the number of matches in series of play-off.", "Play-off series not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (QualificationSet && (QualificationCount < 1 || QualificationRoundOf < 1))
+            {
+                MessageBox.Show("Please set the number of brackets and rounds of qualification.", "Qualification not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (GroupsSet && GroupsCount < 1)
+            {
+                MessageBox.Show("Please set the number of groups.", "Groups not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (GroupsSet && (CurrentSeason.PointsForWin == null || CurrentSeason.PointsForOTWin == null || CurrentSeason.PointsForTie == null || CurrentSeason.PointsForOTLoss == null || CurrentSeason.PointsForLoss == null))
+            {
+                MessageBox.Show("Please set the number of points for match results in groups section.", "Points not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (!GroupsSet)
+            {
+                CurrentSeason.PointsForWin = 0;
+                CurrentSeason.PointsForOTWin = 0;
+                CurrentSeason.PointsForTie = 0;
+                CurrentSeason.PointsForOTLoss = 0;
+                CurrentSeason.PointsForLoss = 0;
             }
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO seasons(name, info) VALUES ('" + CurrentSeason.Name + "', '" + CurrentSeason.Info + "')", connection);
+            MySqlTransaction transaction = null;
+            MySqlCommand cmd = null;
+            string seasonInsertQuerry = "INSERT INTO seasons(competition_id, name, info, winner_id, qualification_count, qualification_rounds, group_count, play_off_rounds, play_off_best_of, " +
+                                        "points_for_W, points_for_OW, points_for_T, points_for_OL, points_for_L, play_off_started) " +
+                                        "VALUES (" + SelectedCompetition.id + ", '" + CurrentSeason.Name + "', '" + CurrentSeason.Info + "', " + -1 +
+                                        ", " + QualificationCount + ", " + QualificationRoundsCount + ", " + GroupsCount + ", " + PlayOffRoundsCount + ", " + PlayOffBestOf +
+                                        ", " + CurrentSeason.PointsForWin + ", " + CurrentSeason.PointsForOTWin + ", " + CurrentSeason.PointsForTie + ", " + CurrentSeason.PointsForOTLoss +
+                                        ", " + CurrentSeason.PointsForLoss + ", '" + 0 + "')";
 
             try
             {
                 connection.Open();
-                cmd.ExecuteReader();
+                transaction = connection.BeginTransaction();
+
+                //season insertion
+                cmd = new MySqlCommand(seasonInsertQuerry, connection);
+                cmd.Transaction = transaction;
+                cmd.ExecuteNonQuery();
                 currentSeason.id = (int)cmd.LastInsertedId;
+
+                if (!string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
+                {
+                    string filePath = SportsData.SeasonLogosPath + "/" + SportsData.sport.name + CurrentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
+                    File.Copy(CurrentSeason.LogoPath, filePath);
+                    CurrentSeason.LogoPath = filePath;
+                }
+
+                //new teams insertion
+                foreach (Team t in Teams.Where(x => x.id == (int)EntityState.AddNew))
+                {
+                    string teamInsertQuerry = "INSERT INTO team(name, info, status, country, date_of_creation) " +
+                                              "VALUES ('" + t.Name + "', '" + t.Info + "', " + Convert.ToInt32(t.Status) + ", '" + t.Country.CodeTwo + "', '" + t.DateOfCreation.ToString() + "')";
+                    cmd = new MySqlCommand(teamInsertQuerry, connection);
+                    cmd.Transaction = transaction;
+                    cmd.ExecuteNonQuery();
+                    t.id = (int)cmd.LastInsertedId;
+
+                    if (!string.IsNullOrWhiteSpace(t.LogoPath))
+                    {
+                        string filePath = SportsData.TeamLogosPath + "/" + SportsData.sport.name + t.id + Path.GetExtension(t.LogoPath);
+                        File.Copy(t.LogoPath, filePath);
+                    }
+                }
+
+                //qualification insertion
+                foreach (Bracket b in QualificationBrackets)
+                {
+                    string qualificationInsertQuerry = "INSERT INTO brackets(season_id, name, type) " +
+                                              "VALUES (" + CurrentSeason.id + ", '" + b.Name + "', 'QF')";
+                    cmd = new MySqlCommand(qualificationInsertQuerry, connection);
+                    cmd.Transaction = transaction;
+                    cmd.ExecuteNonQuery();
+                    b.id = (int)cmd.LastInsertedId;
+
+                    for (int i = 0; i < b.Series.Count; i++)
+                    {
+                        for (int j = 0; j < b.Series[i].Count; j++)
+                        {
+                            int first = -1;
+                            int second = -1;
+                            if (Teams.Contains(b.Series[i][j].FirstTeam))
+                            {
+                                first = b.Series[i][j].FirstTeam.id;
+                                //team enlistment
+                                string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
+                                              "VALUES (" + first + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
+                                cmd.Transaction = transaction;
+                                cmd.ExecuteNonQuery();
+                            }
+                            if (Teams.Contains(b.Series[i][j].SecondTeam))
+                            {
+                                second = b.Series[i][j].SecondTeam.id;
+                                //team enlistment
+                                string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
+                                              "VALUES (" + second + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
+                                cmd.Transaction = transaction;
+                                cmd.ExecuteNonQuery();
+                            }
+                            if (first != -1 || second != -1)
+                            {
+                                //match insertion
+                                string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor) " +
+                                              "VALUES (" + CurrentSeason.id + ", 0, " + b.id + ", " + j + ", " + i + ", 1, " + first + ", " + second + ")";
+                                cmd = new MySqlCommand(macthInsertQuerry, connection);
+                                cmd.Transaction = transaction;
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+
+                //groups insertion
+                foreach (Group g in Groups)
+                {
+                    string groupInsertQuerry = "INSERT INTO groups(season_id, name) " +
+                                              "VALUES (" + CurrentSeason.id + ", '" + g.Name + "')";
+                    cmd = new MySqlCommand(groupInsertQuerry, connection);
+                    cmd.Transaction = transaction;
+                    cmd.ExecuteNonQuery();
+                    g.id = (int)cmd.LastInsertedId;
+
+                    //team enlistment
+                    foreach (Team t in g.Teams)
+                    {
+                        string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
+                                              "VALUES (" + t.id + ", " + CurrentSeason.id + ", " + g.id + ")";
+                        cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                //play-off insertion
+                if (PlayOffSet)
+                {
+                    string playOffInsertQuerry = "INSERT INTO brackets(season_id, name, type) " +
+                                                  "VALUES (" + CurrentSeason.id + ", 'Play-off', 'PO')";
+                    cmd = new MySqlCommand(playOffInsertQuerry, connection);
+                    cmd.Transaction = transaction;
+                    cmd.ExecuteNonQuery();
+                    PlayOff.id = (int)cmd.LastInsertedId;
+
+                    for (int i = 0; i < PlayOff.Series.Count; i++)
+                    {
+                        for (int j = 0; j < PlayOff.Series[i].Count; j++)
+                        {
+                            int first = -1;
+                            int second = -1;
+                            if (Teams.Contains(PlayOff.Series[i][j].FirstTeam))
+                            {
+                                first = PlayOff.Series[i][j].FirstTeam.id;
+                                //team enlistment
+                                string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
+                                              "VALUES (" + first + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
+                                cmd.Transaction = transaction;
+                                cmd.ExecuteNonQuery();
+                            }
+                            if (Teams.Contains(PlayOff.Series[i][j].SecondTeam))
+                            {
+                                second = PlayOff.Series[i][j].SecondTeam.id;
+                                //team enlistment
+                                string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
+                                              "VALUES (" + second + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
+                                cmd.Transaction = transaction;
+                                cmd.ExecuteNonQuery();
+                            }
+                            if (first != -1 || second != -1)
+                            {
+                                //match insertion
+                                string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor) " +
+                                              "VALUES (" + CurrentSeason.id + ", 0, " + PlayOff.id + ", " + j + ", " + i + ", 1, " + first + ", " + second + ")";
+                                cmd = new MySqlCommand(macthInsertQuerry, connection);
+                                cmd.Transaction = transaction;
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+
+                SportsData.competition = SelectedCompetition;
+
+                transaction.Commit();
                 connection.Close();
 
-                if (string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
-                {
-                    return;
-                }
-                string filePath = SportsData.CompetitionLogosPath + "/" + SportsData.sport.name + CurrentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
-                File.Copy(CurrentSeason.LogoPath, filePath);
-                CurrentSeason.LogoPath = filePath;
+                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new SeasonViewModel(ns))).Execute(CurrentSeason);
             }
             catch (Exception)
             {
+                transaction.Rollback();
                 MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
             }
         }
         #endregion

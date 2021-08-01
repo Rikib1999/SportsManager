@@ -81,7 +81,6 @@ namespace CSharpZapoctak
                 connection.Open();
                 DataTable dataTable = new DataTable();
                 dataTable.Load(cmd.ExecuteReader());
-                connection.Close();
 
                 foreach (DataRow cntry in dataTable.Rows)
                 {
@@ -97,6 +96,10 @@ namespace CSharpZapoctak
             catch (System.Exception)
             {
                 MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
             }
         }
     }
