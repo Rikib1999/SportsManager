@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -28,17 +29,6 @@ namespace CSharpZapoctak.ViewModels
         private Random r = new Random();
 
         public ObservableCollection<Competition> Competitions { get; set; }
-
-        private Competition selectedCompetition;
-        public Competition SelectedCompetition
-        {
-            get { return selectedCompetition; }
-            set
-            {
-                selectedCompetition = value;
-                OnPropertyChanged();
-            }
-        }
 
         private Season currentSeason;
         public Season CurrentSeason
@@ -888,11 +878,12 @@ namespace CSharpZapoctak.ViewModels
             NewTeam.id = (int)EntityState.NotSelected;
             ExistingTeam = new Team();
             Countries = SportsData.countries;
-            LoadExistingTeams();
+            Task t1 = new Task(LoadExistingTeams);
+            t1.Start();
             LoadCompetitions();
             if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
             {
-                SelectedCompetition = Competitions.Where(x => x.id == SportsData.competition.id).First();
+                CurrentSeason.Competition = Competitions.Where(x => x.id == SportsData.competition.id).First();
             }
             Teams = new ObservableCollection<Team>();
             QualificationBrackets = new ObservableCollection<Bracket>();
@@ -933,6 +924,13 @@ namespace CSharpZapoctak.ViewModels
             catch (Exception)
             {
                 MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
             }
         }
 
@@ -980,6 +978,13 @@ namespace CSharpZapoctak.ViewModels
             catch (Exception)
             {
                 MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
             }
         }
 
@@ -1504,7 +1509,7 @@ namespace CSharpZapoctak.ViewModels
         private void Save()
         {
             //validation
-            if (SelectedCompetition == null || SelectedCompetition.id == (int)EntityState.AddNew || SelectedCompetition.id == (int)EntityState.NotSelected)
+            if (CurrentSeason.Competition == null || CurrentSeason.Competition.id == (int)EntityState.AddNew || CurrentSeason.Competition.id == (int)EntityState.NotSelected)
             {
                 MessageBox.Show("Please select competition.", "Competition not selected", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -1557,6 +1562,57 @@ namespace CSharpZapoctak.ViewModels
                 CurrentSeason.PointsForOTLoss = 0;
                 CurrentSeason.PointsForLoss = 0;
             }
+            foreach (Team t in Teams)
+            {
+                bool notAssigned = true;
+                foreach (Group g in Groups)
+                {
+                    if (g.Teams.Contains(t))
+                    {
+                        notAssigned = false;
+                        break;
+                    }
+                }
+                if (notAssigned && PlayOffSet)
+                {
+                    foreach (List<Serie> r in PlayOff.Series)
+                    {
+                        if (!notAssigned) { break; }
+                        foreach (Serie s in r)
+                        {
+                            if (s.FirstTeam == t || s.SecondTeam == t)
+                            {
+                                notAssigned = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (notAssigned)
+                {
+                    foreach (Bracket b in QualificationBrackets)
+                    {
+                        if (!notAssigned) { break; }
+                        foreach (List<Serie> r in b.Series)
+                        {
+                            if (!notAssigned) { break; }
+                            foreach (Serie s in r)
+                            {
+                                if (s.FirstTeam == t || s.SecondTeam == t)
+                                {
+                                    notAssigned = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (notAssigned)
+                {
+                    MessageBox.Show("All teams need to be assigned. Please assign team " + t.Name + " to a qualification, group or play-off.", "Team not assigned", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
@@ -1564,7 +1620,7 @@ namespace CSharpZapoctak.ViewModels
             MySqlCommand cmd = null;
             string seasonInsertQuerry = "INSERT INTO seasons(competition_id, name, info, winner_id, qualification_count, qualification_rounds, group_count, play_off_rounds, play_off_best_of, " +
                                         "points_for_W, points_for_OW, points_for_T, points_for_OL, points_for_L, play_off_started) " +
-                                        "VALUES (" + SelectedCompetition.id + ", '" + CurrentSeason.Name + "', '" + CurrentSeason.Info + "', " + -1 +
+                                        "VALUES (" + CurrentSeason.Competition.id + ", '" + CurrentSeason.Name + "', '" + CurrentSeason.Info + "', " + -1 +
                                         ", " + QualificationCount + ", " + QualificationRoundsCount + ", " + GroupsCount + ", " + PlayOffRoundsCount + ", " + PlayOffBestOf +
                                         ", " + CurrentSeason.PointsForWin + ", " + CurrentSeason.PointsForOTWin + ", " + CurrentSeason.PointsForTie + ", " + CurrentSeason.PointsForOTLoss +
                                         ", " + CurrentSeason.PointsForLoss + ", '" + 0 + "')";
@@ -1591,7 +1647,7 @@ namespace CSharpZapoctak.ViewModels
                 foreach (Team t in Teams.Where(x => x.id == (int)EntityState.NotSelected))
                 {
                     string teamInsertQuerry = "INSERT INTO team(name, info, status, country, date_of_creation) " +
-                                              "VALUES ('" + t.Name + "', '" + t.Info + "', " + Convert.ToInt32(t.Status) + ", '" + t.Country.CodeTwo + "', '" + t.DateOfCreation.ToString() + "')";
+                                              "VALUES ('" + t.Name + "', '" + t.Info + "', " + Convert.ToInt32(t.Status) + ", '" + t.Country.CodeTwo + "', '" + t.DateOfCreation.ToString("yyyy-MM-dd H:mm:ss") + "')";
                     cmd = new MySqlCommand(teamInsertQuerry, connection);
                     cmd.Transaction = transaction;
                     cmd.ExecuteNonQuery();
@@ -1723,7 +1779,8 @@ namespace CSharpZapoctak.ViewModels
                     }
                 }
 
-                SportsData.competition = SelectedCompetition;
+                SportsData.competition = CurrentSeason.Competition;
+                SportsData.season = CurrentSeason;
 
                 transaction.Commit();
                 connection.Close();

@@ -5,6 +5,7 @@ using MySql.Data.MySqlClient;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace CSharpZapoctak
@@ -48,7 +49,8 @@ namespace CSharpZapoctak
                 //Process.Start("C:/xampp/mysql/bin/mysqld.exe");
             }
 
-            LoadCountries();
+            Task t = new Task(LoadCountries);
+            t.Start();
 
             NavigationStore navigationStore = new NavigationStore();
 

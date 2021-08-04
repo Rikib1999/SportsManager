@@ -83,7 +83,10 @@ namespace CSharpZapoctak.Others
 
                 double zoom = e.Delta > 0 ? .2 : -.2;
                 if (!(e.Delta > 0) && (st.ScaleX < .4 || st.ScaleY < .4))
+                {
+                    e.Handled = true;
                     return;
+                }
 
                 Point relative = e.GetPosition(child);
                 double absoluteX;
@@ -97,6 +100,8 @@ namespace CSharpZapoctak.Others
 
                 tt.X = absoluteX - relative.X * st.ScaleX;
                 tt.Y = absoluteY - relative.Y * st.ScaleY;
+
+                e.Handled = true;
             }
         }
 

@@ -9,9 +9,6 @@
              d:DesignHeight="450" d:DesignWidth="800"
              FontSize="25">
     <Grid>
-        <Grid.Resources>
-            <Style TargetType="RadioButton" BasedOn="{StaticResource NavButton}"/>
-        </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
@@ -30,33 +27,52 @@
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
-        <RadioButton Grid.Column="0" Grid.Row="3" Content=" " IsEnabled="False"/>
+        <RadioButton Visibility="Hidden" Grid.Column="0" Grid.Row="3" Content=" " IsEnabled="False"/>
 
         <Viewbox Grid.Column="1" Grid.Row="0" StretchDirection="DownOnly" Stretch="Uniform" Margin="20,0">
             <TextBlock Margin="10" Text="{Binding Header}" FontSize="35" TextAlignment="Center"/>
         </Viewbox>
         <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Background="Black" Width="auto" Margin="0,0,10,0" />
 
-        <ScrollViewer Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ContentControl Content="{Binding CurrentViewModel}">
-                <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type viewmodels:CompetitionsSelectionViewModel}">
-                        <views:CompetitionsSelectionView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type viewmodels:CompetitionViewModel}">
-                        <views:CompetitionView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type viewmodels:AddEditCompetitionViewModel}">
-                        <views:AddEditCompetitionView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type viewmodels:SeasonsSelectionViewModel}">
-                        <views:SeasonsSelectionView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type viewmodels:AddSeasonViewModel}">
-                        <views:AddSeasonView/>
-                    </DataTemplate>
-                </ContentControl.Resources>
-            </ContentControl>
-        </ScrollViewer>
+        <ContentControl Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" Content="{Binding CurrentViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type viewmodels:CompetitionsSelectionViewModel}">
+                    <views:CompetitionsSelectionView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:CompetitionViewModel}">
+                    <views:CompetitionView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:AddEditCompetitionViewModel}">
+                    <views:AddEditCompetitionView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:SeasonViewModel}">
+                    <views:SeasonView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:SeasonsSelectionViewModel}">
+                    <views:SeasonsSelectionView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:AddSeasonViewModel}">
+                    <views:AddSeasonView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:EditSeasonViewModel}">
+                    <views:EditSeasonView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:ScheduleViewModel}">
+                    <views:ScheduleView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:MatchesSelectionViewModel}">
+                    <views:MatchesSelectionView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:TeamsSelectionViewModel}">
+                    <views:TeamsSelectionView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:TeamViewModel}">
+                    <views:TeamView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:EditTeamViewModel}">
+                    <views:EditTeamView/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
     </Grid>
 </UserControl>

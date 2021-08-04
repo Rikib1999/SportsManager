@@ -11,7 +11,7 @@ namespace CSharpZapoctak.ViewModels
 
         public ICommand NavigateEditCompetitionCommand { get; }
 
-        public MatchViewModel(NavigationStore navigationStore)
+        public MatchViewModel(NavigationStore navigationStore, Match m)
         {
             NavigateEditCompetitionCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new AddEditCompetitionViewModel(navigationStore)));
 

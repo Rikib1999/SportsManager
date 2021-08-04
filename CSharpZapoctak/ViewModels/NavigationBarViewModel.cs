@@ -37,6 +37,7 @@ namespace CSharpZapoctak.ViewModels
         public ICommand NavigateSeasonsCommand { get; }
         public ICommand NavigateSeasonDetailCommand { get; }
         public ICommand NavigateStandingsCommand { get; }
+        public ICommand NavigateScheduleCommand { get; }
         public ICommand NavigateMatchesCommand { get; }
         public ICommand NavigateTeamsCommand { get; }
         public ICommand NavigatePlayersCommand { get; }
@@ -44,8 +45,7 @@ namespace CSharpZapoctak.ViewModels
 
         public NavigationBarViewModel(NavigationStore navigationStore, string buttonName, Dictionary<string, Visibility> buttonsVisibilities)
         {
-            /*
-            if (SportsData.sport.name == "tennis")
+            /*if (SportsData.sport.name == "tennis")
             {
                 //tennis player view = navigate command
             }*/
@@ -55,8 +55,9 @@ namespace CSharpZapoctak.ViewModels
             NavigateSeasonsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonsSelectionViewModel(navigationStore)));
             NavigateSeasonDetailCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonViewModel(navigationStore)));
             //NavigateStandingsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
-            //NavigateMatchesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
-            //NavigateTeamsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+            NavigateScheduleCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new ScheduleViewModel(navigationStore)));
+            NavigateMatchesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new MatchesSelectionViewModel(navigationStore)));
+            NavigateTeamsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new TeamsSelectionViewModel(navigationStore)));
             //NavigatePlayersCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
             //NavigateGoaliesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
 

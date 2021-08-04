@@ -7,7 +7,6 @@ namespace CSharpZapoctak.Models
         public int id = (int)EntityState.NotSelected;
 
         private string name = "";
-
         public string Name
         {
             get { return name; }
@@ -19,7 +18,6 @@ namespace CSharpZapoctak.Models
         }
 
         private string info;
-
         public string Info
         {
             get { return info; }
@@ -31,7 +29,6 @@ namespace CSharpZapoctak.Models
         }
 
         private string logoPath;
-
         public string LogoPath
         {
             get { return logoPath; }

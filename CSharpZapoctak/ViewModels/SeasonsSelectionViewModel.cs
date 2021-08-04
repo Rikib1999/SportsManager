@@ -56,14 +56,16 @@ namespace CSharpZapoctak.ViewModels
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT c.name AS winner, seasons.id, competition_id, seasons.name, seasons.info, qualification_count, qualification_rounds, group_count, play_off_rounds, play_off_best_of FROM seasons", connection);
+            MySqlCommand cmd = new MySqlCommand("SELECT w.name AS winner, c.name AS competition_name, seasons.id, competition_id, seasons.name, seasons.info, qualification_count, " +
+                                                "qualification_rounds, group_count, play_off_rounds, play_off_best_of FROM seasons " +
+                                                "INNER JOIN competitions AS c ON c.id = seasons.competition_id", connection);
             if (SportsData.sport.name == "tennis")
             {
-                cmd.CommandText += " INNER JOIN player AS c ON c.id = seasons.winner_id";
+                cmd.CommandText += " INNER JOIN player AS w ON w.id = seasons.winner_id";
             }
             else
             {
-                cmd.CommandText += " INNER JOIN team AS c ON c.id = seasons.winner_id";
+                cmd.CommandText += " INNER JOIN team AS w ON w.id = seasons.winner_id";
             }
             if (SportsData.competition.Name != "" && SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
             {
@@ -88,22 +90,26 @@ namespace CSharpZapoctak.ViewModels
                 //name  format  winner  #matches    #teams      #players    goals   goals/g     assists     assists/g   penalties   penalties/g
                 //name  format  winner  #matches    #teams      #players    goals   goals/g     assists     assists/g   yellow cards   red cards
                 //name  format  winner  #matches    #players    #sets       service%            breaks      ...
-                foreach (DataRow ssn in dataTable.Rows)
+                foreach (DataRow row in dataTable.Rows)
                 {
+                    Competition c = new Competition();
+                    c.Name = row["competition_name"].ToString();
+                    c.id = int.Parse(row["competition_id"].ToString());
+
                     Season s = new Season
                     {
-                        id = int.Parse(ssn["id"].ToString()),
-                        competitionID = int.Parse(ssn["competition_id"].ToString()),
-                        Name = ssn["name"].ToString(),
-                        Info = ssn["info"].ToString(),
-                        QualificationCount = int.Parse(ssn["qualification_count"].ToString()),
-                        QualificationRounds = int.Parse(ssn["qualification_rounds"].ToString()),
-                        GroupCount = int.Parse(ssn["group_count"].ToString()),
-                        PlayOffRounds = int.Parse(ssn["play_off_rounds"].ToString()),
-                        PlayOffBestOf = int.Parse(ssn["play_off_best_of"].ToString()),
-                        Winner = ssn["winner"].ToString()
+                        id = int.Parse(row["id"].ToString()),
+                        Competition = c,
+                        Name = row["name"].ToString(),
+                        Info = row["info"].ToString(),
+                        QualificationCount = int.Parse(row["qualification_count"].ToString()),
+                        QualificationRounds = int.Parse(row["qualification_rounds"].ToString()),
+                        GroupCount = int.Parse(row["group_count"].ToString()),
+                        PlayOffRounds = int.Parse(row["play_off_rounds"].ToString()),
+                        PlayOffBestOf = int.Parse(row["play_off_best_of"].ToString()),
+                        Winner = row["winner"].ToString()
                     };
-                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + ssn["id"].ToString() + ".*");
+                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + row["id"].ToString() + ".*");
                     if (imgPath.Length != 0)
                     {
                         s.LogoPath = imgPath.First();

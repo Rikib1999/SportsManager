@@ -4,10 +4,17 @@ namespace CSharpZapoctak.Models
 {
     public class Season : Competition
     {
-        public int competitionID;
+        private Competition competition = null;
+        public Competition Competition
+        {
+            get { return competition; }
+            set
+            {
+                competition = value; OnPropertyChanged();
+            }
+        }
 
         private IStats stats;
-
         public IStats Stats
         {
             get { return stats; }
@@ -19,7 +26,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int qualificationCount;
-
         public int QualificationCount
         {
             get { return qualificationCount; }
@@ -31,7 +37,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int qualificationRounds;
-
         public int QualificationRounds
         {
             get { return qualificationRounds; }
@@ -43,7 +48,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int groupCount;
-
         public int GroupCount
         {
             get { return groupCount; }
@@ -55,7 +59,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int playOffRounds;
-
         public int PlayOffRounds
         {
             get { return playOffRounds; }
@@ -67,7 +70,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int playOffBestOf;
-
         public int PlayOffBestOf
         {
             get { return playOffBestOf; }
@@ -79,7 +81,6 @@ namespace CSharpZapoctak.Models
         }
 
         private string winner;
-
         public string Winner
         {
             get { return winner; }
@@ -91,7 +92,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int? pointsForWin;
-
         public int? PointsForWin
         {
             get { return pointsForWin; }
@@ -103,7 +103,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int? pointsForOTWin;
-
         public int? PointsForOTWin
         {
             get { return pointsForOTWin; }
@@ -115,7 +114,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int? pointsForTie;
-
         public int? PointsForTie
         {
             get { return pointsForTie; }
@@ -127,7 +125,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int? pointsForLoss;
-
         public int? PointsForLoss
         {
             get { return pointsForLoss; }
@@ -139,7 +136,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int? pointsForOTLoss;
-
         public int? PointsForOTLoss
         {
             get { return pointsForOTLoss; }
@@ -185,6 +181,21 @@ namespace CSharpZapoctak.Models
             }
 
             return format;
+        }
+
+        public bool HasQualification()
+        {
+            return QualificationCount > 0;
+        }
+
+        public bool HasGroups()
+        {
+            return GroupCount > 0;
+        }
+
+        public bool HasPlayOff()
+        {
+            return PlayOffRounds > 0;
         }
     }
 }

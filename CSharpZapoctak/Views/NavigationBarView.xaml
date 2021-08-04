@@ -7,6 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel RenderOptions.EdgeMode="Aliased" Orientation="Vertical" Margin="0,-1,0,0">
+        <StackPanel.Resources>
+            <Style TargetType="RadioButton" BasedOn="{StaticResource NavButton}"/>
+        </StackPanel.Resources>
         <RadioButton Content="Sports" Command="{Binding NavigateSportsCommand}"/>
         <RadioButton IsChecked="{Binding AreButtonsChecked[CompetitionsSelection]}" Content="Competitions" Command="{Binding NavigateCompetitionsCommand}"/>
         <RadioButton IsChecked="{Binding AreButtonsChecked[Competition]}" Visibility="{Binding ButtonsVisibilities[Competition]}" Content="{Binding CurrentCompetition}" Command="{Binding NavigateCompetitionDetailCommand}" FontSize="18"/>
@@ -14,6 +17,7 @@
         <RadioButton IsChecked="{Binding AreButtonsChecked[Season]}" Visibility="{Binding ButtonsVisibilities[Season]}" Content="{Binding CurrentSeason}" Command="{Binding NavigateSeasonDetailCommand}" FontSize="18"/>
         <RadioButton Content=" " IsEnabled="False"/>
         <RadioButton IsChecked="{Binding AreButtonsChecked[Standings]}" Visibility="{Binding ButtonsVisibilities[Standings]}" Content="Standings" Command="{Binding NavigateStandingsCommand}"/>
+        <RadioButton IsChecked="{Binding AreButtonsChecked[Schedule]}" Visibility="{Binding ButtonsVisibilities[Schedule]}" Content="Schedule" Command="{Binding NavigateScheduleCommand}"/>
         <RadioButton IsChecked="{Binding AreButtonsChecked[Matches]}" Content="Matches" Command="{Binding NavigateMatchesCommand}"/>
         <RadioButton IsChecked="{Binding AreButtonsChecked[Teams]}" Visibility="{Binding ButtonsVisibilities[Teams]}" Content="Teams" Command="{Binding NavigateTeamsCommand}"/>
         <RadioButton IsChecked="{Binding AreButtonsChecked[Players]}" Content="Players" Command="{Binding NavigatePlayersCommand}"/>

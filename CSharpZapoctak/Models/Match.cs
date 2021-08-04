@@ -1,4 +1,5 @@
 ﻿using CSharpZapoctak.ViewModels;
+using System;
 
 namespace CSharpZapoctak.Models
 {
@@ -6,13 +7,35 @@ namespace CSharpZapoctak.Models
     {
         public int id = (int)EntityState.NotSelected;
 
-        private int seasonID;
-        public int SeasonID
+        private IStats stats;
+        public IStats Stats
         {
-            get { return seasonID; }
+            get { return stats; }
             set
             {
-                seasonID = value;
+                stats = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Competition competition;
+        public Competition Competition
+        {
+            get { return competition; }
+            set
+            {
+                competition = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Season season;
+        public Season Season
+        {
+            get { return season; }
+            set
+            {
+                season = value;
                 OnPropertyChanged();
             }
         }
@@ -24,6 +47,17 @@ namespace CSharpZapoctak.Models
             set
             {
                 played = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime datetime;
+        public DateTime Datetime
+        {
+            get { return datetime; }
+            set
+            {
+                datetime = value;
                 OnPropertyChanged();
             }
         }
@@ -103,6 +137,20 @@ namespace CSharpZapoctak.Models
                 forfeit = value;
                 OnPropertyChanged();
             }
+        }
+
+        public string Score()
+        {
+            string score = HomeScore + " : " + AwayScore;
+            if (Overtime) { score += " ot"; }
+            if (Shootout) { score += " so"; }
+            if (Forfeit) { score += " ff"; }
+            return score;
+        }
+
+        public string Overview()
+        {
+            return Datetime.ToString("g") + " " + HomeTeam.Name + " " + Score() + " " + AwayTeam.Name;
         }
     }
 }

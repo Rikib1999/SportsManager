@@ -91,7 +91,7 @@ namespace CSharpZapoctak.ViewModels
                     Bitmap = bitmap;
                 }
             }
-            //TO DO: SportsData.season = new Season(); needed? maybe not
+            //TODO: SportsData.season = new Season(); needed? maybe not
         }
 
         private void LoadImage()

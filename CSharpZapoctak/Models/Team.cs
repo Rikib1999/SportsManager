@@ -4,8 +4,18 @@ namespace CSharpZapoctak.Models
 {
     public class Team : Competition
     {
-        private bool status = true;
+        private IStats stats;
+        public IStats Stats
+        {
+            get { return stats; }
+            set
+            {
+                stats = value;
+                OnPropertyChanged();
+            }
+        }
 
+        private bool status = true;
         public bool Status
         {
             get { return status; }
@@ -17,7 +27,6 @@ namespace CSharpZapoctak.Models
         }
 
         private Country country;
-
         public Country Country
         {
             get { return country; }
@@ -29,7 +38,6 @@ namespace CSharpZapoctak.Models
         }
 
         private DateTime dateOfCreation = DateTime.Today;
-
         public DateTime DateOfCreation
         {
             get { return dateOfCreation; }
@@ -50,7 +58,6 @@ namespace CSharpZapoctak.Models
             Country = null;
             DateOfCreation = DateTime.Today;
         }
-
         public Team(Team t)
         {
             this.id = t.id;

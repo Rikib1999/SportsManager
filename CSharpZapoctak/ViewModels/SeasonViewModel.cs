@@ -7,13 +7,13 @@ namespace CSharpZapoctak.ViewModels
 {
     class SeasonViewModel : ViewModelBase
     {
-        public Competition CurrentSeason { get; set; }
+        public Season CurrentSeason { get; set; }
 
-        public ICommand NavigateEditCompetitionCommand { get; }
+        public ICommand NavigateEditSeasonCommand { get; }
 
         public SeasonViewModel(NavigationStore navigationStore)
         {
-            NavigateEditCompetitionCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new AddEditCompetitionViewModel(navigationStore)));
+            NavigateEditSeasonCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new EditSeasonViewModel(navigationStore)));
 
             CurrentSeason = SportsData.season;
         }

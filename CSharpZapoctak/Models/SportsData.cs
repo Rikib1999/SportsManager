@@ -85,7 +85,7 @@ namespace CSharpZapoctak
             {
                 string connectionString = "SERVER=" + server + ";DATABASE=" + sport.name + ";UID=" + UID + ";PASSWORD=" + password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT id , name , info FROM competitions WHERE id = '" + s.competitionID + "'", connection);
+                MySqlCommand cmd = new MySqlCommand("SELECT id , name , info FROM competitions WHERE id = '" + s.Competition.id + "'", connection);
 
                 try
                 {

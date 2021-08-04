@@ -11,9 +11,7 @@ namespace CSharpZapoctak.Views
     {
         public AddSeasonView()
         {
-            int a = 5;
             InitializeComponent();
-            a = 6;
         }
 
         private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)

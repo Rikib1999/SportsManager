@@ -64,12 +64,14 @@ namespace CSharpZapoctak.ViewModels
                 case CompetitionViewModel:
                     checkedButton = "Standings";
                     break;
-                case CompetitionViewModel:
+                    */
+                case MatchesSelectionViewModel:
                     checkedButton = "Matches";
                     break;
-                case CompetitionViewModel:
+                case TeamsSelectionViewModel:
                     checkedButton = "Teams";
                     break;
+                    /*
                 case CompetitionViewModel:
                     checkedButton = "Players";
                     break;
@@ -85,6 +87,7 @@ namespace CSharpZapoctak.ViewModels
                 { "Competition", Visibility.Visible },
                 { "Season", Visibility.Visible },
                 { "Standings", Visibility.Visible },
+                { "Schedule", Visibility.Visible },
                 { "Teams", Visibility.Visible },
                 { "Goalies", Visibility.Visible }
             };
@@ -97,6 +100,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 buttonsVisibilities["Season"] = Visibility.Collapsed;
                 buttonsVisibilities["Standings"] = Visibility.Collapsed;
+                buttonsVisibilities["Schedule"] = Visibility.Collapsed;
             }
             if (SportsData.sport.name == "tennis")
             {
