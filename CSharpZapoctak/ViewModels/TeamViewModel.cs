@@ -24,9 +24,9 @@ namespace CSharpZapoctak.ViewModels
 
         public ICommand NavigateEditTeamCommand { get; }
 
-        //           (competition_name)  (season_id)(season_name)
-        private Dictionary<string, Dictionary<int, (string, PlayerEnlistment)>> competitionEnlistments;
-        public Dictionary<string, Dictionary<int, (string, PlayerEnlistment)>> CompetitionEnlistments
+        //           (competition_name)  (season_id)(season_name)  (players info)
+        private Dictionary<string, Dictionary<int, Tuple<string, List<PlayerEnlistment>>>> competitionEnlistments;
+        public Dictionary<string, Dictionary<int, Tuple<string, List<PlayerEnlistment>>>> CompetitionEnlistments
         {
             get { return competitionEnlistments; }
             set { competitionEnlistments = value; }
@@ -67,11 +67,13 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadEnlistments()
         {
-            CompetitionEnlistments = new Dictionary<string, Dictionary<int, (string, PlayerEnlistment)>>();
+            CompetitionEnlistments = new Dictionary<string, Dictionary<int, Tuple<string, List<PlayerEnlistment>>>>();
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT season_id, s.name AS season_name, c.name AS competition_name FROM team_enlistment " +
+            MySqlCommand cmd = new MySqlCommand("SELECT season_id, number, p.first_name AS player_first_name, p.last_name AS player_last_name, pos.name AS position, s.name AS season_name, c.name AS competition_name FROM player_enlistment " +
+                                                "INNER JOIN player AS p ON p.id = player_id " +
+                                                "INNER JOIN position AS pos ON pos.code = position_code " +
                                                 "INNER JOIN seasons AS s ON s.id = season_id " +
                                                 "INNER JOIN competitions AS c ON c.id = s.competition_id " +
                                                 "WHERE team_id = " + CurrentTeam.id, connection);
@@ -84,16 +86,28 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    if (!CompetitionEnlistments.ContainsKey(row["competition_name"].ToString()))
+                    string competition = row["competition_name"].ToString();
+                    int seasonID = int.Parse(row["season_id"].ToString());
+
+                    if (!CompetitionEnlistments.ContainsKey(competition))
                     {
-                        CompetitionEnlistments.Add(row["competition_name"].ToString(), new Dictionary<int, (string, PlayerEnlistment)>());
+                        CompetitionEnlistments.Add(competition, new Dictionary<int, Tuple<string, List<PlayerEnlistment>>>());
                     }
-                    CompetitionEnlistments[row["competition_name"].ToString()].Add(int.Parse(row["season_id"].ToString()), (row["season_name"].ToString(), new PlayerEnlistment()));
+                    if (!CompetitionEnlistments[competition].ContainsKey(seasonID))
+                    {
+                        CompetitionEnlistments[competition].Add(seasonID, Tuple.Create(row["season_name"].ToString(), new List<PlayerEnlistment>()));
+                    }
+                    CompetitionEnlistments[competition][seasonID].Item2.Add(new PlayerEnlistment
+                    {
+                        Name = row["player_first_name"].ToString() + " " + row["player_last_name"].ToString(),
+                        Number = int.Parse(row["number"].ToString()),
+                        Position = row["position"].ToString()
+                    });
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse.\n" + e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
