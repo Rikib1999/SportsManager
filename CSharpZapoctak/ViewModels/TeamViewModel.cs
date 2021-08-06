@@ -18,15 +18,116 @@ namespace CSharpZapoctak.ViewModels
         public int Number { get; set; }
     }
 
+    class SeasonDictionary : ViewModelBase
+    {
+        private Dictionary<int, Tuple<string, PlayerList>> seasons = new Dictionary<int, Tuple<string, PlayerList>>();
+        public Dictionary<int, Tuple<string, PlayerList>> Seasons
+        {
+            get { return seasons; }
+            set
+            {
+                seasons = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility competitionVisibility = Visibility.Collapsed;
+        public Visibility CompetitionVisibility
+        {
+            get { return competitionVisibility; }
+            set
+            {
+                competitionVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private ICommand setCompetitionVisibilityCommand;
+        public ICommand SetCompetitionVisibilityCommand
+        {
+            get
+            {
+                if (setCompetitionVisibilityCommand == null)
+                {
+                    setCompetitionVisibilityCommand = new RelayCommand(param => SetCompetitionVisibility());
+                }
+                return setCompetitionVisibilityCommand;
+            }
+        }
+
+        private void SetCompetitionVisibility()
+        {
+            if (CompetitionVisibility == Visibility.Visible)
+            {
+                CompetitionVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                CompetitionVisibility = Visibility.Visible;
+            }
+        }
+    }
+
+    class PlayerList : ViewModelBase
+    {
+        private List<PlayerEnlistment> players = new List<PlayerEnlistment>();
+        public List<PlayerEnlistment> Players
+        {
+            get { return players; }
+            set
+            {
+                players = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility seasonVisibility = Visibility.Collapsed;
+        public Visibility SeasonVisibility
+        {
+            get { return seasonVisibility; }
+            set
+            {
+                seasonVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private ICommand setSeasonVisibilityCommand;
+        public ICommand SetSeasonVisibilityCommand
+        {
+            get
+            {
+                if (setSeasonVisibilityCommand == null)
+                {
+                    setSeasonVisibilityCommand = new RelayCommand(param => SetSeasonVisibility());
+                }
+                return setSeasonVisibilityCommand;
+            }
+        }
+
+        private void SetSeasonVisibility()
+        {
+            if (SeasonVisibility == Visibility.Visible)
+            {
+                SeasonVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                SeasonVisibility = Visibility.Visible;
+            }
+        }
+    }
+
     class TeamViewModel : ViewModelBase
     {
         public Team CurrentTeam { get; set; }
 
         public ICommand NavigateEditTeamCommand { get; }
 
-        //           (competition_name)  (season_id)(season_name)  (players info)
-        private Dictionary<string, Dictionary<int, Tuple<string, List<PlayerEnlistment>>>> competitionEnlistments;
-        public Dictionary<string, Dictionary<int, Tuple<string, List<PlayerEnlistment>>>> CompetitionEnlistments
+        private Dictionary<string, SeasonDictionary> competitionEnlistments;
+        public Dictionary<string, SeasonDictionary> CompetitionEnlistments
         {
             get { return competitionEnlistments; }
             set { competitionEnlistments = value; }
@@ -67,7 +168,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadEnlistments()
         {
-            CompetitionEnlistments = new Dictionary<string, Dictionary<int, Tuple<string, List<PlayerEnlistment>>>>();
+            CompetitionEnlistments = new Dictionary<string, SeasonDictionary>();
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
@@ -91,13 +192,13 @@ namespace CSharpZapoctak.ViewModels
 
                     if (!CompetitionEnlistments.ContainsKey(competition))
                     {
-                        CompetitionEnlistments.Add(competition, new Dictionary<int, Tuple<string, List<PlayerEnlistment>>>());
+                        CompetitionEnlistments.Add(competition, new SeasonDictionary());
                     }
-                    if (!CompetitionEnlistments[competition].ContainsKey(seasonID))
+                    if (!CompetitionEnlistments[competition].Seasons.ContainsKey(seasonID))
                     {
-                        CompetitionEnlistments[competition].Add(seasonID, Tuple.Create(row["season_name"].ToString(), new List<PlayerEnlistment>()));
+                        CompetitionEnlistments[competition].Seasons.Add(seasonID, Tuple.Create(row["season_name"].ToString(), new PlayerList()));
                     }
-                    CompetitionEnlistments[competition][seasonID].Item2.Add(new PlayerEnlistment
+                    CompetitionEnlistments[competition].Seasons[seasonID].Item2.Players.Add(new PlayerEnlistment
                     {
                         Name = row["player_first_name"].ToString() + " " + row["player_last_name"].ToString(),
                         Number = int.Parse(row["number"].ToString()),
