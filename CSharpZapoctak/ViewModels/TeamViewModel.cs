@@ -4,7 +4,6 @@ using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
@@ -267,6 +266,248 @@ namespace CSharpZapoctak.ViewModels
                 {
                     connection.Open();
                     cmd.ExecuteNonQuery();
+
+                    SelectedNumber = null;
+                    SelectedPlayer = null;
+                    SelectedPosition = null;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        private string newFirstName;
+        public string NewFirstName
+        {
+            get { return newFirstName; }
+            set
+            {
+                newFirstName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string newLastName;
+        public string NewLastName
+        {
+            get { return newLastName; }
+            set
+            {
+                newLastName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime? newBirthdate;
+        public DateTime? NewBirthdate
+        {
+            get { return newBirthdate; }
+            set
+            {
+                newBirthdate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string newGender;
+        public string NewGender
+        {
+            get { return newGender; }
+            set
+            {
+                newGender = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int? newHeight = null;
+        public int? NewHeight
+        {
+            get { return newHeight; }
+            set
+            {
+                newHeight = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int? newWeight = null;
+        public int? NewWeight
+        {
+            get { return newWeight; }
+            set
+            {
+                newWeight = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string newPlaysWith;
+        public string NewPlaysWith
+        {
+            get { return newPlaysWith; }
+            set
+            {
+                newPlaysWith = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Country newCitizenship;
+        public Country NewCitizenship
+        {
+            get { return newCitizenship; }
+            set
+            {
+                newCitizenship = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string newBirthplaceCity;
+        public string NewBirthplaceCity
+        {
+            get { return newBirthplaceCity; }
+            set
+            {
+                newBirthplaceCity = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Country newBirthplaceCountry;
+        public Country NewBirthplaceCountry
+        {
+            get { return newBirthplaceCountry; }
+            set
+            {
+                newBirthplaceCountry = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string newInfo;
+        public string NewInfo
+        {
+            get { return newInfo; }
+            set
+            {
+                newInfo = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string newStatus = "";
+        public string NewStatus
+        {
+            get { return newStatus; }
+            set
+            {
+                newStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ICommand addNewPlayerCommand;
+        public ICommand AddNewPlayerCommand
+        {
+            get
+            {
+                if (addNewPlayerCommand == null)
+                {
+                    addNewPlayerCommand = new RelayCommand(param => AddNewPlayer(param));
+                }
+                return addNewPlayerCommand;
+            }
+        }
+
+        private void AddNewPlayer(object param)
+        {
+            //TODO:
+            IList teamSeasonIDViewModel = param as IList;
+            int teamID = ((Team)teamSeasonIDViewModel[0]).id;
+            int seasonID = (int)teamSeasonIDViewModel[1];
+
+            if (string.IsNullOrWhiteSpace(NewFirstName) || string.IsNullOrWhiteSpace(NewLastName) || NewBirthdate == null
+                || string.IsNullOrWhiteSpace(NewGender) || NewHeight == null || NewWeight == null || string.IsNullOrWhiteSpace(NewPlaysWith)
+                || NewCitizenship == null || string.IsNullOrWhiteSpace(NewBirthplaceCity) || NewBirthplaceCountry == null
+                || string.IsNullOrWhiteSpace(NewStatus))
+            {
+                MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else if (Players.Any(x => x.Number == SelectedNumber))
+            {
+                MessageBox.Show("Number " + SelectedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                string gender = "M";
+                if (NewGender == "Female") { gender = "F"; }
+                string playsWith = "R";
+                if (NewPlaysWith == "Left") { playsWith = "L"; }
+                bool status = true;
+                if (NewStatus == "Inactive") { status = false; }
+                int newID = -2;
+
+
+                /*string s = "INSERT INTO player(first_name, last_name, birthdate, gender, height, weight, plays_with, citizenship, birthplace_city, birthplace_country, status, info) " +
+                "VALUES('" + NewFirstName + "', '" + NewLastName + "', '" + ((DateTime)NewBirthdate).ToString("yyyy-MM-dd H:mm:ss") + "', '" + gender + "', " + NewHeight + ", " + NewWeight + ", '" + playsWith + "', '" + NewCitizenship.CodeTwo + "', " +
+                "'" + NewBirthplaceCity + "', '" + NewBirthplaceCountry.CodeTwo + "', " + Convert.ToInt32(status) + ", '" + NewInfo + "')";*/
+
+                //insert new player
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                //MySqlCommand cmd = new MySqlCommand(s, connection);
+                MySqlCommand cmd = new MySqlCommand("INSERT INTO player(first_name, last_name, birthdate, gender, height, weight, plays_with, citizenship, birthplace_city, birthplace_country, status, info) " +
+                                                    "VALUES ('" + NewFirstName + "', '" + NewLastName + "', '" + ((DateTime)NewBirthdate).ToString("yyyy-MM-dd H:mm:ss") + "', '" + gender + "'," +
+                                                    " " + NewHeight + ", " + NewWeight + ", '" + playsWith + "', '" + NewCitizenship.CodeTwo + "', '" + NewBirthplaceCity + "', " +
+                                                    "'" + NewBirthplaceCountry.CodeTwo + "'" +
+                                                    ", " + Convert.ToInt32(status) + ", '" + NewInfo + "')", connection);
+
+                try
+                {
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                    newID = (int)cmd.LastInsertedId;
+
+                    ((TeamViewModel)teamSeasonIDViewModel[2]).Players.Add(new Player { id = newID, FirstName = NewFirstName, LastName = NewLastName });
+
+                    Players.Add(new PlayerEnlistment
+                    {
+                        id = newID,
+                        Name = NewFirstName + " " + NewLastName,
+                        Position = SelectedPosition.Name,
+                        Number = (int)SelectedNumber
+                    });
+
+                    //insert player_enlistment
+                    cmd = new MySqlCommand("INSERT INTO player_enlistment(player_id, team_id, season_id, number, position_code) " +
+                                                        "VALUES (" + newID + ", " + teamID + ", " + seasonID + ", " + SelectedNumber + ", '" + SelectedPosition.Code + "')", connection);
+
+                    cmd.ExecuteNonQuery();
+
+                    SelectedNumber = null;
+                    SelectedPlayer = null;
+                    SelectedPosition = null;
+
+                    NewFirstName = null;
+                    NewLastName = null;
+                    NewBirthdate = null;
+                    NewGender = null;
+                    NewHeight = null;
+                    NewWeight = null;
+                    NewPlaysWith = null;
+                    NewCitizenship = null;
+                    NewBirthplaceCity = null;
+                    NewBirthplaceCountry = null;
+                    NewStatus = null;
+                    NewInfo = null;
                 }
                 catch (Exception)
                 {
@@ -299,6 +540,14 @@ namespace CSharpZapoctak.ViewModels
 
         public ObservableCollection<Position> Positions { get; } = new ObservableCollection<Position>();
 
+        public ObservableCollection<string> Statuses { get; set; } = new ObservableCollection<string>();
+
+        public ObservableCollection<string> PlaysWith { get; set; } = new ObservableCollection<string>();
+
+        public ObservableCollection<string> Genders { get; set; } = new ObservableCollection<string>();
+
+        public ObservableCollection<Country> Countries { get; } = new ObservableCollection<Country>();
+
         public ObservableCollection<Player> Players { get; } = new ObservableCollection<Player>();
 
         public TeamViewModel(NavigationStore navigationStore, Team t)
@@ -306,12 +555,38 @@ namespace CSharpZapoctak.ViewModels
             NavigateEditTeamCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new EditTeamViewModel(navigationStore, CurrentTeam)));
             CurrentTeam = t;
             CurrentTeam.Country = SportsData.countries.Where(x => x.CodeTwo == CurrentTeam.Country.CodeTwo).First();
+            Countries = SportsData.countries;
+            LoadStatuses();
+            LoadGenders();
+            LoadPlaysWith();
             LoadTeamInfo();
             LoadEnlistments();
             LoadPositions();
             LoadPlayers();
         }
 
+        private void LoadStatuses()
+        {
+            Statuses = new ObservableCollection<string>();
+            Statuses.Add("Active");
+            Statuses.Add("Inactive");
+        }
+
+        private void LoadGenders()
+        {
+            Genders = new ObservableCollection<string>();
+            Genders.Add("Male");
+            Genders.Add("Female");
+        }
+
+        private void LoadPlaysWith()
+        {
+            PlaysWith = new ObservableCollection<string>();
+            PlaysWith.Add("Right");
+            PlaysWith.Add("Left");
+        }
+
+        #region Loading
         private void LoadTeamInfo()
         {
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
@@ -466,5 +741,6 @@ namespace CSharpZapoctak.ViewModels
                 connection.Close();
             }
         }
+        #endregion
     }
 }
