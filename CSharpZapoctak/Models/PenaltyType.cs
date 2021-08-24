@@ -2,7 +2,7 @@
 
 namespace CSharpZapoctak.Models
 {
-    public class Country : ViewModelBase
+    public class PenaltyType : ViewModelBase
     {
         private string name = "";
         public string Name
@@ -15,26 +15,31 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private string codeTwo;
-        public string CodeTwo
+        private string code;
+        public string Code
         {
-            get { return codeTwo; }
+            get { return code; }
             set
             {
-                codeTwo = value;
+                code = value;
                 OnPropertyChanged();
             }
         }
 
-        private string codeThree;
-        public string CodeThree
+        private int minutes;
+        public int Minutes
         {
-            get { return codeThree; }
+            get { return minutes; }
             set
             {
-                codeThree = value;
+                minutes = value;
                 OnPropertyChanged();
             }
+        }
+
+        public string FullName
+        {
+            get { return Name + " (" + Code + ")"; }
         }
     }
 }

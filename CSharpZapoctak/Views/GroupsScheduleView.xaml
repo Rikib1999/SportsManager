@@ -62,7 +62,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
-                            <Button Margin="0,15" Width="150" HorizontalContentAlignment="Center" Content="Add match" Command="{Binding AddMatchCommand}" CommandParameter="{Binding}"/>
+                            <Button Margin="0,15" Width="150" HorizontalContentAlignment="Center" Content="Add match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                         </StackPanel>
 
                     </StackPanel>

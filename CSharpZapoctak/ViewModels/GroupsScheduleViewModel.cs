@@ -56,7 +56,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (matchDetailCommand == null)
                 {
-                    matchDetailCommand = new RelayCommand(param => MatchDetail((Match)param)); ;
+                    matchDetailCommand = new RelayCommand(param => MatchDetail((Match)param));
                 }
                 return matchDetailCommand;
             }
@@ -69,7 +69,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (addMatchCommand == null)
                 {
-                    addMatchCommand = new RelayCommand(param => AddMatch((Match)param)); ;
+                    addMatchCommand = new RelayCommand(param => AddMatch());
                 }
                 return addMatchCommand;
             }
@@ -82,7 +82,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (addRoundCommand == null)
                 {
-                    addRoundCommand = new RelayCommand(param => AddRound()); ;
+                    addRoundCommand = new RelayCommand(param => AddRound());
                 }
                 return addRoundCommand;
             }
@@ -91,8 +91,7 @@ namespace CSharpZapoctak.ViewModels
         public GroupsScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
-            Task t = new Task(LoadRounds);
-            t.Start();
+            LoadRounds();
         }
 
         private void LoadRounds()
@@ -197,9 +196,10 @@ namespace CSharpZapoctak.ViewModels
 
         private void DeleteRound(Round r)
         {
+            //rename all rounds after!!!
             //TODO: delete round from DB
             //TODO: delete matches from DB
-            //MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //MessageBox.Show("Really delete<<<<???.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             Rounds.Remove(r);
 
             //TODO: delete all player and goalie match enlistment from DB!!!
@@ -210,16 +210,19 @@ namespace CSharpZapoctak.ViewModels
             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, m))).Execute(null);
         }
 
-        private void AddMatch(Match param)
+        private void AddMatch()
         {
-            throw new NotImplementedException();
+            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, this))).Execute(null);
         }
 
         private void AddRound()
         {
             Round r = new Round();
-            r.Name = "Round 1";
+            r.SeasonID = SportsData.season.id;
+            r.Name = "Round " + (Rounds.Count + 1);
             r.Matches = new ObservableCollection<Match>();
+
+            /*
             for (int i = 0; i < 5; i++)
             {
                 Match m = new Match();
@@ -237,7 +240,28 @@ namespace CSharpZapoctak.ViewModels
                 m.Stats = ms;
                 r.Matches.Add(m);
             }
-            Rounds.Add(r);
+            */
+
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("INSERT INTO rounds(season_id, name) VALUES ('" + r.SeasonID + "', '" + r.Name + "')", connection);
+
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                r.id = (int)cmd.LastInsertedId;
+
+                Rounds.Add(r);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
     }
 }
