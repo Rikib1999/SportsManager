@@ -391,6 +391,98 @@
             </ItemsControl>
             <Border BorderBrush="Black" BorderThickness="0.5" Margin="0,20,0,20"/>
 
+            <!--.................PENALTY_SHOTS..................-->
+            <TextBlock Text="Penalty shots" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="35"/>
+            <ItemsControl ItemsSource="{Binding Periods}" Name="periodPenaltyShotsSource">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+                            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
+
+                            <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" ItemsSource="{Binding PenaltyShots}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="FontSize" Value="20"/>
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                        <Setter Property="Padding" Value="8"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Width="*" Header="Time" Binding="{Binding Time}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Margin" Value="8,0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="*" Header="Side" Binding="{Binding Side}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Margin" Value="8,0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="*" Header="Player" Binding="{Binding Player.Number}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Margin" Value="8,0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Width="*" Header="Was goal" Binding="{Binding WasGoal}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Margin" Value="8,0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <UniformGrid Columns="2" Margin="0,10,0,5">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="Period time:" Margin="0,0,15,0"/>
+                                    <TextBox Height="35" Width="45" Text="{Binding NewPenaltyShot.Minute}" Name="PeriodMinute" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                                    <TextBlock Text=":" Margin="2,0,3,0"/>
+                                    <TextBox Height="35" Width="45" Text="{Binding NewPenaltyShot.Second}" Name="PeriodSecond" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="20,0,0,10">
+                                    <TextBlock Text="Side:" Margin="0,0,65,0"/>
+                                    <ComboBox Width="100" ItemsSource="{Binding Path=DataContext.Sides, ElementName=periodPenaltyShotsSource}" SelectedItem="{Binding PenaltyShotSide}" IsEditable="True" IsReadOnly="True"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="Player:" Margin="0,0,72,0"/>
+                                    <ComboBox Width="100" ItemsSource="{Binding PenaltyShotRoster}" SelectedItem="{Binding NewPenaltyShot.Player}" DisplayMemberPath="Number" IsEditable="True" IsReadOnly="True"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="20,0,0,10">
+                                    <TextBlock Text="Was goal" Margin="0,0,10,0"/>
+                                    <CheckBox IsChecked="{Binding NewPenaltyShot.WasGoal}" Margin="0,5,0,0">
+                                        <CheckBox.LayoutTransform>
+                                            <ScaleTransform ScaleX="2" ScaleY="2"/>
+                                        </CheckBox.LayoutTransform>
+                                    </CheckBox>
+                                </StackPanel>
+                            </UniformGrid>
+
+                            <Button Content="Add" Width="200" Margin="0,0,0,10" Command="{Binding AddPenaltyShotCommand}"/>
+                        </StackPanel>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Border BorderBrush="Black" BorderThickness="0.5" Margin="0,20,0,20"/>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

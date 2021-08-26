@@ -100,6 +100,13 @@ namespace CSharpZapoctak.ViewModels
                             p.Penalties.RemoveAt(i);
                         }
                     }
+                    for (int i = p.PenaltyShots.Count - 1; i >= 0; i--)
+                    {
+                        if (!p.PenaltyShots[i].Player.Present)
+                        {
+                            p.PenaltyShots.RemoveAt(i);
+                        }
+                    }
                 }
 
                 OnPropertyChanged();
@@ -122,6 +129,9 @@ namespace CSharpZapoctak.ViewModels
             Penalties = new ObservableCollection<Penalty>();
             NewPenalty = new Penalty();
             PenaltyRoster = new ObservableCollection<PlayerInRoster>();
+            PenaltyShots = new ObservableCollection<PenaltyShot>();
+            NewPenaltyShot = new PenaltyShot();
+            PenaltyShotRoster = new ObservableCollection<PlayerInRoster>();
         }
 
         public string Name
@@ -149,6 +159,7 @@ namespace CSharpZapoctak.ViewModels
                 homeRoster = value;
                 if (GoalSide == "Home") { GoalsRoster = value; }
                 if (PenaltySide == "Home") { PenaltyRoster = value; }
+                if (PenaltyShotSide == "Home") { PenaltyShotRoster = value; }
                 OnPropertyChanged();
             }
         }
@@ -162,6 +173,7 @@ namespace CSharpZapoctak.ViewModels
                 awayRoster = value;
                 if (GoalSide == "Away") { GoalsRoster = value; }
                 if (PenaltySide == "Away") { PenaltyRoster = value; }
+                if (PenaltyShotSide == "Away") { PenaltyShotRoster = value; }
                 OnPropertyChanged();
             }
         }
@@ -368,9 +380,100 @@ namespace CSharpZapoctak.ViewModels
             Penalties.OrderBy(x => x.Minute).ThenBy(x => x.Second);
         }
         #endregion
+
+        #region PenaltyShots
+        private ObservableCollection<PenaltyShot> penaltyShots;
+        public ObservableCollection<PenaltyShot> PenaltyShots
+        {
+            get { return penaltyShots; }
+            set
+            {
+                penaltyShots = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private PenaltyShot newPenaltyShot;
+        public PenaltyShot NewPenaltyShot
+        {
+            get { return newPenaltyShot; }
+            set
+            {
+                newPenaltyShot = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string penaltyShotSide;
+        public string PenaltyShotSide
+        {
+            get { return penaltyShotSide; }
+            set
+            {
+                if (penaltyShotSide != value)
+                {
+                    penaltyShotSide = value;
+                    NewPenaltyShot.Side = value;
+                    NewPenaltyShot.Player = null;
+                    if (value == "Home")
+                    {
+                        PenaltyShotRoster = HomeRoster;
+                    }
+                    else
+                    {
+                        PenaltyShotRoster = AwayRoster;
+                    }
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableCollection<PlayerInRoster> penaltyShotRoster;
+        public ObservableCollection<PlayerInRoster> PenaltyShotRoster
+        {
+            get { return penaltyShotRoster; }
+            set
+            {
+                penaltyShotRoster = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ICommand addPenaltyShotCommand;
+        public ICommand AddPenaltyShotCommand
+        {
+            get
+            {
+                if (addPenaltyShotCommand == null)
+                {
+                    addPenaltyShotCommand = new RelayCommand(param => AddPenaltyShot());
+                }
+                return addPenaltyShotCommand;
+            }
+        }
+
+        private void AddPenaltyShot()
+        {
+            if (string.IsNullOrWhiteSpace(NewPenaltyShot.Side))
+            {
+                MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (NewPenaltyShot.Player == null)
+            {
+                MessageBox.Show("Please select player.", "Player not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            PenaltyShots.Add(NewPenaltyShot);
+            NewPenaltyShot = new PenaltyShot();
+            PenaltyShotSide = null;
+            PenaltyShots.OrderBy(x => x.Minute).ThenBy(x => x.Second);
+        }
+        #endregion
     }
 
-    class Goal : ViewModelBase
+    class Stat : ViewModelBase
     {
         private int minute;
         public int Minute
@@ -409,7 +512,10 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
+    }
 
+    class Goal : Stat
+    {
         private PlayerInRoster scorer = new PlayerInRoster();
         public PlayerInRoster Scorer
         {
@@ -466,46 +572,8 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class Penalty : ViewModelBase
+    class Penalty : Stat
     {
-        private int minute;
-        public int Minute
-        {
-            get { return minute; }
-            set
-            {
-                minute = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private int second;
-        public int Second
-        {
-            get { return second; }
-            set
-            {
-                second = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string Time
-        {
-            get { return Minute + ":" + Second; }
-        }
-
-        private string side;
-        public string Side
-        {
-            get { return side; }
-            set
-            {
-                side = value;
-                OnPropertyChanged();
-            }
-        }
-
         private PlayerInRoster player = new PlayerInRoster();
         public PlayerInRoster Player
         {
@@ -535,6 +603,31 @@ namespace CSharpZapoctak.ViewModels
             set
             {
                 penaltyType = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    class PenaltyShot : Stat
+    {
+        private PlayerInRoster player = new PlayerInRoster();
+        public PlayerInRoster Player
+        {
+            get { return player; }
+            set
+            {
+                player = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool wasGoal;
+        public bool WasGoal
+        {
+            get { return wasGoal; }
+            set
+            {
+                wasGoal = value;
                 OnPropertyChanged();
             }
         }
@@ -628,6 +721,13 @@ namespace CSharpZapoctak.ViewModels
                             p.Penalties.RemoveAt(i);
                         }
                     }
+                    for (int i = p.PenaltyShots.Count - 1; i >= 0; i--)
+                    {
+                        if (p.PenaltyShots[i].Side == "Home")
+                        {
+                            p.PenaltyShots.RemoveAt(i);
+                        }
+                    }
                 }
                 //TODO:
                 OnPropertyChanged();
@@ -662,6 +762,13 @@ namespace CSharpZapoctak.ViewModels
                         if (p.Penalties[i].Side == "Away")
                         {
                             p.Penalties.RemoveAt(i);
+                        }
+                    }
+                    for (int i = p.PenaltyShots.Count - 1; i >= 0; i--)
+                    {
+                        if (p.PenaltyShots[i].Side == "Away")
+                        {
+                            p.PenaltyShots.RemoveAt(i);
                         }
                     }
                 }
