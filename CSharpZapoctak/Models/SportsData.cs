@@ -1,6 +1,7 @@
 ﻿using CSharpZapoctak.Models;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
@@ -8,6 +9,16 @@ using System.Windows;
 
 namespace CSharpZapoctak
 {
+    static class Extensions
+    {
+        public static void Sort<T>(this ObservableCollection<T> collection) where T : IComparable
+        {
+            List<T> sorted = collection.OrderBy(x => x).ToList();
+            for (int i = 0; i < sorted.Count(); i++)
+                collection.Move(collection.IndexOf(sorted[i]), i);
+        }
+    }
+
     public struct Sport
     {
         public string name;
@@ -115,6 +126,87 @@ namespace CSharpZapoctak
                     connection.Close();
                 }
             }
+        }
+
+        public static ObservableCollection<PenaltyReason> LoadPenaltyReasons()
+        {
+            ObservableCollection<PenaltyReason> PenaltyReasons = new ObservableCollection<PenaltyReason>();
+
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT code, name FROM penalty_reason", connection);
+
+            try
+            {
+                connection.Open();
+                DataTable dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+                connection.Close();
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    PenaltyReason pr = new PenaltyReason
+                    {
+                        Code = row["code"].ToString(),
+                        Name = row["name"].ToString()
+                    };
+
+                    PenaltyReasons.Add(pr);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+            return PenaltyReasons;
+        }
+
+        public static ObservableCollection<PenaltyType> LoadPenaltyTypes()
+        {
+            ObservableCollection<PenaltyType> PenaltyTypes = new ObservableCollection<PenaltyType>();
+
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT code, name, minutes FROM penalty_type", connection);
+
+            try
+            {
+                connection.Open();
+                DataTable dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+                connection.Close();
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    PenaltyType pt = new PenaltyType
+                    {
+                        Code = row["code"].ToString(),
+                        Name = row["name"].ToString(),
+                        Minutes = int.Parse(row["minutes"].ToString())
+                    };
+
+                    PenaltyTypes.Add(pt);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+            return PenaltyTypes;
         }
     }
 }

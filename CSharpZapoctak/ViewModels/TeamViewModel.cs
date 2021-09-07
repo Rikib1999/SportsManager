@@ -729,7 +729,10 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Players.Add(new Player { id = int.Parse(row["id"].ToString()), FirstName = row["first_name"].ToString(), LastName = row["last_name"].ToString() });
+                    if (int.Parse(row["id"].ToString()) != -1)
+                    {
+                        Players.Add(new Player { id = int.Parse(row["id"].ToString()), FirstName = row["first_name"].ToString(), LastName = row["last_name"].ToString() });
+                    }
                 }
             }
             catch (Exception)

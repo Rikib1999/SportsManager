@@ -66,6 +66,9 @@
                 <DataTemplate DataType="{x:Type viewmodels:AddMatchViewModel}">
                     <views:AddMatchView/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:MatchViewModel}">
+                    <views:MatchView/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type viewmodels:TeamsSelectionViewModel}">
                     <views:TeamsSelectionView/>
                 </DataTemplate>

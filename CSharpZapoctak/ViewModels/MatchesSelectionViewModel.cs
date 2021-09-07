@@ -49,7 +49,7 @@ namespace CSharpZapoctak.ViewModels
 
         public MatchesSelectionViewModel(NavigationStore navigationStore)
         {
-            NavigateMatchCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new MatchViewModel(navigationStore, SelectedMatch)));
+            NavigateMatchCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new MatchViewModel(navigationStore, SelectedMatch, new MatchesSelectionViewModel(navigationStore))));
             SelectedMatch = null;
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";

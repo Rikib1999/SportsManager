@@ -51,6 +51,28 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        private int periods;
+        public int Periods
+        {
+            get { return periods; }
+            set
+            {
+                periods = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int periodDuration;
+        public int PeriodDuration
+        {
+            get { return periodDuration; }
+            set
+            {
+                periodDuration = value;
+                OnPropertyChanged();
+            }
+        }
+
         private DateTime datetime;
         public DateTime Datetime
         {
@@ -60,6 +82,11 @@ namespace CSharpZapoctak.Models
                 datetime = value;
                 OnPropertyChanged();
             }
+        }
+
+        public string DatetimeToString
+        {
+            get { return Datetime.ToString("g"); }
         }
 
         private Team homeTeam;

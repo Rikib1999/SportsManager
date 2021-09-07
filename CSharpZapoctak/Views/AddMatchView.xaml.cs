@@ -42,6 +42,15 @@ namespace CSharpZapoctak.Views
                 case "PeriodSecond":
                     max = 59;
                     break;
+                case "EndPeriodMinute":
+                    max = 700;
+                    break;
+                case "EndPeriodSecond":
+                    max = 59;
+                    break;
+                case "ShootoutSeries":
+                    max = 99;
+                    break;
                 default:
                     break;
             }
@@ -73,6 +82,15 @@ namespace CSharpZapoctak.Views
                     break;
                 case "PeriodSecond":
                     max = 59;
+                    break;
+                case "EndPeriodMinute":
+                    max = 700;
+                    break;
+                case "EndPeriodSecond":
+                    max = 59;
+                    break;
+                case "ShootoutSeries":
+                    max = 99;
                     break;
                 default:
                     break;
