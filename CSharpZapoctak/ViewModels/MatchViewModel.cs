@@ -369,9 +369,9 @@ namespace CSharpZapoctak.ViewModels
 
                 connection.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse." +e.Message+e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -459,7 +459,7 @@ namespace CSharpZapoctak.ViewModels
             MySqlCommand cmd = new MySqlCommand("SELECT e.number AS player_number, pos.code AS position_code, p.first_name AS player_first_name, p.last_name AS player_last_name " +
                                                 "FROM player_matches " +
                                                 "INNER JOIN player AS p ON p.id = player_matches.player_id " +
-                                                "INNER JOIN player_enlistment AS e ON e.player_id = player_matches.player_id " +
+                                                "INNER JOIN player_enlistment AS e ON e.player_id = player_matches.player_id AND e.team_id = player_matches.team_id AND e.season_id = " + Match.Season.id + " " +
                                                 "INNER JOIN position AS pos ON pos.code = e.position_code " +
                                                 "WHERE match_id = " + Match.id + " AND player_matches.team_id = " + teamID, connection);
 
@@ -773,7 +773,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void Edit(Match param)
         {
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, Match))).Execute(null);
+            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, Match, scheduleToReturnVM, true))).Execute(null);
         }
 
         private void Delete()

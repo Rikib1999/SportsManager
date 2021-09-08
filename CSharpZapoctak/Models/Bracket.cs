@@ -11,7 +11,6 @@ namespace CSharpZapoctak.Models
         public int id = (int)EntityState.NotSelected;
 
         private string name = "";
-
         public string Name
         {
             get { return name; }
@@ -23,7 +22,6 @@ namespace CSharpZapoctak.Models
         }
 
         private int seasonID;
-
         public int SeasonID
         {
             get { return seasonID; }

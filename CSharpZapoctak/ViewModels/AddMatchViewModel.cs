@@ -90,7 +90,7 @@ namespace CSharpZapoctak.ViewModels
                 {
                     for (int i = p.Goals.Count - 1; i >= 0; i--)
                     {
-                        if (!p.Goals[i].Scorer.Present || (p.Goals[i].Assist != null && !p.Goals[i].Assist.Present))
+                        if (!p.Goals[i].Scorer.Present || (p.Goals[i].Assist != null && p.Goals[i].Assist.Name != null && !p.Goals[i].Assist.Present))
                         {
                             p.Goals.RemoveAt(i);
                         }
@@ -1005,6 +1005,40 @@ namespace CSharpZapoctak.ViewModels
                 return 1;
             }
         }
+
+        private ICommand deleteCommand;
+        public ICommand DeleteCommand
+        {
+            get
+            {
+                if (deleteCommand == null)
+                {
+                    deleteCommand = new RelayCommand(param => Delete((Period)param));
+                }
+                return deleteCommand;
+            }
+        }
+
+        private void Delete(Period period)
+        {
+            switch (this)
+            {
+                case Goal:
+                    period.Goals.Remove((Goal)this);
+                    break;
+                case Penalty:
+                    period.Penalties.Remove((Penalty)this);
+                    break;
+                case PenaltyShot:
+                    period.PenaltyShots.Remove((PenaltyShot)this);
+                    break;
+                case TimeOut:
+                    period.TimeOuts.Remove((TimeOut)this);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     class PeriodEnd : BasicStat { }
@@ -1290,6 +1324,19 @@ namespace CSharpZapoctak.ViewModels
                 return 1;
             }
         }
+
+        private ICommand deleteCommand;
+        public ICommand DeleteCommand
+        {
+            get
+            {
+                if (deleteCommand == null)
+                {
+                    deleteCommand = new RelayCommand(param => ((Period)param).GoalieShifts.Remove(this));
+                }
+                return deleteCommand;
+            }
+        }
     }
 
     class GoalieChange : BasicStat
@@ -1442,6 +1489,34 @@ namespace CSharpZapoctak.ViewModels
                 wasGoal = value;
                 OnPropertyChanged();
             }
+        }
+
+        private ICommand resetCommand;
+        public ICommand ResetCommand
+        {
+            get
+            {
+                if (resetCommand == null)
+                {
+                    resetCommand = new RelayCommand(param => Reset());
+                }
+                return resetCommand;
+            }
+        }
+
+        private void Reset()
+        {
+            ObservableCollection<PlayerInRoster> tmpP = PlayerRoster;
+            PlayerRoster = null;
+            Player = new PlayerInRoster();
+            PlayerRoster = tmpP;
+
+            ObservableCollection<PlayerInRoster> tmpG = GoalieRoster;
+            GoalieRoster = null;
+            Goalie = new PlayerInRoster();
+            GoalieRoster = tmpG;
+
+            WasGoal = false;
         }
     }
 
@@ -2068,6 +2143,9 @@ namespace CSharpZapoctak.ViewModels
         #region Data
         public NavigationStore ns;
         public ViewModelBase scheduleToReturnVM;
+        public int seasonID;
+        public Match match;
+        public bool edit;
 
         private ObservableCollection<string> sides;
         public ObservableCollection<string> Sides
@@ -2210,6 +2288,7 @@ namespace CSharpZapoctak.ViewModels
         public AddMatchViewModel(NavigationStore navigationStore, ViewModelBase scheduleToReturnVM, int qualificationID, int bracketIndex, int round, int serieMatchNumber)
         {
             ns = navigationStore;
+            seasonID = SportsData.season.id;
             this.scheduleToReturnVM = scheduleToReturnVM;
             this.qualificationID = qualificationID;
             this.bracketIndex = bracketIndex;
@@ -2225,10 +2304,13 @@ namespace CSharpZapoctak.ViewModels
             //TODO: set different overtime duration
         }
 
-        public AddMatchViewModel(NavigationStore navigationStore, Match m)
+        public AddMatchViewModel(NavigationStore navigationStore, Match m, ViewModelBase scheduleToReturnVM, bool edit)
         {
             ns = navigationStore;
-            scheduleToReturnVM = null;
+            seasonID = m.Season.id;
+            match = m;
+            this.edit = edit;
+            this.scheduleToReturnVM = scheduleToReturnVM;
             LoadMatchInfo(m.id);
 
             MatchDate = m.Datetime.Date;
@@ -2254,8 +2336,8 @@ namespace CSharpZapoctak.ViewModels
                 PeriodDuration = m.PeriodDuration;
 
                 //set teams, rosters
-                HomeTeam = m.HomeTeam;
-                AwayTeam = m.AwayTeam;
+                HomeTeam = AvailableTeamsHome.First(x => x.id == m.HomeTeam.id);
+                AwayTeam = AvailableTeamsAway.First(x => x.id == m.AwayTeam.id);
                 LoadExistingRosters(m.id);
 
                 //load all period events
@@ -2329,7 +2411,7 @@ namespace CSharpZapoctak.ViewModels
             MySqlCommand cmd = new MySqlCommand("SELECT team_id, t.name AS team_name, season_id " +
                                                 "FROM team_enlistment " +
                                                 "INNER JOIN team AS t ON t.id = team_id " +
-                                                "WHERE season_id = " + SportsData.season.id, connection);
+                                                "WHERE season_id = " + seasonID, connection);
 
             try
             {
@@ -2382,7 +2464,7 @@ namespace CSharpZapoctak.ViewModels
                                                 "FROM player_enlistment " +
                                                 "INNER JOIN player AS p ON p.id = player_id " +
                                                 "INNER JOIN position AS pos ON pos.code = position_code " +
-                                                "WHERE season_id = " + SportsData.season.id + " AND team_id = " + teamID, connection);
+                                                "WHERE season_id = " + seasonID + " AND team_id = " + teamID, connection);
 
             try
             {
@@ -2458,13 +2540,13 @@ namespace CSharpZapoctak.ViewModels
                     }
                     else
                     {
-                        HomePlayers.First(x => x.id == int.Parse(row["player_id"].ToString())).Present = true;
+                        AwayPlayers.First(x => x.id == int.Parse(row["player_id"].ToString())).Present = true;
                     }
                 }
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databseROSTERS.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2491,11 +2573,11 @@ namespace CSharpZapoctak.ViewModels
                 qualificationID = int.Parse(dataTable.Rows[0]["qualification_id"].ToString());
                 bracketIndex = int.Parse(dataTable.Rows[0]["bracket_index"].ToString());
                 round = int.Parse(dataTable.Rows[0]["round"].ToString());
-                serieMatchNumber = int.Parse(dataTable.Rows[0]["serie_match_numbers"].ToString());
+                serieMatchNumber = int.Parse(dataTable.Rows[0]["serie_match_number"].ToString());
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databseMATCH.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2535,12 +2617,12 @@ namespace CSharpZapoctak.ViewModels
                     if (g.Side == "Home")
                     {
                         g.Scorer = HomeRoster.First(x => x.id == scorerID);
-                        if (assistID != -1) { g.Assist = HomeRoster.First(x => x.id == assistID); }
+                        if (assistID != -1) { g.Assist = HomeRoster.First(x => x.id == assistID); } else { g.Assist = new PlayerInRoster { id = -1 }; }
                     }
                     else
                     {
                         g.Scorer = AwayRoster.First(x => x.id == scorerID);
-                        if (assistID != -1) { g.Assist = AwayRoster.First(x => x.id == assistID); }
+                        if (assistID != -1) { g.Assist = AwayRoster.First(x => x.id == assistID); } else { g.Assist = new PlayerInRoster { id = -1 }; }
                     }
 
                     int periodNumber = int.Parse(row["period"].ToString());
@@ -2701,7 +2783,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse.EVENTS", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2717,7 +2799,7 @@ namespace CSharpZapoctak.ViewModels
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT player_id, goalie_id, number, was_goal " +
-                                                "FROM shootout_shots WHERE match_id = " + matchID + " ORDER BY order_in_match", connection);
+                                                "FROM shootout_shots WHERE match_id = " + matchID + " ORDER BY number", connection);
 
             try
             {
@@ -2750,7 +2832,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databseSHOOTOUT.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -3223,10 +3305,11 @@ namespace CSharpZapoctak.ViewModels
             //saving
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
             string querry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, periods, " +
                                         "period_duration, home_competitor, away_competitor, home_score, away_score, datetime, overtime, shootout, forfeit) " +
-                                        "VALUES (" + SportsData.season.id + ", " + 0 + ", " + qualificationID + ", " + bracketIndex +
+                                        "VALUES (" + seasonID + ", " + 0 + ", " + qualificationID + ", " + bracketIndex +
                                         ", " + round + ", " + serieMatchNumber + ", " + 0 + ", " + 0 + ", " + HomeTeam.id +
                                         ", " + AwayTeam.id + ", " + 0 + ", " + 0 + ", '" + MatchDateTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + 0 +
                                         ", " + 0 + ", " + 0 + ")";
@@ -3234,24 +3317,57 @@ namespace CSharpZapoctak.ViewModels
             try
             {
                 connection.Open();
+                transaction = connection.BeginTransaction();
                 cmd = new MySqlCommand(querry, connection);
+                cmd.Transaction = transaction;
                 cmd.ExecuteNonQuery();
+                int matchID = (int)cmd.LastInsertedId;
+
+                if (edit)
+                {
+                    //delete match from DB
+                    querry = "DELETE FROM matches WHERE id = " + match.id;
+
+                    cmd = new MySqlCommand(querry, connection);
+                    cmd.Transaction = transaction;
+                    cmd.ExecuteNonQuery();
+
+                    //delete all player/goalie match enlistments and all stats
+                    List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
+                    foreach (string db in databases)
+                    {
+                        querry = "DELETE FROM " + db + " WHERE match_id = " + match.id;
+                        cmd = new MySqlCommand(querry, connection);
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                transaction.Commit();
                 connection.Close();
 
                 ScheduleViewModel scheduleViewModel = new ScheduleViewModel(ns);
-                switch (scheduleToReturnVM)
+                if (edit)
                 {
-                    //TODO: add qualification and play-off schedules
-                    case GroupsScheduleViewModel:
-                        scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
-                        break;
-                    default:
-                        break;
+                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, new Match { id = matchID }, scheduleToReturnVM))).Execute(null);
                 }
-                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
+                else
+                {
+                    switch (scheduleToReturnVM)
+                    {
+                        //TODO: add qualification and play-off schedules
+                        case GroupsScheduleViewModel:
+                            scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
+                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
             catch (Exception)
             {
+                transaction.Rollback();
                 MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -3473,7 +3589,7 @@ namespace CSharpZapoctak.ViewModels
             MySqlCommand cmd = null;
             string matchInsertionQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, periods, " +
                                         "period_duration, home_competitor, away_competitor, home_score, away_score, datetime, overtime, shootout, forfeit) " +
-                                        "VALUES (" + SportsData.season.id + ", " + 1 + ", " + qualificationID + ", " + bracketIndex +
+                                        "VALUES (" + seasonID + ", " + 1 + ", " + qualificationID + ", " + bracketIndex +
                                         ", " + round + ", " + serieMatchNumber + ", " + PeriodCount + ", " + PeriodDuration + ", " + HomeTeam.id +
                                         ", " + AwayTeam.id + ", " + homeScore + ", " + awayScore + ", '" + MatchDateTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + Convert.ToInt32(Overtime) +
                                         ", " + Convert.ToInt32(IsShootout) + ", " + Convert.ToInt32(Forfeit) + ")";
@@ -3750,20 +3866,47 @@ namespace CSharpZapoctak.ViewModels
                     cmd.ExecuteNonQuery();
                 }
 
+                if (edit)
+                {
+                    //delete match from DB
+                    string querry = "DELETE FROM matches WHERE id = " + match.id;
+
+                    cmd = new MySqlCommand(querry, connection);
+                    cmd.Transaction = transaction;
+                    cmd.ExecuteNonQuery();
+
+                    //delete all player/goalie match enlistments and all stats
+                    List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
+                    foreach (string db in databases)
+                    {
+                        querry = "DELETE FROM " + db + " WHERE match_id = " + match.id;
+                        cmd = new MySqlCommand(querry, connection);
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
                 transaction.Commit();
                 connection.Close();
 
                 ScheduleViewModel scheduleViewModel = new ScheduleViewModel(ns);
-                switch (scheduleToReturnVM)
+                if (edit)
                 {
-                    //TODO: add qualification and play-off schedules
-                    case GroupsScheduleViewModel:
-                        scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
-                        break;
-                    default:
-                        break;
+                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, new Match { id = matchID }, scheduleToReturnVM))).Execute(null);
                 }
-                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
+                else
+                {
+                    switch (scheduleToReturnVM)
+                    {
+                        //TODO: add qualification and play-off schedules
+                        case GroupsScheduleViewModel:
+                            scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
+                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
             catch (Exception)
             {

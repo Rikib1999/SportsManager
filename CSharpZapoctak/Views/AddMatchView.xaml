@@ -202,7 +202,7 @@
                             <StackPanel Orientation="Vertical" Margin="0,20,0,0">
                                 <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
 
-                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" ItemsSource="{Binding Goals}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
+                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" Name="goalsSource" ItemsSource="{Binding Goals}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style TargetType="{x:Type DataGridColumnHeader}">
                                             <Setter Property="FontWeight" Value="Bold"/>
@@ -252,6 +252,13 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+                                        <DataGridTemplateColumn Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding DeleteCommand}" CommandParameter="{Binding Path=DataContext, ElementName=goalsSource}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
 
@@ -322,7 +329,7 @@
                             <StackPanel Orientation="Vertical" Margin="0,20,0,0">
                                 <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
 
-                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" ItemsSource="{Binding Penalties}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
+                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" Name="penaltySource" ItemsSource="{Binding Penalties}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style TargetType="{x:Type DataGridColumnHeader}">
                                             <Setter Property="FontWeight" Value="Bold"/>
@@ -372,6 +379,13 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+                                        <DataGridTemplateColumn Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding DeleteCommand}" CommandParameter="{Binding Path=DataContext, ElementName=penaltySource}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
 
@@ -423,7 +437,7 @@
                             <StackPanel Orientation="Vertical" Margin="0,20,0,0">
                                 <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
 
-                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" ItemsSource="{Binding PenaltyShots}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
+                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" Name="penaltyShotsSource" ItemsSource="{Binding PenaltyShots}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style TargetType="{x:Type DataGridColumnHeader}">
                                             <Setter Property="FontWeight" Value="Bold"/>
@@ -465,6 +479,13 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+                                        <DataGridTemplateColumn Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding DeleteCommand}" CommandParameter="{Binding Path=DataContext, ElementName=penaltyShotsSource}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
 
@@ -515,7 +536,7 @@
                             <StackPanel Orientation="Vertical" Margin="0,20,0,0">
                                 <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
 
-                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" ItemsSource="{Binding GoalieShifts}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
+                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" Name="goalieShiftGridSource" ItemsSource="{Binding GoalieShifts}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style TargetType="{x:Type DataGridColumnHeader}">
                                             <Setter Property="FontWeight" Value="Bold"/>
@@ -557,6 +578,13 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+                                        <DataGridTemplateColumn Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding DeleteCommand}" CommandParameter="{Binding Path=DataContext, ElementName=goalieShiftGridSource}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
 
@@ -605,7 +633,7 @@
                             <StackPanel Orientation="Vertical" Margin="0,20,0,0">
                                 <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
 
-                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" ItemsSource="{Binding TimeOuts}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
+                                <DataGrid PreviewMouseWheel="DataGrid_PreviewMouseWheel" Name="timeOutGridSource" ItemsSource="{Binding TimeOuts}" AutoGenerateColumns="False" CanUserSortColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style TargetType="{x:Type DataGridColumnHeader}">
                                             <Setter Property="FontWeight" Value="Bold"/>
@@ -631,6 +659,13 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+                                        <DataGridTemplateColumn Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding DeleteCommand}" CommandParameter="{Binding Path=DataContext, ElementName=timeOutGridSource}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
 
@@ -716,6 +751,13 @@
                                     </Style>
                                 </DataGridCheckBoxColumn.ElementStyle>
                             </DataGridCheckBoxColumn>
+                            <DataGridTemplateColumn Width="40">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding ResetCommand}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
 
