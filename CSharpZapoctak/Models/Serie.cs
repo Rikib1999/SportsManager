@@ -1,13 +1,14 @@
 ﻿using CSharpZapoctak.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 
 namespace CSharpZapoctak.Models
 {
     class Serie : ViewModelBase
     {
-        private Team firstTeam;
+        private Team firstTeam = new Team { id = -1, Name = "-- no team --" };
         public Team FirstTeam
         {
             get { return firstTeam; }
@@ -18,7 +19,7 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private Team secondTeam;
+        private Team secondTeam = new Team { id = -1, Name = "-- no team --" };
         public Team SecondTeam
         {
             get { return secondTeam; }
@@ -29,6 +30,172 @@ namespace CSharpZapoctak.Models
             }
         }
 
+
+        private ObservableCollection<Match> matches = new ObservableCollection<Match>();
+        public ObservableCollection<Match> Matches
+        {
+            get { return matches; }
+            set
+            {
+                matches = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility preLineVisibility = Visibility.Visible;
+        public Visibility PreLineVisibility
+        {
+            get { return preLineVisibility; }
+            set
+            {
+                preLineVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility postLineVisibility = Visibility.Visible;
+        public Visibility PostLineVisibility
+        {
+            get { return postLineVisibility; }
+            set
+            {
+                postLineVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #region Setting matches
+        public Team winner = new Team { id = -1, Name = "-- no team --" };
+
+        public bool isEnabled = true;
+        public bool IsEnabled
+        {
+            get { return isEnabled; }
+            set
+            {
+                isEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility scoreVisibility;
+        public Visibility ScoreVisibility
+        {
+            get { return scoreVisibility; }
+            set
+            {
+                scoreVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<int> firstScore = new ObservableCollection<int>();
+        public ObservableCollection<int> FirstScore
+        {
+            get { return firstScore; }
+            set
+            {
+                firstScore = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<int> secondScore = new ObservableCollection<int>();
+        public ObservableCollection<int> SecondScore
+        {
+            get { return secondScore; }
+            set
+            {
+                secondScore = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public void InsertMatch(Match m, int firstTeam, int firstToWin)
+        {
+            if (FirstTeam.id == -1 || SecondTeam.id == -1)
+            {
+                if (m.HomeTeam.id == firstTeam)
+                {
+                    FirstTeam = m.HomeTeam;
+                    SecondTeam = m.AwayTeam;
+                }
+                else
+                {
+                    FirstTeam = m.AwayTeam;
+                    SecondTeam = m.HomeTeam;
+                }
+            }
+
+            if (m.Played)
+            {
+                ScoreVisibility = Visibility.Visible;
+            }
+            else
+            {
+                ScoreVisibility = Visibility.Collapsed;
+            }
+
+            if (Matches.Count == 0 || Matches[Matches.Count - 1].serieNumber < m.serieNumber)
+            {
+                Matches.Add(m);
+                if (m.HomeTeam.id == FirstTeam.id)
+                {
+                    FirstScore.Add(m.HomeScore);
+                    SecondScore.Add(m.AwayScore);
+                }
+                else
+                {
+                    FirstScore.Add(m.AwayScore);
+                    SecondScore.Add(m.HomeScore);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Matches.Count; i++)
+                {
+                    if (Matches[i].serieNumber > m.serieNumber)
+                    {
+                        Matches.Insert(i, m);
+                        if (m.HomeTeam.id == FirstTeam.id)
+                        {
+                            FirstScore.Insert(i, m.HomeScore);
+                            SecondScore.Insert(i, m.AwayScore);
+                        }
+                        else
+                        {
+                            FirstScore.Insert(i, m.AwayScore);
+                            SecondScore.Insert(i, m.HomeScore);
+                        }
+                    }
+                }
+            }
+
+            int firstWins = 0;
+            int secondWins = 0;
+            foreach (Match match in matches)
+            {
+                if (match.HomeScore > match.AwayScore)
+                {
+                    if (match.HomeTeam.id == FirstTeam.id) { firstWins++; } else { secondWins++; }
+                }
+                else if (match.HomeScore < match.AwayScore)
+                {
+                    if (match.HomeTeam.id == FirstTeam.id) { secondWins++; } else { firstWins++; }
+                }
+            }
+            if (firstWins >= firstToWin)
+            {
+                winner = FirstTeam;
+            }
+            else if (secondWins >= firstToWin)
+            {
+                winner = SecondTeam;
+            }
+        }
+        #endregion
+
+        #region Setting teams
         private Team firstSelectedTeam;
         public Team FirstSelectedTeam
         {
@@ -152,38 +319,6 @@ namespace CSharpZapoctak.Models
                 OnPropertyChanged();
             }
         }
-
-        public Visibility preLineVisibility = Visibility.Visible;
-        public Visibility PreLineVisibility
-        {
-            get { return preLineVisibility; }
-            set
-            {
-                preLineVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public Visibility postLineVisibility = Visibility.Visible;
-        public Visibility PostLineVisibility
-        {
-            get { return postLineVisibility; }
-            set
-            {
-                postLineVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private ObservableCollection<List<Match>> matches;
-        public ObservableCollection<List<Match>> Matches
-        {
-            get { return matches; }
-            set
-            {
-                matches = value;
-                OnPropertyChanged();
-            }
-        }
+        #endregion
     }
 }

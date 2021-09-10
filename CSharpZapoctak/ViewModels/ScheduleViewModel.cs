@@ -23,7 +23,7 @@ namespace CSharpZapoctak.ViewModels
                 {
                     GroupsSet = false;
                     PlayOffSet = false;
-                    //CurrentViewModel = new QualificationScheduleViewModel(navigationStore);
+                    CurrentViewModel = new QualificationScheduleViewModel(ns);
                 }
                 OnPropertyChanged();
             }
@@ -104,7 +104,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 QualificationVisibility = Visibility.Visible;
                 QualificationSet = true;
-                //CurrentViewModel = new QualificationScheduleViewModel(navigationStore);
+                CurrentViewModel = new QualificationScheduleViewModel(navigationStore);
             }
             if (SportsData.season.HasGroups())
             {

@@ -1816,6 +1816,7 @@ namespace CSharpZapoctak.ViewModels
         int bracketIndex;
         int round;
         int serieMatchNumber;
+        int bracketFirstTeam;
 
         private bool played;
         public bool Played
@@ -2561,7 +2562,7 @@ namespace CSharpZapoctak.ViewModels
         {
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT qualification_id, bracket_index, round, serie_match_number FROM matches WHERE id = " + matchID, connection);
+            MySqlCommand cmd = new MySqlCommand("SELECT qualification_id, bracket_index, round, serie_match_number, bracket_first_team FROM matches WHERE id = " + matchID, connection);
 
             try
             {
@@ -2574,6 +2575,7 @@ namespace CSharpZapoctak.ViewModels
                 bracketIndex = int.Parse(dataTable.Rows[0]["bracket_index"].ToString());
                 round = int.Parse(dataTable.Rows[0]["round"].ToString());
                 serieMatchNumber = int.Parse(dataTable.Rows[0]["serie_match_number"].ToString());
+                bracketFirstTeam = int.Parse(dataTable.Rows[0]["bracket_first_team"].ToString());
             }
             catch (Exception)
             {
@@ -3302,17 +3304,22 @@ namespace CSharpZapoctak.ViewModels
                 return;
             }
 
+            if (!edit)
+            {
+                bracketFirstTeam = HomeTeam.id;
+            }
+
             //saving
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
             string querry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, periods, " +
-                                        "period_duration, home_competitor, away_competitor, home_score, away_score, datetime, overtime, shootout, forfeit) " +
+                                        "period_duration, home_competitor, away_competitor, home_score, away_score, datetime, overtime, shootout, forfeit, bracket_first_team) " +
                                         "VALUES (" + seasonID + ", " + 0 + ", " + qualificationID + ", " + bracketIndex +
                                         ", " + round + ", " + serieMatchNumber + ", " + 0 + ", " + 0 + ", " + HomeTeam.id +
                                         ", " + AwayTeam.id + ", " + 0 + ", " + 0 + ", '" + MatchDateTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + 0 +
-                                        ", " + 0 + ", " + 0 + ")";
+                                        ", " + 0 + ", " + 0 + ", " + bracketFirstTeam + ")";
 
             try
             {
@@ -3583,16 +3590,21 @@ namespace CSharpZapoctak.ViewModels
             //saving
             int matchID = -1;
 
+            if (!edit)
+            {
+                bracketFirstTeam = HomeTeam.id;
+            }
+
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
             string matchInsertionQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, periods, " +
-                                        "period_duration, home_competitor, away_competitor, home_score, away_score, datetime, overtime, shootout, forfeit) " +
+                                        "period_duration, home_competitor, away_competitor, home_score, away_score, datetime, overtime, shootout, forfeit, bracket_first_team) " +
                                         "VALUES (" + seasonID + ", " + 1 + ", " + qualificationID + ", " + bracketIndex +
                                         ", " + round + ", " + serieMatchNumber + ", " + PeriodCount + ", " + PeriodDuration + ", " + HomeTeam.id +
                                         ", " + AwayTeam.id + ", " + homeScore + ", " + awayScore + ", '" + MatchDateTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + Convert.ToInt32(Overtime) +
-                                        ", " + Convert.ToInt32(IsShootout) + ", " + Convert.ToInt32(Forfeit) + ")";
+                                        ", " + Convert.ToInt32(IsShootout) + ", " + Convert.ToInt32(Forfeit) + ", " + bracketFirstTeam + ")";
 
             try
             {

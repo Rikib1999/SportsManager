@@ -122,8 +122,8 @@ namespace CSharpZapoctak.ViewModels
                         };
 
                         cmd = new MySqlCommand("SELECT h.name AS home_name, a.name AS away_name, " +
-                                                "matches.id, played, datetime, home_score, away_score, overtime, shootout, forfeit FROM matches " +
-                                                "INNER JOIN seasons AS s ON s.id = matches.season_id", connection);
+                                                "matches.id, played, datetime, home_score, away_score, overtime, shootout, forfeit " +
+                                                "FROM matches", connection);
                         if (SportsData.sport.name == "tennis")
                         {
                             cmd.CommandText += " INNER JOIN player AS h ON h.id = matches.home_competitor";

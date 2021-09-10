@@ -7,6 +7,8 @@ namespace CSharpZapoctak.Models
     {
         public int id = (int)EntityState.NotSelected;
 
+        public int serieNumber;
+
         private IStats stats;
         public IStats Stats
         {
