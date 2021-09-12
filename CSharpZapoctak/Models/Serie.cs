@@ -78,17 +78,6 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Visibility scoreVisibility;
-        public Visibility ScoreVisibility
-        {
-            get { return scoreVisibility; }
-            set
-            {
-                scoreVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-
         public ObservableCollection<int> firstScore = new ObservableCollection<int>();
         public ObservableCollection<int> FirstScore
         {
@@ -121,33 +110,27 @@ namespace CSharpZapoctak.Models
                     SecondTeam = m.AwayTeam;
                 }
                 else
-                {
+                {/////////////////
                     FirstTeam = m.AwayTeam;
                     SecondTeam = m.HomeTeam;
                 }
             }
 
-            if (m.Played)
-            {
-                ScoreVisibility = Visibility.Visible;
-            }
-            else
-            {
-                ScoreVisibility = Visibility.Collapsed;
-            }
-
             if (Matches.Count == 0 || Matches[Matches.Count - 1].serieNumber < m.serieNumber)
             {
                 Matches.Add(m);
-                if (m.HomeTeam.id == FirstTeam.id)
+                if (m.Played)
                 {
-                    FirstScore.Add(m.HomeScore);
-                    SecondScore.Add(m.AwayScore);
-                }
-                else
-                {
-                    FirstScore.Add(m.AwayScore);
-                    SecondScore.Add(m.HomeScore);
+                    if (m.HomeTeam.id == FirstTeam.id)
+                    {
+                        FirstScore.Add(m.HomeScore);
+                        SecondScore.Add(m.AwayScore);
+                    }
+                    else
+                    {
+                        FirstScore.Add(m.AwayScore);
+                        SecondScore.Add(m.HomeScore);
+                    }
                 }
             }
             else
@@ -157,13 +140,14 @@ namespace CSharpZapoctak.Models
                     if (Matches[i].serieNumber > m.serieNumber)
                     {
                         Matches.Insert(i, m);
+
                         if (m.HomeTeam.id == FirstTeam.id)
                         {
                             FirstScore.Insert(i, m.HomeScore);
                             SecondScore.Insert(i, m.AwayScore);
                         }
                         else
-                        {
+                        {///////////////////////////
                             FirstScore.Insert(i, m.AwayScore);
                             SecondScore.Insert(i, m.HomeScore);
                         }
