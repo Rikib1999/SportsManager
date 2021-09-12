@@ -50,7 +50,7 @@
                                                                     <ColumnDefinition Width="auto"/>
                                                                     <ColumnDefinition Width="*"/>
                                                                 </Grid.ColumnDefinitions>
-                                                                
+
                                                                 <Grid Grid.Column="0" Visibility="{Binding PreLineVisibility}" Margin="0,-20">
                                                                     <Grid.RowDefinitions>
                                                                         <RowDefinition Height="1*"/>
@@ -64,49 +64,47 @@
 
                                                                 <Border Grid.Column="1" Visibility="{Binding PreLineVisibility}" BorderBrush="Black" BorderThickness="3" MinWidth="100" Height="3"/>
 
-                                                                <Grid Grid.Column="2">
-                                                                    <StackPanel IsEnabled="{Binding IsEnabled}" Orientation="Vertical" VerticalAlignment="Center">
-                                                                        <StackPanel Orientation="Horizontal">
-                                                                            <Button Background="White">
-                                                                                <TextBlock Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding FirstTeam.Name}"/>
-                                                                            </Button>
-                                                                            <ItemsControl  ItemsSource="{Binding FirstScore}">
-                                                                                <ItemsControl.ItemsPanel>
-                                                                                    <ItemsPanelTemplate>
-                                                                                        <StackPanel Orientation="Horizontal"/>
-                                                                                    </ItemsPanelTemplate>
-                                                                                </ItemsControl.ItemsPanel>
-                                                                                <ItemsControl.ItemTemplate>
-                                                                                    <DataTemplate>
-                                                                                        <Button Background="White">
-                                                                                            <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
-                                                                                        </Button>
-                                                                                    </DataTemplate>
-                                                                                </ItemsControl.ItemTemplate>
-                                                                            </ItemsControl>
-                                                                        </StackPanel>
+                                                                <StackPanel Grid.Column="2" IsEnabled="{Binding IsEnabled}" Orientation="Vertical" VerticalAlignment="Center">
 
-                                                                        <StackPanel Orientation="Horizontal">
-                                                                            <Button Background="White">
-                                                                                <TextBlock Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding SecondTeam.Name}"/>
-                                                                            </Button>
-                                                                            <ItemsControl  ItemsSource="{Binding SecondScore}">
-                                                                                <ItemsControl.ItemsPanel>
-                                                                                    <ItemsPanelTemplate>
-                                                                                        <StackPanel Orientation="Horizontal"/>
-                                                                                    </ItemsPanelTemplate>
-                                                                                </ItemsControl.ItemsPanel>
-                                                                                <ItemsControl.ItemTemplate>
-                                                                                    <DataTemplate>
-                                                                                        <Button Background="White">
-                                                                                            <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
-                                                                                        </Button>
-                                                                                    </DataTemplate>
-                                                                                </ItemsControl.ItemTemplate>
-                                                                            </ItemsControl>
-                                                                        </StackPanel>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding FirstTeam.Name}"/>
+                                                                        <ItemsControl  ItemsSource="{Binding FirstScore}">
+                                                                            <ItemsControl.ItemsPanel>
+                                                                                <ItemsPanelTemplate>
+                                                                                    <StackPanel Orientation="Horizontal"/>
+                                                                                </ItemsPanelTemplate>
+                                                                            </ItemsControl.ItemsPanel>
+                                                                            <ItemsControl.ItemTemplate>
+                                                                                <DataTemplate>
+                                                                                    <Button BorderBrush="Black" Background="White">
+                                                                                        <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
+                                                                                    </Button>
+                                                                                </DataTemplate>
+                                                                            </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                        <Button Width="40" BorderBrush="Black" Background="White" Content="+" Command="{Binding Command}" Visibility="{Binding Visibility}"/>
                                                                     </StackPanel>
-                                                                </Grid>
+
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding SecondTeam.Name}"/>
+                                                                        <ItemsControl  ItemsSource="{Binding SecondScore}">
+                                                                            <ItemsControl.ItemsPanel>
+                                                                                <ItemsPanelTemplate>
+                                                                                    <StackPanel Orientation="Horizontal"/>
+                                                                                </ItemsPanelTemplate>
+                                                                            </ItemsControl.ItemsPanel>
+                                                                            <ItemsControl.ItemTemplate>
+                                                                                <DataTemplate>
+                                                                                    <Button BorderBrush="Black" Background="White">
+                                                                                        <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
+                                                                                    </Button>
+                                                                                </DataTemplate>
+                                                                            </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                        <Button Width="40" BorderBrush="Black" Background="White" Content="+" Command="{Binding Command}" Visibility="{Binding Visibility}"/>
+                                                                    </StackPanel>
+
+                                                                </StackPanel>
 
                                                                 <Border Grid.Column="3" Visibility="{Binding PostLineVisibility}" BorderBrush="Black" BorderThickness="3" MinWidth="100" Height="3"/>
 
