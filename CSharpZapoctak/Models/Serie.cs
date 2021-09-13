@@ -15,6 +15,16 @@ namespace CSharpZapoctak.Models
             set
             {
                 firstTeam = value;
+                if (value.id != -1)
+                {
+                    FirstSelectedVisibility = Visibility.Visible;
+                    FirstNotSelectedVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    FirstSelectedVisibility = Visibility.Collapsed;
+                    FirstNotSelectedVisibility = Visibility.Visible;
+                }
                 OnPropertyChanged();
             }
         }
@@ -26,6 +36,16 @@ namespace CSharpZapoctak.Models
             set
             {
                 secondTeam = value;
+                if (value.id != -1)
+                {
+                    SecondSelectedVisibility = Visibility.Visible;
+                    SecondNotSelectedVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    SecondSelectedVisibility = Visibility.Collapsed;
+                    SecondNotSelectedVisibility = Visibility.Visible;
+                }
                 OnPropertyChanged();
             }
         }
@@ -67,17 +87,6 @@ namespace CSharpZapoctak.Models
         #region Setting matches
         public Team winner = new Team { id = -1, Name = "-- no team --" };
 
-        public bool isEnabled = true;
-        public bool IsEnabled
-        {
-            get { return isEnabled; }
-            set
-            {
-                isEnabled = value;
-                OnPropertyChanged();
-            }
-        }
-
         public ObservableCollection<int> firstScore = new ObservableCollection<int>();
         public ObservableCollection<int> FirstScore
         {
@@ -100,6 +109,28 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        public Visibility addMatchVisibility = Visibility.Collapsed;
+        public Visibility AddMatchVisibility
+        {
+            get { return addMatchVisibility; }
+            set
+            {
+                addMatchVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+        
+        public Visibility removeTeamVisibility = Visibility.Visible;
+        public Visibility RemoveTeamVisibility
+        {
+            get { return removeTeamVisibility; }
+            set
+            {
+                removeTeamVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
         public void InsertMatch(Match m, int firstTeam, int firstToWin)
         {
             if (FirstTeam.id == -1 || SecondTeam.id == -1)
@@ -110,7 +141,7 @@ namespace CSharpZapoctak.Models
                     SecondTeam = m.AwayTeam;
                 }
                 else
-                {/////////////////
+                {
                     FirstTeam = m.AwayTeam;
                     SecondTeam = m.HomeTeam;
                 }
@@ -128,6 +159,7 @@ namespace CSharpZapoctak.Models
                     }
                     else
                     {
+                        ////////add them after all match insertions
                         FirstScore.Add(m.AwayScore);
                         SecondScore.Add(m.HomeScore);
                     }
@@ -153,6 +185,11 @@ namespace CSharpZapoctak.Models
                         }
                     }
                 }
+            }
+
+            if (m.Played)
+            {
+                RemoveTeamVisibility = Visibility.Collapsed;
             }
 
             int firstWins = 0;

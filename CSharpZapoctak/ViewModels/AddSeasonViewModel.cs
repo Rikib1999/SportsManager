@@ -1077,16 +1077,12 @@ namespace CSharpZapoctak.ViewModels
                         (int, int) roundIndex = PlayOff.GetSerieRoundIndex(s);
                         PlayOff.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, -1);
                         s.FirstTeam = new Team();
-                        s.FirstSelectedVisibility = Visibility.Collapsed;
-                        s.FirstNotSelectedVisibility = Visibility.Visible;
                     }
                     else if (s.SecondTeam == t)
                     {
                         (int, int) roundIndex = PlayOff.GetSerieRoundIndex(s);
                         PlayOff.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, -1);
                         s.SecondTeam = new Team();
-                        s.SecondSelectedVisibility = Visibility.Collapsed;
-                        s.SecondNotSelectedVisibility = Visibility.Visible;
                     }
                 }
             }
@@ -1101,16 +1097,12 @@ namespace CSharpZapoctak.ViewModels
                             (int, int) roundIndex = b.GetSerieRoundIndex(s);
                             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, -1);
                             s.FirstTeam = new Team();
-                            s.FirstSelectedVisibility = Visibility.Collapsed;
-                            s.FirstNotSelectedVisibility = Visibility.Visible;
                         }
                         else if (s.SecondTeam == t)
                         {
                             (int, int) roundIndex = b.GetSerieRoundIndex(s);
                             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, -1);
                             s.SecondTeam = new Team();
-                            s.SecondSelectedVisibility = Visibility.Collapsed;
-                            s.SecondNotSelectedVisibility = Visibility.Visible;
                         }
                     }
                 }
@@ -1163,15 +1155,11 @@ namespace CSharpZapoctak.ViewModels
                     {
                         b.Series[0][i].FirstTeam = NotSelectedTeams[0];
                         NotSelectedTeams.RemoveAt(0);
-                        b.Series[0][i].FirstNotSelectedVisibility = Visibility.Collapsed;
-                        b.Series[0][i].FirstSelectedVisibility = Visibility.Visible;
                         b.IsEnabledTreeAfterInsertionAt(0, i, 1, 1);
                         if (NotSelectedTeams.Count == 0) { return; }
 
                         b.Series[0][i].SecondTeam = NotSelectedTeams[0];
                         NotSelectedTeams.RemoveAt(0);
-                        b.Series[0][i].SecondNotSelectedVisibility = Visibility.Collapsed;
-                        b.Series[0][i].SecondSelectedVisibility = Visibility.Visible;
                         b.IsEnabledTreeAfterInsertionAt(0, i, 2, 1);
                         if (NotSelectedTeams.Count == 0) { return; }
                     }
@@ -1196,8 +1184,6 @@ namespace CSharpZapoctak.ViewModels
                     {
                         b.Series[0][i].FirstTeam = NotSelectedTeams[0];
                         NotSelectedTeams.RemoveAt(0);
-                        b.Series[0][i].FirstNotSelectedVisibility = Visibility.Collapsed;
-                        b.Series[0][i].FirstSelectedVisibility = Visibility.Visible;
                         b.IsEnabledTreeAfterInsertionAt(0, i, 1, 1);
                         if (NotSelectedTeams.Count == 0) { return; }
                     }
@@ -1206,8 +1192,6 @@ namespace CSharpZapoctak.ViewModels
                     {
                         b.Series[0][i].SecondTeam = NotSelectedTeams[0];
                         NotSelectedTeams.RemoveAt(0);
-                        b.Series[0][i].SecondNotSelectedVisibility = Visibility.Collapsed;
-                        b.Series[0][i].SecondSelectedVisibility = Visibility.Visible;
                         b.IsEnabledTreeAfterInsertionAt(0, i, 2, 1);
                         if (NotSelectedTeams.Count == 0) { return; }
                     }
@@ -1373,15 +1357,11 @@ namespace CSharpZapoctak.ViewModels
                 {
                     PlayOff.Series[0][i].FirstTeam = NotSelectedTeams[0];
                     NotSelectedTeams.RemoveAt(0);
-                    PlayOff.Series[0][i].FirstNotSelectedVisibility = Visibility.Collapsed;
-                    PlayOff.Series[0][i].FirstSelectedVisibility = Visibility.Visible;
                     PlayOff.IsEnabledTreeAfterInsertionAt(0, i, 1, 1);
                     if (NotSelectedTeams.Count == 0) { return; }
 
                     PlayOff.Series[0][i].SecondTeam = NotSelectedTeams[0];
                     NotSelectedTeams.RemoveAt(0);
-                    PlayOff.Series[0][i].SecondNotSelectedVisibility = Visibility.Collapsed;
-                    PlayOff.Series[0][i].SecondSelectedVisibility = Visibility.Visible;
                     PlayOff.IsEnabledTreeAfterInsertionAt(0, i, 2, 1);
                     if (NotSelectedTeams.Count == 0) { return; }
                 }
@@ -1403,8 +1383,6 @@ namespace CSharpZapoctak.ViewModels
                 {
                     PlayOff.Series[0][i].FirstTeam = NotSelectedTeams[0];
                     NotSelectedTeams.RemoveAt(0);
-                    PlayOff.Series[0][i].FirstNotSelectedVisibility = Visibility.Collapsed;
-                    PlayOff.Series[0][i].FirstSelectedVisibility = Visibility.Visible;
                     PlayOff.IsEnabledTreeAfterInsertionAt(0, i, 1, 1);
                     if (NotSelectedTeams.Count == 0) { return; }
                 }
@@ -1413,8 +1391,6 @@ namespace CSharpZapoctak.ViewModels
                 {
                     PlayOff.Series[0][i].SecondTeam = NotSelectedTeams[0];
                     NotSelectedTeams.RemoveAt(0);
-                    PlayOff.Series[0][i].SecondNotSelectedVisibility = Visibility.Collapsed;
-                    PlayOff.Series[0][i].SecondSelectedVisibility = Visibility.Visible;
                     PlayOff.IsEnabledTreeAfterInsertionAt(0, i, 2, 1);
                     if (NotSelectedTeams.Count == 0) { return; }
                 }
@@ -1429,8 +1405,6 @@ namespace CSharpZapoctak.ViewModels
 
             NotSelectedTeams.Add(s.FirstTeam);
             s.FirstTeam = new Team();
-            s.FirstSelectedVisibility = Visibility.Collapsed;
-            s.FirstNotSelectedVisibility = Visibility.Visible;
 
             (int, int) roundIndex = b.GetSerieRoundIndex(s);
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, -1);
@@ -1449,8 +1423,6 @@ namespace CSharpZapoctak.ViewModels
             s.FirstTeam = s.FirstSelectedTeam;
             s.FirstSelectedTeam = new Team();
             NotSelectedTeams.Remove(s.FirstTeam);
-            s.FirstNotSelectedVisibility = Visibility.Collapsed;
-            s.FirstSelectedVisibility = Visibility.Visible;
 
             (int, int) roundIndex = b.GetSerieRoundIndex(s);
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, 1);
@@ -1464,8 +1436,6 @@ namespace CSharpZapoctak.ViewModels
 
             NotSelectedTeams.Add(s.SecondTeam);
             s.SecondTeam = new Team();
-            s.SecondSelectedVisibility = Visibility.Collapsed;
-            s.SecondNotSelectedVisibility = Visibility.Visible;
 
             (int, int) roundIndex = b.GetSerieRoundIndex(s);
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, -1);
@@ -1484,8 +1454,6 @@ namespace CSharpZapoctak.ViewModels
             s.SecondTeam = s.SecondSelectedTeam;
             s.SecondSelectedTeam = new Team();
             NotSelectedTeams.Remove(s.SecondTeam);
-            s.SecondNotSelectedVisibility = Visibility.Collapsed;
-            s.SecondSelectedVisibility = Visibility.Visible;
 
             (int, int) roundIndex = b.GetSerieRoundIndex(s);
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, 1);

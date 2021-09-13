@@ -158,7 +158,7 @@ namespace CSharpZapoctak.Models
         {
             if (round == -1) { return; }
 
-            Series[round][index].IsEnabled = false;
+            //Series[round][index].IsEnabled = false;
 
             LockSeriesBefore(round - 1, index * 2);
             LockSeriesBefore(round - 1, (index * 2) + 1);
@@ -168,27 +168,28 @@ namespace CSharpZapoctak.Models
         {
             if (round == Series.Count) { return; }
 
-            Series[round][index].IsEnabled = false;
+            //Series[round][index].IsEnabled = false;
 
             LockSeriesAfter(round + 1, index / 2);
         }
 
+        /*public void PrepareSeries()
+        {
+            //SeedCompetitors();
+            //FindSeriesToLock(Series.Count - 1, 0);
+            //EnableAddMatchButtons();
+        }*/
+
         public void PrepareSeries()
         {
-            SeedCompetitors();
-            FindSeriesToLock(Series.Count - 1, 0);
-        }
-
-        public void SeedCompetitors()
-        {
-            //for each round except last one (there is no match after final)
-            for (int r = 0; r < Series.Count - 1; r++)
+            //for each round
+            for (int r = 0; r < Series.Count; r++)
             {
                 //for each serie in round
                 for (int i = 0; i < Series[r].Count; i++)
                 {
                     //if there is no competitor in next match and this match was already played and is closed or its a BYE match
-                    if (!IsThereNextCompetitor(r, i) && HasWinner(r, i))
+                    if (r != Series.Count - 1 && !IsThereNextCompetitor(r, i) && HasWinner(r, i))
                     {
                         //advance winner to the next match
                         if (i % 2 == 0)
@@ -199,12 +200,18 @@ namespace CSharpZapoctak.Models
                         {
                             Series[r + 1][i / 2].SecondTeam = Series[r][i].winner;
                         }
+                        Series[r + 1][i / 2].RemoveTeamVisibility = Visibility.Collapsed;
+                    }
+
+                    if (Series[r][i].winner.id == -1 && Series[r][i].FirstTeam.id != -1 && Series[r][i].SecondTeam.id != -1)
+                    {
+                        Series[r][i].AddMatchVisibility = Visibility.Visible;
                     }
                 }
             }
         }
 
-        public void FindSeriesToLock(int round, int index)
+        private void FindSeriesToLock(int round, int index)
         {
             if (round == -1) { return; }
 
@@ -229,6 +236,20 @@ namespace CSharpZapoctak.Models
             {
                 FindSeriesToLock(round - 1, index * 2);
                 FindSeriesToLock(round - 1, (index * 2) + 1);
+            }
+        }
+
+        private void EnableAddMatchButtons()
+        {
+            foreach (List<Serie> r in Series)
+            {
+                foreach (Serie s in r)
+                {
+                    if (s.winner.id == -1 && s.FirstTeam.id != -1 && s.SecondTeam.id != -1)
+                    {
+                        s.AddMatchVisibility = Visibility.Visible;
+                    }
+                }
             }
         }
         #endregion

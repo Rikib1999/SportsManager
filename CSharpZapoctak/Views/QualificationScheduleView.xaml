@@ -64,46 +64,94 @@
 
                                                                 <Border Grid.Column="1" Visibility="{Binding PreLineVisibility}" BorderBrush="Black" BorderThickness="3" MinWidth="100" Height="3"/>
 
-                                                                <StackPanel Grid.Column="2" IsEnabled="{Binding IsEnabled}" Orientation="Vertical" VerticalAlignment="Center">
+                                                                <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">
+                                                                    <Grid>
+                                                                        <StackPanel Visibility="{Binding FirstSelectedVisibility}" Orientation="Horizontal">
+                                                                            <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding FirstTeam.Name}"/>
 
-                                                                    <StackPanel Orientation="Horizontal">
-                                                                        <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding FirstTeam.Name}"/>
-                                                                        <ItemsControl  ItemsSource="{Binding FirstScore}">
-                                                                            <ItemsControl.ItemsPanel>
-                                                                                <ItemsPanelTemplate>
-                                                                                    <StackPanel Orientation="Horizontal"/>
-                                                                                </ItemsPanelTemplate>
-                                                                            </ItemsControl.ItemsPanel>
-                                                                            <ItemsControl.ItemTemplate>
-                                                                                <DataTemplate>
-                                                                                    <Button BorderBrush="Black" Background="White">
-                                                                                        <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
-                                                                                    </Button>
-                                                                                </DataTemplate>
-                                                                            </ItemsControl.ItemTemplate>
-                                                                        </ItemsControl>
-                                                                        <Button Width="40" BorderBrush="Black" Background="White" Content="+" Command="{Binding Command}" Visibility="{Binding Visibility}"/>
-                                                                    </StackPanel>
+                                                                            <Button Visibility="{Binding RemoveTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=bracketSource}">
+                                                                                <Button.CommandParameter>
+                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                        <Binding Path="."/>
+                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                    </MultiBinding>
+                                                                                </Button.CommandParameter>
+                                                                            </Button>
+                                                                            
+                                                                            <ItemsControl ItemsSource="{Binding FirstScore}">
+                                                                                <ItemsControl.ItemsPanel>
+                                                                                    <ItemsPanelTemplate>
+                                                                                        <StackPanel Orientation="Horizontal"/>
+                                                                                    </ItemsPanelTemplate>
+                                                                                </ItemsControl.ItemsPanel>
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <Button BorderBrush="Black" Background="White">
+                                                                                            <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
+                                                                                        </Button>
+                                                                                    </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                            </ItemsControl>
 
-                                                                    <StackPanel Orientation="Horizontal">
-                                                                        <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding SecondTeam.Name}"/>
-                                                                        <ItemsControl  ItemsSource="{Binding SecondScore}">
-                                                                            <ItemsControl.ItemsPanel>
-                                                                                <ItemsPanelTemplate>
-                                                                                    <StackPanel Orientation="Horizontal"/>
-                                                                                </ItemsPanelTemplate>
-                                                                            </ItemsControl.ItemsPanel>
-                                                                            <ItemsControl.ItemTemplate>
-                                                                                <DataTemplate>
-                                                                                    <Button BorderBrush="Black" Background="White">
-                                                                                        <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
-                                                                                    </Button>
-                                                                                </DataTemplate>
-                                                                            </ItemsControl.ItemTemplate>
-                                                                        </ItemsControl>
-                                                                        <Button Width="40" BorderBrush="Black" Background="White" Content="+" Command="{Binding Command}" Visibility="{Binding Visibility}"/>
-                                                                    </StackPanel>
+                                                                            <Button Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add" Command="{Binding Command}" Visibility="{Binding AddMatchVisibility}"/>
+                                                                        </StackPanel>
 
+                                                                        <StackPanel IsEnabled="{Binding FirstIsEnabled}" Visibility="{Binding FirstNotSelectedVisibility}" Orientation="Horizontal">
+                                                                            <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=bracketSource}" SelectedItem="{Binding FirstSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
+                                                                            <Button Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddFirstTeamToSerieCommand, ElementName=bracketSource}">
+                                                                                <Button.CommandParameter>
+                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                        <Binding Path="."/>
+                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                    </MultiBinding>
+                                                                                </Button.CommandParameter>
+                                                                            </Button>
+                                                                        </StackPanel>
+                                                                    </Grid>
+
+                                                                    <Grid>
+                                                                        <StackPanel Visibility="{Binding SecondSelectedVisibility}" Orientation="Horizontal">
+                                                                            <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding SecondTeam.Name}"/>
+
+                                                                            <Button Visibility="{Binding RemoveTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=bracketSource}">
+                                                                                <Button.CommandParameter>
+                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                        <Binding Path="."/>
+                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                    </MultiBinding>
+                                                                                </Button.CommandParameter>
+                                                                            </Button>
+
+                                                                            <ItemsControl ItemsSource="{Binding SecondScore}">
+                                                                                <ItemsControl.ItemsPanel>
+                                                                                    <ItemsPanelTemplate>
+                                                                                        <StackPanel Orientation="Horizontal"/>
+                                                                                    </ItemsPanelTemplate>
+                                                                                </ItemsControl.ItemsPanel>
+                                                                                <ItemsControl.ItemTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <Button BorderBrush="Black" Background="White">
+                                                                                            <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
+                                                                                        </Button>
+                                                                                    </DataTemplate>
+                                                                                </ItemsControl.ItemTemplate>
+                                                                            </ItemsControl>
+
+                                                                            <Button Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match" Command="{Binding Command}" Visibility="{Binding AddMatchVisibility}"/>
+                                                                        </StackPanel>
+
+                                                                        <StackPanel IsEnabled="{Binding SecondIsEnabled}" Visibility="{Binding SecondNotSelectedVisibility}" Orientation="Horizontal">
+                                                                            <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=bracketSource}" SelectedItem="{Binding SecondSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
+                                                                            <Button Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddSecondTeamToSerieCommand, ElementName=bracketSource}">
+                                                                                <Button.CommandParameter>
+                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                        <Binding Path="."/>
+                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                    </MultiBinding>
+                                                                                </Button.CommandParameter>
+                                                                            </Button>
+                                                                        </StackPanel>
+                                                                    </Grid>
                                                                 </StackPanel>
 
                                                                 <Border Grid.Column="3" Visibility="{Binding PostLineVisibility}" BorderBrush="Black" BorderThickness="3" MinWidth="100" Height="3"/>
