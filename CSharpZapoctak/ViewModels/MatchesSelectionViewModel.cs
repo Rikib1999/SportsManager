@@ -3,12 +3,8 @@ using CSharpZapoctak.Models;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 

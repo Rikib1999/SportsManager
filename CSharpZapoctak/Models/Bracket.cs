@@ -216,7 +216,10 @@ namespace CSharpZapoctak.Models
         private void CollapseRemoveButton(int round, int index)
         {
             if (round == -1) { return; }
-
+            if (id == 11)
+            {
+                int a = 5;
+            }
             if (Series[round][index].Matches.Count(x => x.Played) > 0)
             {
                 CollapseAllRemoveButton(round, index);
@@ -226,6 +229,8 @@ namespace CSharpZapoctak.Models
                 if (Series[round][index].Matches[0].HomeTeam.id == -1)
                 {
                     Series[round][index].RemoveFirstTeamVisibility = Visibility.Collapsed;
+                    CollapseRemoveButton(round - 1, index * 2);
+                    CollapseRemoveButton(round - 1, (index * 2) + 1);
                 }
                 else
                 {
@@ -235,6 +240,8 @@ namespace CSharpZapoctak.Models
                 if (Series[round][index].Matches[0].AwayTeam.id == -1)
                 {
                     Series[round][index].RemoveSecondTeamVisibility = Visibility.Collapsed;
+                    CollapseRemoveButton(round - 1, index * 2);
+                    CollapseRemoveButton(round - 1, (index * 2) + 1);
                 }
                 else
                 {

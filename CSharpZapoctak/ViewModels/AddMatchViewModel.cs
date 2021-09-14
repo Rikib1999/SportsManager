@@ -1817,6 +1817,8 @@ namespace CSharpZapoctak.ViewModels
         int round = -1;
         int serieMatchNumber = -1;
         int bracketFirstTeam = -1;
+        int HomeScore;
+        int AwayScore;
 
         private bool played;
         public bool Played
@@ -2291,7 +2293,7 @@ namespace CSharpZapoctak.ViewModels
         {
             ns = navigationStore;
             seasonID = SportsData.season.id;
-            this.scheduleToReturnVM = new GroupsScheduleViewModel(ns);
+            scheduleToReturnVM = new GroupsScheduleViewModel(ns);
             this.round = round;
             Periods = new ObservableCollection<Period>();
             Shootout = new ObservableCollection<ShootoutShot>();
@@ -2330,12 +2332,12 @@ namespace CSharpZapoctak.ViewModels
         }
 
         //EDIT
-        public AddMatchViewModel(NavigationStore navigationStore, Match m, ViewModelBase scheduleToReturnVM, bool edit)
+        public AddMatchViewModel(NavigationStore navigationStore, Match m, ViewModelBase scheduleToReturnVM)
         {
+            edit = true;
             ns = navigationStore;
             seasonID = m.Season.id;
             match = m;
-            this.edit = edit;
             this.scheduleToReturnVM = scheduleToReturnVM;
             LoadMatchInfo(m.id);
 
@@ -2345,7 +2347,24 @@ namespace CSharpZapoctak.ViewModels
 
             Periods = new ObservableCollection<Period>();
             Shootout = new ObservableCollection<ShootoutShot>();
-            LoadTeams();
+
+            if (qualificationID == -1)
+            {
+                LoadTeams();
+            }
+            else
+            {
+                AvailableTeamsHome = new ObservableCollection<Team>();
+                availableTeamsHome.Add(m.HomeTeam);
+                availableTeamsHome.Add(m.AwayTeam);
+                AvailableTeamsAway = new ObservableCollection<Team>();
+                AvailableTeamsAway.Add(m.HomeTeam);
+                AvailableTeamsAway.Add(m.AwayTeam);
+
+                HomeScore = m.HomeScore;
+                AwayScore = m.AwayScore;
+            }
+
             LoadSides();
             LoadStrengths();
             PenaltyReasons = SportsData.LoadPenaltyReasons();
@@ -3312,6 +3331,12 @@ namespace CSharpZapoctak.ViewModels
                 }
             }
         }
+
+        private bool ExceedsFirstToWin(int homeScore, int awayScore)
+        {
+            throw new NotImplementedException();
+            //firstToWin exceeds?
+        }
         #endregion
 
         #region Saving
@@ -3585,6 +3610,11 @@ namespace CSharpZapoctak.ViewModels
             }
 
             //validation
+            if (ExceedsFirstToWin(homeScore, awayScore))
+            {
+                MessageBox.Show("Match can not be added. The winner of this match already has the required number of wins to win the series.", "Series match number of violation", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             if (HomeTeam == null)
             {
                 MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);

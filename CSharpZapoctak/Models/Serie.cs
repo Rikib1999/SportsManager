@@ -6,6 +6,37 @@ using System.Windows;
 
 namespace CSharpZapoctak.Models
 {
+    class Score : ViewModelBase
+    {
+        public Score(int score, Match match)
+        {
+            Value = score;
+            Match = match;
+        }
+
+        public int value;
+        public int Value
+        {
+            get { return value; }
+            set
+            {
+                this.value = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Match match;
+        public Match Match
+        {
+            get { return match; }
+            set
+            {
+                match = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     class Serie : ViewModelBase
     {
         private Team firstTeam = new Team { id = -1, Name = "-- no team --" };
@@ -87,8 +118,8 @@ namespace CSharpZapoctak.Models
         #region Setting matches
         public Team winner = new Team { id = -1, Name = "-- no team --" };
 
-        public ObservableCollection<int> firstScore = new ObservableCollection<int>();
-        public ObservableCollection<int> FirstScore
+        public ObservableCollection<Score> firstScore = new ObservableCollection<Score>();
+        public ObservableCollection<Score> FirstScore
         {
             get { return firstScore; }
             set
@@ -98,8 +129,8 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public ObservableCollection<int> secondScore = new ObservableCollection<int>();
-        public ObservableCollection<int> SecondScore
+        public ObservableCollection<Score> secondScore = new ObservableCollection<Score>();
+        public ObservableCollection<Score> SecondScore
         {
             get { return secondScore; }
             set
@@ -165,14 +196,13 @@ namespace CSharpZapoctak.Models
                 {
                     if (m.HomeTeam.id == FirstTeam.id)
                     {
-                        FirstScore.Add(m.HomeScore);
-                        SecondScore.Add(m.AwayScore);
+                        FirstScore.Add(new Score(m.HomeScore, m));
+                        SecondScore.Add(new Score(m.AwayScore, m));
                     }
                     else
                     {
-                        ////////add them after all match insertions
-                        FirstScore.Add(m.AwayScore);
-                        SecondScore.Add(m.HomeScore);
+                        FirstScore.Add(new Score(m.AwayScore, m));
+                        SecondScore.Add(new Score(m.HomeScore, m));
                     }
                 }
             }
@@ -184,15 +214,18 @@ namespace CSharpZapoctak.Models
                     {
                         Matches.Insert(i, m);
 
+                        int insertAt = i;
+                        if (Matches.Count(x => !x.Played) == 0) { insertAt--; }
+
                         if (m.HomeTeam.id == FirstTeam.id)
                         {
-                            FirstScore.Insert(i, m.HomeScore);
-                            SecondScore.Insert(i, m.AwayScore);
+                            FirstScore.Insert(insertAt, new Score(m.AwayScore, m));
+                            SecondScore.Insert(insertAt, new Score(m.AwayScore, m));
                         }
                         else
-                        {///////////////////////////
-                            FirstScore.Insert(i, m.AwayScore);
-                            SecondScore.Insert(i, m.HomeScore);
+                        {
+                            FirstScore.Insert(insertAt, new Score(m.AwayScore, m));
+                            SecondScore.Insert(insertAt, new Score(m.AwayScore, m));
                         }
                     }
                 }

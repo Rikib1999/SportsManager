@@ -307,6 +307,7 @@ namespace CSharpZapoctak.ViewModels
 
         public NavigationStore ns;
         public ViewModelBase scheduleToReturnVM;
+        public bool IsEditable = true;
 
         public int qualificationID;
         public int round;
@@ -319,11 +320,82 @@ namespace CSharpZapoctak.ViewModels
             PenaltyReasons = SportsData.LoadPenaltyReasons();
             PenaltyTypes = SportsData.LoadPenaltyTypes();
             LoadMatch(m);
+            if (qualificationID != -1)
+            {
+                CanBeEdited();
+            }
             LoadPeriodScore();
             LoadRoster("Home");
             LoadRoster("Away");
             LoadEvents();
             LoadShootout();
+        }
+
+        private void CanBeEdited()
+        {
+            //Select all played matches from current bracket
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT round, bracket_index " +
+                                                "FROM matches " +
+                                                "WHERE qualification_id = " + qualificationID + " AND played = 1 AND round > " + round, connection);
+
+            try
+            {
+                connection.Open();
+                DataTable dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+
+                List<(int, int)> macthes = new List<(int, int)>();
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    macthes.Add((int.Parse(dataTable.Rows[0]["round"].ToString()), int.Parse(dataTable.Rows[0]["bracket_index"].ToString())));
+                }
+
+                if (macthes.Count > 0)
+                {
+                    List<(int, int)> path = CreateBracketPath(round, bracketIndex, macthes.OrderByDescending(x => x.Item1).First().Item1);
+
+                    foreach ((int, int) m in macthes)
+                    {
+                        if (path.Contains(m))
+                        {
+                            IsEditable = false;
+                            break;
+                        }
+                    }
+                }
+
+                connection.Close();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Unable to connect to databse."+e.Message+e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        private List<(int, int)> CreateBracketPath(int round, int index, int lastRound)
+        {
+            List<(int, int)> path = new List<(int, int)>();
+            int r = round;
+            int i = index;
+
+            while (r < lastRound)
+            {
+                r++;
+                i /= 2;
+                path.Add((r, i));
+            }
+
+            return path;
         }
 
         private void LoadMatch(Match m)
@@ -379,9 +451,9 @@ namespace CSharpZapoctak.ViewModels
 
                 connection.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse." +e.Message+e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -407,7 +479,7 @@ namespace CSharpZapoctak.ViewModels
                 dataTable.Load(cmd.ExecuteReader());
 
                 PeriodScores = "(";
-                
+
                 foreach (DataRow row in dataTable.Rows)
                 {
                     PeriodEvents pe = new PeriodEvents();
@@ -783,81 +855,95 @@ namespace CSharpZapoctak.ViewModels
 
         private void Edit()
         {
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, Match, scheduleToReturnVM, true))).Execute(null);
+            if (IsEditable)
+            {
+                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, Match, scheduleToReturnVM))).Execute(null);
+            }
+            else
+            {
+                MessageBox.Show("Match can not be edited because another match in bracket depends on it.", "Match can not be edited", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Delete()
         {
-            MessageBoxResult msgResult = MessageBox.Show("Do you really want to delete this match?.", "Delete match", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-            if (msgResult == MessageBoxResult.Yes)
+            if (IsEditable)
             {
-                //delete match from DB
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlTransaction transaction = null;
-                MySqlCommand cmd = null;
-                string querry = "DELETE FROM matches WHERE id = " + Match.id;
+                MessageBoxResult msgResult = MessageBox.Show("Do you really want to delete this match?.", "Delete match", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
-                try
+                if (msgResult == MessageBoxResult.Yes)
                 {
-                    connection.Open();
-                    transaction = connection.BeginTransaction();
+                    //delete match from DB
+                    string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                    MySqlConnection connection = new MySqlConnection(connectionString);
+                    MySqlTransaction transaction = null;
+                    MySqlCommand cmd = null;
+                    string querry = "DELETE FROM matches WHERE id = " + Match.id;
 
-                    cmd = new MySqlCommand(querry, connection);
-                    cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
-
-                    //shift serie match numbers
-                    if (qualificationID != -1)
+                    try
                     {
-                        querry = "UPDATE matches SET serie_match_number = serie_match_number - 1 " +
-                                 "WHERE serie_match_number > " + Match.serieNumber + " AND qualification_id = " + qualificationID + " AND round = " + round + " AND bracket_index = " + bracketIndex;
+                        connection.Open();
+                        transaction = connection.BeginTransaction();
+
                         cmd = new MySqlCommand(querry, connection);
                         cmd.Transaction = transaction;
                         cmd.ExecuteNonQuery();
-                    }
 
-                    //delete all player/goalie match enlistments and all stats
-                    List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
-                    foreach (string db in databases)
-                    {
-                        querry = "DELETE FROM " + db + " WHERE match_id = " + Match.id;
-                        cmd = new MySqlCommand(querry, connection);
-                        cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
-                    }
+                        //shift serie match numbers
+                        if (qualificationID != -1)
+                        {
+                            querry = "UPDATE matches SET serie_match_number = serie_match_number - 1 " +
+                                     "WHERE serie_match_number > " + Match.serieNumber + " AND qualification_id = " + qualificationID + " AND round = " + round + " AND bracket_index = " + bracketIndex;
+                            cmd = new MySqlCommand(querry, connection);
+                            cmd.Transaction = transaction;
+                            cmd.ExecuteNonQuery();
+                        }
 
-                    transaction.Commit();
-                    connection.Close();
+                        //delete all player/goalie match enlistments and all stats
+                        List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
+                        foreach (string db in databases)
+                        {
+                            querry = "DELETE FROM " + db + " WHERE match_id = " + Match.id;
+                            cmd = new MySqlCommand(querry, connection);
+                            cmd.Transaction = transaction;
+                            cmd.ExecuteNonQuery();
+                        }
 
-                    ScheduleViewModel scheduleViewModel = new ScheduleViewModel(ns);
-                    switch (scheduleToReturnVM)
-                    {
-                        //TODO: add qualification and play-off schedules
-                        case MatchesSelectionViewModel:
-                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchesSelectionViewModel(ns))).Execute(null);
-                            break;
-                        case GroupsScheduleViewModel:
-                            scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
-                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    if (connection.State == ConnectionState.Open)
-                    {
+                        transaction.Commit();
                         connection.Close();
+
+                        ScheduleViewModel scheduleViewModel = new ScheduleViewModel(ns);
+                        switch (scheduleToReturnVM)
+                        {
+                            //TODO: add qualification and play-off schedules
+                            case MatchesSelectionViewModel:
+                                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchesSelectionViewModel(ns))).Execute(null);
+                                break;
+                            case GroupsScheduleViewModel:
+                                scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
+                                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    finally
+                    {
+                        if (connection.State == ConnectionState.Open)
+                        {
+                            connection.Close();
+                        }
                     }
                 }
+            }
+            else
+            {
+                MessageBox.Show("Match can not be deleted because another match in bracket depends on it.", "Match can not be deleted", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

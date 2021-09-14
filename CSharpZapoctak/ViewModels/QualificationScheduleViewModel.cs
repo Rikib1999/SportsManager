@@ -276,7 +276,6 @@ namespace CSharpZapoctak.ViewModels
         {
             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, m, new QualificationScheduleViewModel(ns)))).Execute(null);
         }
-        //delete match in serie, shift serie numbers
 
         private void AddMatch(object param)
         {

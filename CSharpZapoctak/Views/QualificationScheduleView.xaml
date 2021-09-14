@@ -77,8 +77,8 @@
                                                                                 </ItemsControl.ItemsPanel>
                                                                                 <ItemsControl.ItemTemplate>
                                                                                     <DataTemplate>
-                                                                                        <Button BorderBrush="Black" Background="White">
-                                                                                            <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
+                                                                                        <Button Command="{Binding Path=DataContext.MatchDetailCommand, ElementName=bracketSource}" CommandParameter="{Binding Match}" BorderBrush="Black" Background="White">
+                                                                                            <TextBlock Padding="5,2" Text="{Binding Value}" Width="40"/>
                                                                                         </Button>
                                                                                     </DataTemplate>
                                                                                 </ItemsControl.ItemTemplate>
@@ -128,8 +128,8 @@
                                                                                 </ItemsControl.ItemsPanel>
                                                                                 <ItemsControl.ItemTemplate>
                                                                                     <DataTemplate>
-                                                                                        <Button BorderBrush="Black" Background="White">
-                                                                                            <TextBlock Padding="5,2" Text="{Binding}" Width="40"/>
+                                                                                        <Button Command="{Binding Path=DataContext.MatchDetailCommand, ElementName=bracketSource}" CommandParameter="{Binding Match}" BorderBrush="Black" Background="White">
+                                                                                            <TextBlock Padding="5,2" Text="{Binding Value}" Width="40"/>
                                                                                         </Button>
                                                                                     </DataTemplate>
                                                                                 </ItemsControl.ItemTemplate>
