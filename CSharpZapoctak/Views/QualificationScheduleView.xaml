@@ -69,15 +69,6 @@
                                                                         <StackPanel Visibility="{Binding FirstSelectedVisibility}" Orientation="Horizontal">
                                                                             <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding FirstTeam.Name}"/>
 
-                                                                            <Button Visibility="{Binding RemoveTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=bracketSource}">
-                                                                                <Button.CommandParameter>
-                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                                        <Binding Path="."/>
-                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                                    </MultiBinding>
-                                                                                </Button.CommandParameter>
-                                                                            </Button>
-                                                                            
                                                                             <ItemsControl ItemsSource="{Binding FirstScore}">
                                                                                 <ItemsControl.ItemsPanel>
                                                                                     <ItemsPanelTemplate>
@@ -92,8 +83,24 @@
                                                                                     </DataTemplate>
                                                                                 </ItemsControl.ItemTemplate>
                                                                             </ItemsControl>
-
-                                                                            <Button Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add" Command="{Binding Command}" Visibility="{Binding AddMatchVisibility}"/>
+                                                                            
+                                                                            <Button Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=bracketSource}" Visibility="{Binding AddMatchVisibility}">
+                                                                                <Button.CommandParameter>
+                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                        <Binding Path="."/>
+                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                    </MultiBinding>
+                                                                                </Button.CommandParameter>
+                                                                            </Button>
+                                                                            
+                                                                            <Button Visibility="{Binding RemoveFirstTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=bracketSource}">
+                                                                                <Button.CommandParameter>
+                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                        <Binding Path="."/>
+                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                    </MultiBinding>
+                                                                                </Button.CommandParameter>
+                                                                            </Button>
                                                                         </StackPanel>
 
                                                                         <StackPanel IsEnabled="{Binding FirstIsEnabled}" Visibility="{Binding FirstNotSelectedVisibility}" Orientation="Horizontal">
@@ -113,15 +120,6 @@
                                                                         <StackPanel Visibility="{Binding SecondSelectedVisibility}" Orientation="Horizontal">
                                                                             <TextBox IsReadOnly="True" Padding="5,2" Width="180" TextWrapping="Wrap" Text="{Binding SecondTeam.Name}"/>
 
-                                                                            <Button Visibility="{Binding RemoveTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=bracketSource}">
-                                                                                <Button.CommandParameter>
-                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                                        <Binding Path="."/>
-                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                                    </MultiBinding>
-                                                                                </Button.CommandParameter>
-                                                                            </Button>
-
                                                                             <ItemsControl ItemsSource="{Binding SecondScore}">
                                                                                 <ItemsControl.ItemsPanel>
                                                                                     <ItemsPanelTemplate>
@@ -136,8 +134,24 @@
                                                                                     </DataTemplate>
                                                                                 </ItemsControl.ItemTemplate>
                                                                             </ItemsControl>
-
-                                                                            <Button Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match" Command="{Binding Command}" Visibility="{Binding AddMatchVisibility}"/>
+                                                                            
+                                                                            <Button Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=bracketSource}" Visibility="{Binding AddMatchVisibility}">
+                                                                                <Button.CommandParameter>
+                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                        <Binding Path="."/>
+                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                    </MultiBinding>
+                                                                                </Button.CommandParameter>
+                                                                            </Button>
+                                                                            
+                                                                            <Button Visibility="{Binding RemoveSecondTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=bracketSource}">
+                                                                                <Button.CommandParameter>
+                                                                                    <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                        <Binding Path="."/>
+                                                                                        <Binding Path="DataContext" ElementName="roundSource"/>
+                                                                                    </MultiBinding>
+                                                                                </Button.CommandParameter>
+                                                                            </Button>
                                                                         </StackPanel>
 
                                                                         <StackPanel IsEnabled="{Binding SecondIsEnabled}" Visibility="{Binding SecondNotSelectedVisibility}" Orientation="Horizontal">

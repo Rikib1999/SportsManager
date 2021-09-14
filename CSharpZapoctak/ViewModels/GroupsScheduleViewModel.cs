@@ -289,7 +289,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void AddMatch(int id)
         {
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, new GroupsScheduleViewModel(ns), -1, -1, id, -1))).Execute(null);
+            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, id))).Execute(null);
         }
 
         private void AddRound()

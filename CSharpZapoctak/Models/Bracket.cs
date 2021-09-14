@@ -1,6 +1,7 @@
 ﻿using CSharpZapoctak.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 
 namespace CSharpZapoctak.Models
@@ -200,7 +201,6 @@ namespace CSharpZapoctak.Models
                         {
                             Series[r + 1][i / 2].SecondTeam = Series[r][i].winner;
                         }
-                        Series[r + 1][i / 2].RemoveTeamVisibility = Visibility.Collapsed;
                     }
 
                     if (Series[r][i].winner.id == -1 && Series[r][i].FirstTeam.id != -1 && Series[r][i].SecondTeam.id != -1)
@@ -209,6 +209,77 @@ namespace CSharpZapoctak.Models
                     }
                 }
             }
+
+            CollapseRemoveButton(Series.Count - 1, 0);
+        }
+
+        private void CollapseRemoveButton(int round, int index)
+        {
+            if (round == -1) { return; }
+
+            if (Series[round][index].Matches.Count(x => x.Played) > 0)
+            {
+                CollapseAllRemoveButton(round, index);
+            }
+            else if (Series[round][index].Matches.Count > 0)
+            {
+                if (Series[round][index].Matches[0].HomeTeam.id == -1)
+                {
+                    Series[round][index].RemoveFirstTeamVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    CollapseAllRemoveButton(round - 1, index * 2);
+                }
+
+                if (Series[round][index].Matches[0].AwayTeam.id == -1)
+                {
+                    Series[round][index].RemoveSecondTeamVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    CollapseAllRemoveButton(round - 1, (index * 2) + 1);
+                }
+            }
+            else
+            {
+                Series[round][index].RemoveFirstTeamVisibility = Visibility.Collapsed;
+                Series[round][index].RemoveSecondTeamVisibility = Visibility.Collapsed;
+                CollapseRemoveButton(round - 1, index * 2);
+                CollapseRemoveButton(round - 1, (index * 2) + 1);
+            }
+        }
+
+        private void CollapseAllRemoveButton(int round, int index)
+        {
+            if (round == -1) { return; }
+
+            Series[round][index].RemoveFirstTeamVisibility = Visibility.Collapsed;
+            Series[round][index].RemoveSecondTeamVisibility = Visibility.Collapsed;
+            CollapseAllRemoveButton(round - 1, index * 2);
+            CollapseAllRemoveButton(round - 1, (index * 2) + 1);
+        }
+
+        public void ResetSeriesAdvanced(int round, int index, int position)
+        {
+            if (round == Series.Count) { return; }
+
+            if (position == 1)
+            {
+                Series[round][index].FirstTeam = new Team { id = -1 };
+            }
+            else
+            {
+                Series[round][index].SecondTeam = new Team { id = -1 };
+            }
+            Series[round][index].winner = new Team { id = -1 };
+            Series[round][index].RemoveFirstTeamVisibility = Visibility.Visible;
+            Series[round][index].RemoveSecondTeamVisibility = Visibility.Visible;
+            Series[round][index].AddMatchVisibility = Visibility.Collapsed;
+
+            int newPosition = 2;
+            if (index % 2 == 0) { newPosition = 1; }
+            ResetSeriesAdvanced(round + 1, index / 2, newPosition);
         }
 
         private void FindSeriesToLock(int round, int index)

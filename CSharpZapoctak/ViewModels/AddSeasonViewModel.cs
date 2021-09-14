@@ -1668,7 +1668,7 @@ namespace CSharpZapoctak.ViewModels
                             {
                                 //match insertion
                                 string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                              "VALUES (" + CurrentSeason.id + ", 0, " + b.id + ", " + j + ", " + i + ", 1, " + first + ", " + second + ", " + first + ")";
+                                              "VALUES (" + CurrentSeason.id + ", 0, " + b.id + ", " + j + ", " + i + ", -1, " + first + ", " + second + ", " + first + ")";
                                 cmd = new MySqlCommand(macthInsertQuerry, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
@@ -1738,7 +1738,7 @@ namespace CSharpZapoctak.ViewModels
                             {
                                 //match insertion
                                 string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                              "VALUES (" + CurrentSeason.id + ", 0, " + PlayOff.id + ", " + j + ", " + i + ", 1, " + first + ", " + second + ", " + first + ")";
+                                              "VALUES (" + CurrentSeason.id + ", 0, " + PlayOff.id + ", " + j + ", " + i + ", -1, " + first + ", " + second + ", " + first + ")";
                                 cmd = new MySqlCommand(macthInsertQuerry, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();

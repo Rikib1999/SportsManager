@@ -119,14 +119,25 @@ namespace CSharpZapoctak.Models
                 OnPropertyChanged();
             }
         }
-        
-        public Visibility removeTeamVisibility = Visibility.Visible;
-        public Visibility RemoveTeamVisibility
+
+        public Visibility removeFirstTeamVisibility = Visibility.Visible;
+        public Visibility RemoveFirstTeamVisibility
         {
-            get { return removeTeamVisibility; }
+            get { return removeFirstTeamVisibility; }
             set
             {
-                removeTeamVisibility = value;
+                removeFirstTeamVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility removeSecondTeamVisibility = Visibility.Visible;
+        public Visibility RemoveSecondTeamVisibility
+        {
+            get { return removeSecondTeamVisibility; }
+            set
+            {
+                removeSecondTeamVisibility = value;
                 OnPropertyChanged();
             }
         }
@@ -185,11 +196,6 @@ namespace CSharpZapoctak.Models
                         }
                     }
                 }
-            }
-
-            if (m.Played)
-            {
-                RemoveTeamVisibility = Visibility.Collapsed;
             }
 
             int firstWins = 0;

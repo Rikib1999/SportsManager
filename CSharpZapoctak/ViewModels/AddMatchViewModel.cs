@@ -1812,11 +1812,11 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Match info
-        int qualificationID;
-        int bracketIndex;
-        int round;
-        int serieMatchNumber;
-        int bracketFirstTeam;
+        int qualificationID = -1;
+        int bracketIndex = -1;
+        int round = -1;
+        int serieMatchNumber = -1;
+        int bracketFirstTeam = -1;
 
         private bool played;
         public bool Played
@@ -2286,15 +2286,13 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Constructors
-        public AddMatchViewModel(NavigationStore navigationStore, ViewModelBase scheduleToReturnVM, int qualificationID, int bracketIndex, int round, int serieMatchNumber)
+        //ADD for group
+        public AddMatchViewModel(NavigationStore navigationStore, int round)
         {
             ns = navigationStore;
             seasonID = SportsData.season.id;
-            this.scheduleToReturnVM = scheduleToReturnVM;
-            this.qualificationID = qualificationID;
-            this.bracketIndex = bracketIndex;
+            this.scheduleToReturnVM = new GroupsScheduleViewModel(ns);
             this.round = round;
-            this.serieMatchNumber = serieMatchNumber;
             Periods = new ObservableCollection<Period>();
             Shootout = new ObservableCollection<ShootoutShot>();
             LoadTeams();
@@ -2305,6 +2303,33 @@ namespace CSharpZapoctak.ViewModels
             //TODO: set different overtime duration
         }
 
+        //ADD for bracket
+        public AddMatchViewModel(NavigationStore navigationStore, ViewModelBase scheduleToReturnVM, int qualificationID, int bracketIndex, int round, int serieMatchNumber, Team first, Team second)
+        {
+            ns = navigationStore;
+            seasonID = SportsData.season.id;
+            this.scheduleToReturnVM = scheduleToReturnVM;
+            this.qualificationID = qualificationID;
+            this.bracketIndex = bracketIndex;
+            this.round = round;
+            this.serieMatchNumber = serieMatchNumber;
+            bracketFirstTeam = first.id;
+            Periods = new ObservableCollection<Period>();
+            Shootout = new ObservableCollection<ShootoutShot>();
+            AvailableTeamsHome = new ObservableCollection<Team>();
+            availableTeamsHome.Add(first);
+            availableTeamsHome.Add(second);
+            AvailableTeamsAway = new ObservableCollection<Team>();
+            AvailableTeamsAway.Add(first);
+            AvailableTeamsAway.Add(second);
+            LoadSides();
+            LoadStrengths();
+            PenaltyReasons = SportsData.LoadPenaltyReasons();
+            PenaltyTypes = SportsData.LoadPenaltyTypes();
+            //TODO: set different overtime duration
+        }
+
+        //EDIT
         public AddMatchViewModel(NavigationStore navigationStore, Match m, ViewModelBase scheduleToReturnVM, bool edit)
         {
             ns = navigationStore;
@@ -3293,6 +3318,11 @@ namespace CSharpZapoctak.ViewModels
         private void NotPlayedSave()
         {
             //validation
+            if (qualificationID != -1)
+            {
+                MessageBox.Show("Qualification or play-off match needs to be played.", "Match not played", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             if (HomeTeam == null)
             {
                 MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -3362,7 +3392,7 @@ namespace CSharpZapoctak.ViewModels
                 {
                     switch (scheduleToReturnVM)
                     {
-                        //TODO: add qualification and play-off schedules
+                        //TODO: add qualification and play-off schedules, but they cannot be not played (?)
                         case GroupsScheduleViewModel:
                             scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
@@ -3910,9 +3940,13 @@ namespace CSharpZapoctak.ViewModels
                 {
                     switch (scheduleToReturnVM)
                     {
-                        //TODO: add qualification and play-off schedules
+                        //TODO: add play-off schedule
                         case GroupsScheduleViewModel:
                             scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
+                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
+                            break;
+                        case QualificationScheduleViewModel:
+                            scheduleViewModel.CurrentViewModel = new QualificationScheduleViewModel(ns);
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
                         default:

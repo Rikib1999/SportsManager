@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -36,7 +37,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (addMatchCommand == null)
                 {
-                    addMatchCommand = new RelayCommand(param => AddMatch(((Round)param).id));
+                    addMatchCommand = new RelayCommand(param => AddMatch(param));
                 }
                 return addMatchCommand;
             }
@@ -120,14 +121,52 @@ namespace CSharpZapoctak.ViewModels
         public QualificationScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
-            LoadBrackets();
             LoadNotSelectedTeams();
+            LoadBrackets();
         }
 
         private void LoadNotSelectedTeams()
         {
             NotSelectedTeams = new ObservableCollection<Team>();
-            //only name and id of team
+
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT team_id, t.name AS team_name FROM team_enlistment " +
+                                                "INNER JOIN team AS t ON t.id = team_id " +
+                                                "WHERE season_id = " + SportsData.season.id, connection);
+
+            try
+            {
+                connection.Open();
+                DataTable dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+                connection.Close();
+
+                foreach (DataRow tm in dataTable.Rows)
+                {
+                    Team t = new Team
+                    {
+                        id = int.Parse(tm["team_id"].ToString()),
+                        Name = tm["team_name"].ToString(),
+                    };
+
+                    if (t.id != -1)
+                    {
+                        NotSelectedTeams.Add(t);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
         }
 
         private void LoadBrackets()
@@ -206,14 +245,23 @@ namespace CSharpZapoctak.ViewModels
                         {
                             b.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
                         }
+
+                        if (NotSelectedTeams.Count(x => x.id == home.id) == 1)
+                        {
+                            NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.id == home.id));
+                        }
+                        if (NotSelectedTeams.Count(x => x.id == away.id) == 1)
+                        {
+                            NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.id == away.id));
+                        }
                     }
                     b.PrepareSeries();
                     Brackets.Add(b);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse."+e.Message + e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -229,10 +277,17 @@ namespace CSharpZapoctak.ViewModels
             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, m, new QualificationScheduleViewModel(ns)))).Execute(null);
         }
         //delete match in serie, shift serie numbers
-        private void AddMatch(int id)
+
+        private void AddMatch(object param)
         {
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, new QualificationScheduleViewModel(ns), -1, -1, id, -1))).Execute(null);
-            //TODO: indexes rounds etc, allow only set teams
+            IList serieAndBracket = (IList)param;
+            Serie s = (Serie)serieAndBracket[0];
+            Bracket b = (Bracket)serieAndBracket[1];
+            (int, int) roundIndex = b.GetSerieRoundIndex(s);
+
+            int matchNumber = s.Matches.Count(x => x.Played) + 1;
+
+            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, new QualificationScheduleViewModel(ns), b.id, roundIndex.Item2, roundIndex.Item1, matchNumber, s.FirstTeam, s.SecondTeam))).Execute(null);
         }
 
         private void RemoveFirstTeamFromSerie(object param)
@@ -241,11 +296,58 @@ namespace CSharpZapoctak.ViewModels
             Serie s = (Serie)serieAndBracket[0];
             Bracket b = (Bracket)serieAndBracket[1];
 
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd;
+
+            if (s.Matches[0].HomeTeam.id == -1 || s.Matches[0].AwayTeam.id == -1)
+            {
+                //DELETE
+                cmd = new MySqlCommand("DELETE FROM matches WHERE id = " + s.Matches[0].id, connection);
+                s.Matches.RemoveAt(0);
+            }
+            else
+            {
+                //UPDATE
+                if (s.Matches[0].HomeTeam.id == s.FirstTeam.id)
+                {
+                    //delete home
+                    cmd = new MySqlCommand("UPDATE matches SET home_competitor = -1 WHERE id = " + s.Matches[0].id, connection);
+                    s.Matches[0].HomeTeam = new Team { id = -1 };
+                }
+                else
+                {
+                    //delete away
+                    cmd = new MySqlCommand("UPDATE matches SET away_competitor = -1 WHERE id = " + s.Matches[0].id, connection);
+                    s.Matches[0].AwayTeam = new Team { id = -1 };
+                }
+            }
+
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+
             NotSelectedTeams.Add(s.FirstTeam);
             s.FirstTeam = new Team();
 
             (int, int) roundIndex = b.GetSerieRoundIndex(s);
+            b.ResetSeriesAdvanced(roundIndex.Item1, roundIndex.Item2, 1);
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, -1);
+            b.PrepareSeries();
         }
 
         private void AddFirstTeamToSerie(object param)
@@ -253,17 +355,82 @@ namespace CSharpZapoctak.ViewModels
             IList serieAndBracket = (IList)param;
             Serie s = (Serie)serieAndBracket[0];
             Bracket b = (Bracket)serieAndBracket[1];
+            (int, int) roundIndex = b.GetSerieRoundIndex(s);
 
             if (s.FirstSelectedTeam == null || !NotSelectedTeams.Contains(s.FirstSelectedTeam))
             {
                 return;
             }
+
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd;
+
+            if (s.Matches.Count == 0)
+            {
+                //INSERT
+                cmd = new MySqlCommand("INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
+                                       "VALUES (" + SportsData.season.id + ", 0, " + b.id + ", " + roundIndex.Item2 + "," +
+                                       " " + roundIndex.Item1 + ", -1, " + s.FirstSelectedTeam.id + ", -1, " + s.FirstSelectedTeam.id + ")", connection);
+            }
+            else
+            {
+                //UPDATE
+                if (s.Matches[0].HomeTeam.id == -1)
+                {
+                    //home
+                    cmd = new MySqlCommand("UPDATE matches SET home_competitor = " + s.FirstSelectedTeam.id + ", bracket_first_team = " + s.FirstSelectedTeam.id + " WHERE id = " + s.Matches[0].id, connection);
+                    s.Matches[0].HomeTeam = s.FirstSelectedTeam;
+                }
+                else
+                {
+                    //away
+                    cmd = new MySqlCommand("UPDATE matches SET away_competitor = " + s.FirstSelectedTeam.id + ", bracket_first_team = " + s.FirstSelectedTeam.id + " WHERE id = " + s.Matches[0].id, connection);
+                    s.Matches[0].AwayTeam = s.FirstSelectedTeam;
+                }
+            }
+
+            int matchID = -1;
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                matchID = (int)cmd.LastInsertedId;
+                connection.Close();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+
             s.FirstTeam = s.FirstSelectedTeam;
             s.FirstSelectedTeam = new Team();
+            s.winner = new Team { id = -1 };
+            s.RemoveFirstTeamVisibility = Visibility.Visible;
+            s.RemoveSecondTeamVisibility = Visibility.Visible;
             NotSelectedTeams.Remove(s.FirstTeam);
 
-            (int, int) roundIndex = b.GetSerieRoundIndex(s);
+            if (s.Matches.Count == 0)
+            {
+                Match m = new Match { id = matchID, Played = false, HomeTeam = s.FirstTeam, AwayTeam = new Team { id = -1 }, serieNumber = -1 };
+                s.InsertMatch(m, s.FirstTeam.id, 1);
+            }
+            if (roundIndex.Item1 < b.Series.Count - 1)
+            {
+                int newPosition = 2;
+                if (roundIndex.Item2 % 2 == 0) { newPosition = 1; }
+                b.ResetSeriesAdvanced(roundIndex.Item1 + 1, roundIndex.Item2 / 2, newPosition);
+            }
+
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, 1);
+            b.PrepareSeries();
         }
 
         private void RemoveSecondTeamFromSerie(object param)
@@ -272,11 +439,58 @@ namespace CSharpZapoctak.ViewModels
             Serie s = (Serie)serieAndBracket[0];
             Bracket b = (Bracket)serieAndBracket[1];
 
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd;
+
+            if (s.Matches[0].HomeTeam.id == -1 || s.Matches[0].AwayTeam.id == -1)
+            {
+                //DELETE
+                cmd = new MySqlCommand("DELETE FROM matches WHERE id = " + s.Matches[0].id, connection);
+                s.Matches.RemoveAt(0);
+            }
+            else
+            {
+                //UPDATE
+                if (s.Matches[0].HomeTeam.id == s.SecondTeam.id)
+                {
+                    //delete home
+                    cmd = new MySqlCommand("UPDATE matches SET home_competitor = -1 WHERE id = " + s.Matches[0].id, connection);
+                    s.Matches[0].HomeTeam = new Team { id = -1 };
+                }
+                else
+                {
+                    //delete away
+                    cmd = new MySqlCommand("UPDATE matches SET away_competitor = -1 WHERE id = " + s.Matches[0].id, connection);
+                    s.Matches[0].AwayTeam = new Team { id = -1 };
+                }
+            }
+
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+
             NotSelectedTeams.Add(s.SecondTeam);
             s.SecondTeam = new Team();
 
             (int, int) roundIndex = b.GetSerieRoundIndex(s);
+            b.ResetSeriesAdvanced(roundIndex.Item1, roundIndex.Item2, 2);
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, -1);
+            b.PrepareSeries();
         }
 
         private void AddSecondTeamToSerie(object param)
@@ -285,16 +499,82 @@ namespace CSharpZapoctak.ViewModels
             Serie s = (Serie)serieAndBracket[0];
             Bracket b = (Bracket)serieAndBracket[1];
 
+            (int, int) roundIndex = b.GetSerieRoundIndex(s);
+
             if (s.SecondSelectedTeam == null || !NotSelectedTeams.Contains(s.SecondSelectedTeam))
             {
                 return;
             }
+
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd;
+
+            if (s.Matches.Count == 0)
+            {
+                //INSERT
+                cmd = new MySqlCommand("INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
+                                       "VALUES (" + SportsData.season.id + ", 0, " + b.id + ", " + roundIndex.Item2 + "," +
+                                       " " + roundIndex.Item1 + ", -1, -1, " + s.SecondSelectedTeam.id + ", -1)", connection);
+            }
+            else
+            {
+                //UPDATE
+                if (s.Matches[0].HomeTeam.id == -1)
+                {
+                    //home
+                    cmd = new MySqlCommand("UPDATE matches SET home_competitor = " + s.SecondSelectedTeam.id + " WHERE id = " + s.Matches[0].id, connection);
+                    s.Matches[0].HomeTeam = s.SecondSelectedTeam;
+                }
+                else
+                {
+                    //away
+                    cmd = new MySqlCommand("UPDATE matches SET away_competitor = " + s.SecondSelectedTeam.id + " WHERE id = " + s.Matches[0].id, connection);
+                    s.Matches[0].AwayTeam = s.SecondSelectedTeam;
+                }
+            }
+
+            int matchID = -1;
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                matchID = (int)cmd.LastInsertedId;
+                connection.Close();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+
             s.SecondTeam = s.SecondSelectedTeam;
             s.SecondSelectedTeam = new Team();
+            s.winner = new Team { id = -1 };
+            s.RemoveFirstTeamVisibility = Visibility.Visible;
+            s.RemoveSecondTeamVisibility = Visibility.Visible;
             NotSelectedTeams.Remove(s.SecondTeam);
 
-            (int, int) roundIndex = b.GetSerieRoundIndex(s);
+            if (s.Matches.Count == 0)
+            {
+                Match m = new Match { id = matchID, Played = false, AwayTeam = s.SecondTeam, HomeTeam = new Team { id = -1 }, serieNumber = -1 };
+                s.InsertMatch(m, -1, 1);
+            }
+            if (roundIndex.Item1 < b.Series.Count - 1)
+            {
+                int newPosition = 2;
+                if (roundIndex.Item2 % 2 == 0) { newPosition = 1; }
+                b.ResetSeriesAdvanced(roundIndex.Item1 + 1, roundIndex.Item2 / 2, newPosition);
+            }
+
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, 1);
+            b.PrepareSeries();
         }
     }
 }

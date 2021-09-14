@@ -286,7 +286,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (editCommand == null)
                 {
-                    editCommand = new RelayCommand(param => Edit((Match)param));
+                    editCommand = new RelayCommand(param => Edit());
                 }
                 return editCommand;
             }
@@ -308,6 +308,10 @@ namespace CSharpZapoctak.ViewModels
         public NavigationStore ns;
         public ViewModelBase scheduleToReturnVM;
 
+        public int qualificationID;
+        public int round;
+        public int bracketIndex;
+
         public MatchViewModel(NavigationStore navigationStore, Match m, ViewModelBase scheduleToReturnVM)
         {
             this.scheduleToReturnVM = scheduleToReturnVM;
@@ -327,7 +331,8 @@ namespace CSharpZapoctak.ViewModels
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT matches.id, season_id, datetime, played, periods, period_duration, home_competitor, away_competitor, home_score, away_score, overtime, shootout, forfeit, " +
-                                                "ht.name AS home_name, at.name AS away_name " +
+                                                "ht.name AS home_name, at.name AS away_name, " +
+                                                "round, bracket_index, qualification_id, serie_match_number " +
                                                 "FROM matches " +
                                                 "INNER JOIN team AS ht ON ht.id = home_competitor " +
                                                 "INNER JOIN team AS at ON at.id = away_competitor " +
@@ -353,8 +358,13 @@ namespace CSharpZapoctak.ViewModels
                     AwayScore = int.Parse(dataTable.Rows[0]["away_score"].ToString()),
                     Overtime = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["overtime"].ToString())),
                     Shootout = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["shootout"].ToString())),
-                    Forfeit = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["forfeit"].ToString()))
+                    Forfeit = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["forfeit"].ToString())),
+                    serieNumber = int.Parse(dataTable.Rows[0]["serie_match_number"].ToString())
                 };
+
+                round = int.Parse(dataTable.Rows[0]["round"].ToString());
+                qualificationID = int.Parse(dataTable.Rows[0]["qualification_id"].ToString());
+                bracketIndex = int.Parse(dataTable.Rows[0]["bracket_index"].ToString());
 
                 string[] imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + Match.HomeTeam.id + ".*");
                 if (imgPath.Length != 0)
@@ -771,7 +781,7 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private void Edit(Match param)
+        private void Edit()
         {
             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, Match, scheduleToReturnVM, true))).Execute(null);
         }
@@ -797,6 +807,16 @@ namespace CSharpZapoctak.ViewModels
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
                     cmd.ExecuteNonQuery();
+
+                    //shift serie match numbers
+                    if (qualificationID != -1)
+                    {
+                        querry = "UPDATE matches SET serie_match_number = serie_match_number - 1 " +
+                                 "WHERE serie_match_number > " + Match.serieNumber + " AND qualification_id = " + qualificationID + " AND round = " + round + " AND bracket_index = " + bracketIndex;
+                        cmd = new MySqlCommand(querry, connection);
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+                    }
 
                     //delete all player/goalie match enlistments and all stats
                     List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
