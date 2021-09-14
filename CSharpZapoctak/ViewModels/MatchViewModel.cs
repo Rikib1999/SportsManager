@@ -320,7 +320,7 @@ namespace CSharpZapoctak.ViewModels
             PenaltyReasons = SportsData.LoadPenaltyReasons();
             PenaltyTypes = SportsData.LoadPenaltyTypes();
             LoadMatch(m);
-            if (qualificationID != -1)
+            if (bracketIndex != -1)
             {
                 CanBeEdited();
             }
@@ -890,7 +890,7 @@ namespace CSharpZapoctak.ViewModels
                         cmd.ExecuteNonQuery();
 
                         //shift serie match numbers
-                        if (qualificationID != -1)
+                        if (qualificationID == -1 && bracketIndex == -1 )
                         {
                             querry = "UPDATE matches SET serie_match_number = serie_match_number - 1 " +
                                      "WHERE serie_match_number > " + Match.serieNumber + " AND qualification_id = " + qualificationID + " AND round = " + round + " AND bracket_index = " + bracketIndex;

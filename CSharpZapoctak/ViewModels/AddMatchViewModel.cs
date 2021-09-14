@@ -2348,7 +2348,7 @@ namespace CSharpZapoctak.ViewModels
             Periods = new ObservableCollection<Period>();
             Shootout = new ObservableCollection<ShootoutShot>();
 
-            if (qualificationID == -1)
+            if (serieMatchNumber == -1)
             {
                 LoadTeams();
             }
@@ -3334,8 +3334,93 @@ namespace CSharpZapoctak.ViewModels
 
         private bool ExceedsFirstToWin(int homeScore, int awayScore)
         {
-            throw new NotImplementedException();
-            //firstToWin exceeds?
+            if (!(HomeScore <= AwayScore && homeScore > awayScore) || !(HomeScore >= AwayScore && homeScore < awayScore))
+            {
+                return false;
+            }
+
+            int homeWins = 0;
+            int awayWins = 0;
+            int firstToWin;
+
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT home_competitor, away_competitor, home_score, away_score " +
+                                                "FROM matches " +
+                                                "WHERE qualification_id = " + qualificationID + " AND played = 1 AND round = " + round + " AND bracket_index = " + bracketIndex, connection);
+
+            try
+            {
+                connection.Open();
+                DataTable dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+
+                foreach (DataRow tm in dataTable.Rows)
+                {
+                    int hTeam = int.Parse(tm["home_competitor"].ToString());
+                    int aTeam = int.Parse(tm["away_competitor"].ToString());
+                    int hScore = int.Parse(tm["home_score"].ToString());
+                    int aScore = int.Parse(tm["away_score"].ToString());
+
+                    if (hTeam == HomeTeam.id)
+                    {
+                        if (hScore > aScore)
+                        {
+                            homeWins++;
+                        }
+                        else if (hScore < aScore)
+                        {
+                            awayWins++;
+                        }
+                    }
+                    else
+                    {
+                        if (hScore > aScore)
+                        {
+                            awayWins++;
+                        }
+                        else if (hScore < aScore)
+                        {
+                            homeWins++;
+                        }
+                    }
+                }
+
+                cmd = new MySqlCommand("SELECT play_off_best_of FROM seasons WHERE id = " + seasonID, connection);
+                dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+                connection.Close();
+
+                firstToWin = int.Parse(dataTable.Rows[0]["play_off_best_of"].ToString());
+
+                if (homeWins >= firstToWin)
+                {
+                    if (homeScore > awayScore)
+                    {
+                        return true;
+                    }
+                }
+                if (awayWins >= firstToWin)
+                {
+                    if (homeScore < awayScore)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
         }
         #endregion
 
@@ -3343,7 +3428,7 @@ namespace CSharpZapoctak.ViewModels
         private void NotPlayedSave()
         {
             //validation
-            if (qualificationID != -1)
+            if (serieMatchNumber != -1)
             {
                 MessageBox.Show("Qualification or play-off match needs to be played.", "Match not played", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -3610,7 +3695,7 @@ namespace CSharpZapoctak.ViewModels
             }
 
             //validation
-            if (ExceedsFirstToWin(homeScore, awayScore))
+            if (bracketIndex != -1 && qualificationID != -1 && ExceedsFirstToWin(homeScore, awayScore))
             {
                 MessageBox.Show("Match can not be added. The winner of this match already has the required number of wins to win the series.", "Series match number of violation", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;

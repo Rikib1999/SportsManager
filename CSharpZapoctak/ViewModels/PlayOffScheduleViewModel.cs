@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class QualificationScheduleViewModel : ViewModelBase
+    class PlayOffScheduleViewModel : ViewModelBase
     {
         private readonly NavigationStore ns;
 
@@ -107,22 +107,22 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ObservableCollection<Bracket> brackets;
-        public ObservableCollection<Bracket> Brackets
+        private Bracket bracket;
+        public Bracket Bracket
         {
-            get { return brackets; }
+            get { return bracket; }
             set
             {
-                brackets = value;
+                bracket = value;
                 OnPropertyChanged();
             }
         }
 
-        public QualificationScheduleViewModel(NavigationStore navigationStore)
+        public PlayOffScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
             LoadNotSelectedTeams();
-            LoadBrackets();
+            LoadBracket();
         }
 
         private void LoadNotSelectedTeams()
@@ -169,95 +169,85 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private void LoadBrackets()
+        private void LoadBracket()
         {
-            Brackets = new ObservableCollection<Bracket>();
+            Bracket = new Bracket(-1, "Play-off", SportsData.season.id, SportsData.season.PlayOffRounds);
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + "; convert zero datetime=True";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id, season_id, name FROM brackets WHERE season_id = " + SportsData.season.id + " ORDER BY name", connection);
+            MySqlCommand cmd = new MySqlCommand("SELECT h.name AS home_name, a.name AS away_name, home_competitor, away_competitor, " +
+                                            "matches.id, played, datetime, home_score, away_score, bracket_index, round, serie_match_number, bracket_first_team " +
+                                            "FROM matches", connection);
+            if (SportsData.sport.name == "tennis")
+            {
+                cmd.CommandText += " INNER JOIN player AS h ON h.id = matches.home_competitor";
+                cmd.CommandText += " INNER JOIN player AS a ON a.id = matches.away_competitor";
+            }
+            else
+            {
+                cmd.CommandText += " INNER JOIN team AS h ON h.id = matches.home_competitor";
+                cmd.CommandText += " INNER JOIN team AS a ON a.id = matches.away_competitor";
+            }
+            cmd.CommandText += " WHERE qualification_id = -1 AND bracket_index <> -1 ORDER BY round, bracket_index";
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
-                dataTable.Load(cmd.ExecuteReader());
+                DataTable dt = new DataTable();
+                dt.Load(cmd.ExecuteReader());
 
-                foreach (DataRow row in dataTable.Rows)
+                //load matches
+                foreach (DataRow dtRow in dt.Rows)
                 {
-                    Bracket b = new Bracket(int.Parse(row["id"].ToString()), row["name"].ToString(), int.Parse(row["season_id"].ToString()), SportsData.season.QualificationRounds);
+                    Team home = new Team();
+                    home.Name = dtRow["home_name"].ToString();
+                    home.id = int.Parse(dtRow["home_competitor"].ToString());
+                    Team away = new Team();
+                    away.Name = dtRow["away_name"].ToString();
+                    away.id = int.Parse(dtRow["away_competitor"].ToString());
 
-                    cmd = new MySqlCommand("SELECT h.name AS home_name, a.name AS away_name, home_competitor, away_competitor, " +
-                                            "matches.id, played, datetime, home_score, away_score, bracket_index, round, serie_match_number, bracket_first_team " +
-                                            "FROM matches", connection);
-                    if (SportsData.sport.name == "tennis")
+                    Match m = new Match
                     {
-                        cmd.CommandText += " INNER JOIN player AS h ON h.id = matches.home_competitor";
-                        cmd.CommandText += " INNER JOIN player AS a ON a.id = matches.away_competitor";
-                    }
-                    else
+                        id = int.Parse(dtRow["id"].ToString()),
+                        Datetime = DateTime.Parse(dtRow["datetime"].ToString()),
+                        Played = Convert.ToBoolean(int.Parse(dtRow["played"].ToString())),
+                        HomeTeam = home,
+                        AwayTeam = away,
+                        HomeScore = int.Parse(dtRow["home_score"].ToString()),
+                        AwayScore = int.Parse(dtRow["away_score"].ToString()),
+                        serieNumber = int.Parse(dtRow["serie_match_number"].ToString())
+                    };
+
+                    int round = int.Parse(dtRow["round"].ToString());
+                    int index = int.Parse(dtRow["bracket_index"].ToString());
+                    int firstTeamID = int.Parse(dtRow["bracket_first_team"].ToString());
+
+                    Bracket.Series[round][index].InsertMatch(m, firstTeamID, 1);
+
+                    if (firstTeamID != -1)
                     {
-                        cmd.CommandText += " INNER JOIN team AS h ON h.id = matches.home_competitor";
-                        cmd.CommandText += " INNER JOIN team AS a ON a.id = matches.away_competitor";
+                        Bracket.IsEnabledTreeAfterInsertionAt(round, index, 1, 1);
                     }
-                    cmd.CommandText += " WHERE qualification_id = " + b.id + " ORDER BY round, bracket_index";
-
-                    DataTable dt = new DataTable();
-                    dt.Load(cmd.ExecuteReader());
-
-                    //load matches
-                    foreach (DataRow dtRow in dt.Rows)
+                    if (home.id != -1 && away.id != -1)
                     {
-                        Team home = new Team();
-                        home.Name = dtRow["home_name"].ToString();
-                        home.id = int.Parse(dtRow["home_competitor"].ToString());
-                        Team away = new Team();
-                        away.Name = dtRow["away_name"].ToString();
-                        away.id = int.Parse(dtRow["away_competitor"].ToString());
-
-                        Match m = new Match
-                        {
-                            id = int.Parse(dtRow["id"].ToString()),
-                            Datetime = DateTime.Parse(dtRow["datetime"].ToString()),
-                            Played = Convert.ToBoolean(int.Parse(dtRow["played"].ToString())),
-                            HomeTeam = home,
-                            AwayTeam = away,
-                            HomeScore = int.Parse(dtRow["home_score"].ToString()),
-                            AwayScore = int.Parse(dtRow["away_score"].ToString()),
-                            serieNumber = int.Parse(dtRow["serie_match_number"].ToString())
-                        };
-
-                        int round = int.Parse(dtRow["round"].ToString());
-                        int index = int.Parse(dtRow["bracket_index"].ToString());
-                        int firstTeamID = int.Parse(dtRow["bracket_first_team"].ToString());
-
-                        b.Series[round][index].InsertMatch(m, firstTeamID, 1);
-
-                        if (firstTeamID != -1)
-                        {
-                            b.IsEnabledTreeAfterInsertionAt(round, index, 1, 1);
-                        }
-                        if (home.id != -1 && away.id != -1)
-                        {
-                            b.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
-                        }
-                        else if (firstTeamID == -1)
-                        {
-                            b.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
-                        }
-
-                        if (NotSelectedTeams.Count(x => x.id == home.id) == 1)
-                        {
-                            NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.id == home.id));
-                        }
-                        if (NotSelectedTeams.Count(x => x.id == away.id) == 1)
-                        {
-                            NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.id == away.id));
-                        }
+                        Bracket.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
                     }
-                    b.PrepareSeries();
-                    Brackets.Add(b);
+                    else if (firstTeamID == -1)
+                    {
+                        Bracket.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
+                    }
+
+                    if (NotSelectedTeams.Count(x => x.id == home.id) == 1)
+                    {
+                        NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.id == home.id));
+                    }
+                    if (NotSelectedTeams.Count(x => x.id == away.id) == 1)
+                    {
+                        NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.id == away.id));
+                    }
                 }
+
+                Bracket.PrepareSeries();
             }
             catch (Exception)
             {
@@ -274,7 +264,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void MatchDetail(Match m)
         {
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, m, new QualificationScheduleViewModel(ns)))).Execute(null);
+            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, m, new PlayOffScheduleViewModel(ns)))).Execute(null);
         }
 
         private void AddMatch(object param)
@@ -286,7 +276,7 @@ namespace CSharpZapoctak.ViewModels
 
             int matchNumber = s.Matches.Count(x => x.Played) + 1;
 
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, new QualificationScheduleViewModel(ns), b.id, roundIndex.Item2, roundIndex.Item1, matchNumber, s.FirstTeam, s.SecondTeam))).Execute(null);
+            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, new PlayOffScheduleViewModel(ns), b.id, roundIndex.Item2, roundIndex.Item1, matchNumber, s.FirstTeam, s.SecondTeam))).Execute(null);
         }
 
         private void RemoveFirstTeamFromSerie(object param)

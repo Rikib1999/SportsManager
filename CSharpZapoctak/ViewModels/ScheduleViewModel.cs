@@ -1,8 +1,5 @@
-﻿using CSharpZapoctak.Commands;
-using CSharpZapoctak.Models;
-using CSharpZapoctak.Stores;
+﻿using CSharpZapoctak.Stores;
 using System.Windows;
-using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
@@ -57,7 +54,7 @@ namespace CSharpZapoctak.ViewModels
                 {
                     QualificationSet = false;
                     GroupsSet = false;
-                    //CurrentViewModel = new PlayOffScheduleViewModel(navigationStore);
+                    CurrentViewModel = new PlayOffScheduleViewModel(ns);
                 }
                 OnPropertyChanged();
             }
@@ -109,14 +106,17 @@ namespace CSharpZapoctak.ViewModels
             if (SportsData.season.HasGroups())
             {
                 GroupsVisibility = Visibility.Visible;
-                if (!QualificationSet) { GroupsSet = true; }
+                GroupsSet = true;
                 CurrentViewModel = new GroupsScheduleViewModel(navigationStore);
             }
             if (SportsData.season.HasPlayOff())
             {
                 PlayOffVisibility = Visibility.Visible;
-                if (!QualificationSet && !GroupsSet) { PlayOffSet = true; }
-                //CurrentViewModel = new PlayOffScheduleViewModel(navigationStore);
+                if (!QualificationSet && !GroupsSet)
+                {
+                    PlayOffSet = true;
+                    CurrentViewModel = new PlayOffScheduleViewModel(navigationStore);
+                }
             }
         }
     }
