@@ -4,6 +4,7 @@ using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
@@ -12,6 +13,16 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
+    class TeamPoints : IStats
+    {
+        public TeamPoints(int points)
+        {
+            this.points = points;
+        }
+
+        public int points;
+    }
+
     class PlayOffScheduleViewModel : ViewModelBase
     {
         private readonly NavigationStore ns;
@@ -227,7 +238,7 @@ namespace CSharpZapoctak.ViewModels
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
-            string seasonInsertQuerry = "UPDATE seasons SET play_off_started = 1 WHERE id = " + SportsData.season.id;
+            string querry = "UPDATE seasons SET play_off_started = 1 WHERE id = " + SportsData.season.id;
 
             try
             {
@@ -235,18 +246,194 @@ namespace CSharpZapoctak.ViewModels
                 transaction = connection.BeginTransaction();
 
                 //update season
-                cmd = new MySqlCommand(seasonInsertQuerry, connection);
+                cmd = new MySqlCommand(querry, connection);
                 cmd.Transaction = transaction;
                 cmd.ExecuteNonQuery();
 
                 //seed competitors
-                if (SeedCompetitors)
+                if (SeedCompetitors && (SportsData.season.GroupCount > 0 || SportsData.season.QualificationCount > 0))
                 {
-                    string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                  "VALUES (" + second + ", " + CurrentSeason.id + ", " + -1 + ")";
-                    cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
-                    cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    Bracket = new Bracket(-1, "Play-off", SportsData.season.id, SportsData.season.PlayOffRounds);
+                    Dictionary<int, List<Team>> groups = new Dictionary<int, List<Team>>();
+
+                    //if season had qualification
+                    if (SportsData.season.QualificationCount > 0)
+                    {
+                        //clear bracket
+                        cmd = new MySqlCommand("DELETE FROM matches WHERE qualification_id = -1 AND bracket_index <> -1", connection);
+                        connection.Open();
+                        DataTable dt = new DataTable();
+                        dt.Load(cmd.ExecuteReader());
+
+                        //select teams
+                        querry = "SELECT home_score, away_score, home_competitor, away_competitor, h.name AS home_name, a.name AS away_name " +
+                                 "FROM matches " +
+                                 "INNER JOIN team AS h ON h.id = home_competitor " +
+                                 "INNER JOIN team AS a ON a.id = away_competitor " +
+                                 "WHERE season_id = " + SportsData.season.id + " AND played = 1 AND round = " + (SportsData.season.QualificationRounds - 1);
+
+                        cmd = new MySqlCommand(querry, connection);
+                        cmd.Transaction = transaction;
+                        DataTable dataTable = new DataTable();
+                        dataTable.Load(cmd.ExecuteReader());
+
+                        List<Team> teams = new List<Team>();
+                        foreach (DataRow row in dataTable.Rows)
+                        {
+                            int homeScore = int.Parse(row["home_score"].ToString());
+                            int awayScore = int.Parse(row["away_score"].ToString());
+                            Team t = new Team();
+                            if (homeScore > awayScore)
+                            {
+                                t.id = int.Parse(row["home_competitor"].ToString());
+                                t.Name = row["home_name"].ToString();
+                            }
+                            else if (homeScore < awayScore)
+                            {
+                                t.id = int.Parse(row["away_competitor"].ToString());
+                                t.Name = row["away_name"].ToString();
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            teams.Add(t);
+                        }
+                        groups.Add(-1, teams);
+                    }
+                    //if season had groups
+                    else if (SportsData.season.GroupCount > 0)
+                    {
+                        //select teams
+                        querry = "SELECT team_id, t.name AS t_name, group_id " +
+                                 "FROM team_enlistment " +
+                                 "INNER JOIN team AS t ON t.id = team_id " +
+                                 "WHERE season_id = " + SportsData.season.id;
+
+                        cmd = new MySqlCommand(querry, connection);
+                        cmd.Transaction = transaction;
+                        DataTable dataTable = new DataTable();
+                        dataTable.Load(cmd.ExecuteReader());
+
+                        Dictionary<int, int> points = new Dictionary<int, int>();
+                        foreach (DataRow row in dataTable.Rows)
+                        {
+                            Team t = new Team();
+                            t.id = int.Parse(row["team_id"].ToString());
+                            t.Name = row["t_name"].ToString();
+
+                            int groupID = int.Parse(row["group_id"].ToString());
+
+                            if (!groups.ContainsKey(groupID)) { groups.Add(groupID, new List<Team>()); }
+                            groups[groupID].Add(t);
+                            points.Add(t.id, 0);
+                        }
+
+                        //select matches
+                        querry = "SELECT home_score, away_score, home_competitor, away_competitor, overtime, shootout " +
+                                 "FROM matches " +
+                                 "WHERE season_id = " + SportsData.season.id + " AND played = 1 AND serie_match_number = -1";
+
+                        cmd = new MySqlCommand(querry, connection);
+                        cmd.Transaction = transaction;
+                        dataTable = new DataTable();
+                        dataTable.Load(cmd.ExecuteReader());
+
+                        //calculate points
+                        foreach (DataRow row in dataTable.Rows)
+                        {
+                            int homeScore = int.Parse(row["home_score"].ToString());
+                            int awayScore = int.Parse(row["away_score"].ToString());
+                            int homeID = int.Parse(row["home_competitor"].ToString());
+                            int awayID = int.Parse(row["away_competitor"].ToString());
+                            bool overtime = Convert.ToBoolean(int.Parse(row["overtime"].ToString()));
+                            bool shootout = Convert.ToBoolean(int.Parse(row["shootout"].ToString()));
+
+                            if (homeScore > awayScore)
+                            {
+                                if (overtime || shootout)
+                                {
+                                    points[homeID] += (int)SportsData.season.PointsForOTWin;
+                                    points[awayID] += (int)SportsData.season.PointsForOTLoss;
+                                }
+                                else
+                                {
+                                    points[homeID] += (int)SportsData.season.PointsForWin;
+                                    points[awayID] += (int)SportsData.season.PointsForLoss;
+                                }
+                            }
+                            else if (homeScore < awayScore)
+                            {
+                                if (overtime || shootout)
+                                {
+                                    points[homeID] += (int)SportsData.season.PointsForOTLoss;
+                                    points[awayID] += (int)SportsData.season.PointsForOTWin;
+                                }
+                                else
+                                {
+                                    points[homeID] += (int)SportsData.season.PointsForLoss;
+                                    points[awayID] += (int)SportsData.season.PointsForWin;
+                                }
+                            }
+                            else
+                            {
+                                points[homeID] += (int)SportsData.season.PointsForTie;
+                                points[awayID] += (int)SportsData.season.PointsForTie;
+                            }
+                        }
+
+                        Dictionary<int, List<Team>> tmp = new Dictionary<int, List<Team>>();
+                        foreach (KeyValuePair<int, List<Team>> g in groups)
+                        {
+                            foreach (Team t in g.Value)
+                            {
+                                t.Stats = new TeamPoints(points[t.id]);
+                            }
+                            tmp.Add(g.Key, g.Value.OrderByDescending(x => ((TeamPoints)x.Stats).points).ToList());
+                        }
+                        groups = tmp;
+                    }
+
+                    //sort teams into one list
+                    List<Team> allTeams = new List<Team>();
+                    List<List<Team>> groupLists = new List<List<Team>>();
+                    foreach (KeyValuePair<int, List<Team>> g in groups)
+                    {
+                        groupLists.Add(g.Value);
+                    }
+
+                    int maxCount = groupLists.OrderByDescending(x => x.Count).First().Count;
+                    for (int i = 0; i < maxCount; i++)
+                    {
+                        for (int j = 0; j < groupLists.Count; j++)
+                        {
+                            if (groupLists[j].Count < maxCount)
+                            {
+                                allTeams.Add(groupLists[j][i]);
+                            }
+                        }
+                    }
+
+                    //seed teams
+                    int firstRoundPlaces = (int)Math.Pow(2, SportsData.season.PlayOffRounds);
+                    int[] places = new int[firstRoundPlaces];
+                    for (int r = 0; r <= (int)Math.Log(firstRoundPlaces, 2); r++)
+                    {
+                        for (int N = 1; N <= firstRoundPlaces; ++N)
+                        {
+                            int myRank = (N - 1) / (int)Math.Pow(2, r) + 1;
+                            places[N - 1] += myRank % 4 / 2 * (int)Math.Pow(2, (int)Math.Log(firstRoundPlaces, 2) - r - 1);
+                        }
+                    }
+                    for (int N = 1; N <= firstRoundPlaces; ++N)
+                    {
+                        Console.WriteLine("Team {0} plays game {1}", N, places[N - 1] + 1);
+                    }
+                    //najdem index timu v liste
+                    //podla toho indexu najdem poradie miesta dosadenia od vrchu
+                    //najdem toto miesto v serii (Serie[0][place / 2])
+                    //podla parity miesta sa rozhodnem ci prvy alebo druhy
                 }
 
                 transaction.Commit();

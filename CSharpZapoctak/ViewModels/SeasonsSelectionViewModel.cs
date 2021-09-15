@@ -57,7 +57,8 @@ namespace CSharpZapoctak.ViewModels
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT w.name AS winner, c.name AS competition_name, seasons.id, competition_id, seasons.name, seasons.info, qualification_count, " +
-                                                "qualification_rounds, group_count, play_off_rounds, play_off_best_of, play_off_started FROM seasons " +
+                                                "qualification_rounds, group_count, play_off_rounds, play_off_best_of, play_off_started, points_for_W, points_for_OW, points_for_T, points_for_OL, points_for_L " +
+                                                "FROM seasons " +
                                                 "INNER JOIN competitions AS c ON c.id = seasons.competition_id", connection);
             if (SportsData.sport.name == "tennis")
             {
@@ -108,7 +109,12 @@ namespace CSharpZapoctak.ViewModels
                         PlayOffRounds = int.Parse(row["play_off_rounds"].ToString()),
                         PlayOffBestOf = int.Parse(row["play_off_best_of"].ToString()),
                         Winner = row["winner"].ToString(),
-                        PlayOffStarted = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["play_off_started"].ToString()))
+                        PlayOffStarted = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["play_off_started"].ToString())),
+                        PointsForWin = int.Parse(row["points_for_W"].ToString()),
+                        PointsForOTWin = int.Parse(row["points_for_OW"].ToString()),
+                        PointsForTie = int.Parse(row["points_for_T"].ToString()),
+                        PointsForOTLoss = int.Parse(row["points_for_OL"].ToString()),
+                        PointsForLoss = int.Parse(row["points_for_L"].ToString())
                     };
                     string[] imgPath = System.IO.Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + row["id"].ToString() + ".*");
                     if (imgPath.Length != 0)

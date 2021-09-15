@@ -60,13 +60,13 @@ namespace CSharpZapoctak.Models
         }
         public Team(Team t)
         {
-            this.id = t.id;
-            this.Name = t.Name;
-            this.Info = t.Info;
-            this.LogoPath = t.LogoPath;
-            this.Status = t.Status;
-            this.Country = t.Country;
-            this.DateOfCreation = t.DateOfCreation;
+            id = t.id;
+            Name = t.Name;
+            Info = t.Info;
+            LogoPath = t.LogoPath;
+            Status = t.Status;
+            Country = t.Country;
+            DateOfCreation = t.DateOfCreation;
         }
     }
 }
