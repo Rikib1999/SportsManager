@@ -17,6 +17,19 @@ namespace CSharpZapoctak.ViewModels
         private readonly NavigationStore ns;
 
         #region Commands
+        private ICommand startPlayOffCommand;
+        public ICommand StartPlayOffCommand
+        {
+            get
+            {
+                if (startPlayOffCommand == null)
+                {
+                    startPlayOffCommand = new RelayCommand(param => StartPlayOff());
+                }
+                return matchDetailCommand;
+            }
+        }
+
         private ICommand matchDetailCommand;
         public ICommand MatchDetailCommand
         {
@@ -118,11 +131,50 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private bool seedCompetitors = false;
+        public bool SeedCompetitors
+        {
+            get { return seedCompetitors; }
+            set
+            {
+                seedCompetitors = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility notStartedVisibility = Visibility.Visible;
+        public Visibility NotStartedVisibility
+        {
+            get { return notStartedVisibility; }
+            set
+            {
+                notStartedVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility startedVisibility = Visibility.Collapsed;
+        public Visibility StartedVisibility
+        {
+            get { return startedVisibility; }
+            set
+            {
+                startedVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
         public PlayOffScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
-            LoadNotSelectedTeams();
-            LoadBracket();
+
+            if (SportsData.season.PlayOffStarted)
+            {
+                NotStartedVisibility = Visibility.Collapsed;
+                StartedVisibility = Visibility.Visible;
+                LoadNotSelectedTeams();
+                LoadBracket();
+            }
         }
 
         private void LoadNotSelectedTeams()
@@ -158,6 +210,56 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        private void StartPlayOff()
+        {
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlTransaction transaction = null;
+            MySqlCommand cmd = null;
+            string seasonInsertQuerry = "UPDATE seasons SET play_off_started = 1 WHERE id = " + SportsData.season.id;
+
+            try
+            {
+                connection.Open();
+                transaction = connection.BeginTransaction();
+
+                //update season
+                cmd = new MySqlCommand(seasonInsertQuerry, connection);
+                cmd.Transaction = transaction;
+                cmd.ExecuteNonQuery();
+
+                //seed competitors
+                if (SeedCompetitors)
+                {
+                    string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
+                                  "VALUES (" + second + ", " + CurrentSeason.id + ", " + -1 + ")";
+                    cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
+                    cmd.Transaction = transaction;
+                    cmd.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+                connection.Close();
+
+                //refresh view
+                ScheduleViewModel vm = new ScheduleViewModel(ns);
+                vm.CurrentViewModel = new PlayOffScheduleViewModel(ns);
+                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, vm)).Execute(null);
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
                 MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally

@@ -80,6 +80,17 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        private bool playOffStarted;
+        public bool PlayOffStarted
+        {
+            get { return playOffStarted; }
+            set
+            {
+                playOffStarted = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string winner;
         public string Winner
         {
