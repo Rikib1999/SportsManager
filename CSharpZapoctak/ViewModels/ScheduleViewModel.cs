@@ -101,13 +101,11 @@ namespace CSharpZapoctak.ViewModels
             {
                 QualificationVisibility = Visibility.Visible;
                 QualificationSet = true;
-                CurrentViewModel = new QualificationScheduleViewModel(navigationStore);
             }
             if (SportsData.season.HasGroups())
             {
                 GroupsVisibility = Visibility.Visible;
                 GroupsSet = true;
-                CurrentViewModel = new GroupsScheduleViewModel(navigationStore);
             }
             if (SportsData.season.HasPlayOff())
             {
@@ -115,7 +113,6 @@ namespace CSharpZapoctak.ViewModels
                 if (!QualificationSet && !GroupsSet)
                 {
                     PlayOffSet = true;
-                    CurrentViewModel = new PlayOffScheduleViewModel(navigationStore);
                 }
             }
         }

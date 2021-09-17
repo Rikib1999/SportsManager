@@ -1631,8 +1631,8 @@ namespace CSharpZapoctak.ViewModels
                 //qualification insertion
                 foreach (Bracket b in QualificationBrackets)
                 {
-                    string qualificationInsertQuerry = "INSERT INTO brackets(season_id, name, type) " +
-                                              "VALUES (" + CurrentSeason.id + ", '" + b.Name + "', 'QF')";
+                    string qualificationInsertQuerry = "INSERT INTO brackets(season_id, name) " +
+                                              "VALUES (" + CurrentSeason.id + ", '" + b.Name + "')";
                     cmd = new MySqlCommand(qualificationInsertQuerry, connection);
                     cmd.Transaction = transaction;
                     cmd.ExecuteNonQuery();

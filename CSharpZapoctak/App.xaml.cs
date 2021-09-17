@@ -65,6 +65,7 @@ namespace CSharpZapoctak
 
             base.OnStartup(e);
         }
+
         protected override void OnExit(ExitEventArgs e)
         {
             //Process.GetProcessesByName("mysqld")[0].Kill();

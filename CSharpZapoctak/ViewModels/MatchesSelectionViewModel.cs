@@ -73,6 +73,7 @@ namespace CSharpZapoctak.ViewModels
                     cmd.CommandText += " AND season_id = " + SportsData.season.id;
                 }
             }
+            cmd.CommandText += " ORDER BY matches.datetime DESC";
 
             try
             {

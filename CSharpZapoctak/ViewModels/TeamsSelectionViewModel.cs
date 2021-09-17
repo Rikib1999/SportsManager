@@ -13,21 +13,40 @@ namespace CSharpZapoctak.ViewModels
 {
     class TeamsSelectionViewModel : ViewModelBase
     {
-        public class TeamStats : IStats
+        public class TeamStats : TeamTableStats
         {
-            public string Status { get; set; }
-            public string DateOfCreation { get; set; }
-            public int GamesPlayed { get; set; }
-            public int Wins { get; set; }
-            public int WinsOT { get; set; }
-            public int Ties { get; set; }
-            public int LossesOT { get; set; }
-            public int Losses { get; set; }
-            public int Goals { get; set; }
-            public int GoalsAgainst { get; set; }
-            public int GoalDifference { get; set; }
-            public int Assists { get; set; }
-            public int PenaltyMinutes { get; set; }
+            private int assists = 0;
+            public int Assists
+            {
+                get { return assists; }
+                set
+                {
+                    assists = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private string dateOfCreation;
+            public string DateOfCreation
+            {
+                get { return dateOfCreation; }
+                set
+                {
+                    dateOfCreation = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private string status;
+            public string Status
+            {
+                get { return status; }
+                set
+                {
+                    status = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public ICommand NavigateTeamCommand { get; set; }

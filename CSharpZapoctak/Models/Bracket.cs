@@ -216,10 +216,7 @@ namespace CSharpZapoctak.Models
         private void CollapseRemoveButton(int round, int index)
         {
             if (round == -1) { return; }
-            if (id == 11)
-            {
-                int a = 5;
-            }
+
             if (Series[round][index].Matches.Count(x => x.Played) > 0)
             {
                 CollapseAllRemoveButton(round, index);

@@ -89,9 +89,12 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        public bool IsEnabled { get; private set; } = true;
+
         public GroupsScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
+            if (SportsData.season.PlayOffStarted) { IsEnabled = false; }
             LoadRounds();
         }
 
