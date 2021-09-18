@@ -1,11 +1,14 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -45,6 +48,48 @@ namespace CSharpZapoctak.ViewModels
                 {
                     status = value;
                     OnPropertyChanged();
+                }
+            }
+
+            public TeamStats(Team t, string status)
+            {
+                Status = status;
+                DateOfCreation = t.DateOfCreation.ToShortDateString();
+                CalculateStats(t.id).Await();
+            }
+
+            public new async Task CalculateStats(int teamID)
+            {
+                List<Task> tasks = new List<Task>();
+                tasks.Add(Task.Run(() => CountMatches(teamID)));
+                tasks.Add(Task.Run(() => CountGoals(teamID)));
+                tasks.Add(Task.Run(() => CountAssists(teamID)));
+                tasks.Add(Task.Run(() => CountGoalsAgainst(teamID)));
+                tasks.Add(Task.Run(() => CountPenaltyMinutes(teamID)));
+                await Task.WhenAll(tasks);
+                GoalDifference = Goals - GoalsAgainst;
+            }
+
+            private async Task CountAssists(int teamID)
+            {
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
+                                                    "INNER JOIN matches AS m ON m.id = match_id " +
+                                                    "WHERE assist_player_id <> -1 AND team_id = " + teamID, connection);
+                if (SportsData.season.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.season.id; }
+                try
+                {
+                    connection.Open();
+                    Assists = (int)(long)await cmd.ExecuteScalarAsync();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
                 }
             }
         }
@@ -120,16 +165,7 @@ namespace CSharpZapoctak.ViewModels
                     string status = "inactive";
                     if (t.Status) { status = "active"; }
 
-                    TeamStats tStats = new TeamStats
-                    {
-                        Status = status,
-                        DateOfCreation = t.DateOfCreation.ToShortDateString()
-                        /*goals
-                        GamesPlayed = 
-                         assists
-                        penaties*/
-                    };
-                    t.Stats = tStats;
+                    t.Stats = new TeamStats(t, status);
 
                     Teams.Add(t);
                 }

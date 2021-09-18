@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -135,30 +136,33 @@ namespace CSharpZapoctak.ViewModels
         }
         #endregion
 
+        public TeamTableStats() { }
+
         public TeamTableStats(Team t)
         {
-            CalculateStats(t.id).Await();
+            CalculateStats(t.id);
         }
 
-        public async Task CalculateStats(int teamID)
+        public void CalculateStats(int teamID)
         {
             List<Task> tasks = new List<Task>();
             tasks.Add(Task.Run(() => CountMatches(teamID)));
             tasks.Add(Task.Run(() => CountGoals(teamID)));
             tasks.Add(Task.Run(() => CountGoalsAgainst(teamID)));
             tasks.Add(Task.Run(() => CountPenaltyMinutes(teamID)));
-            await Task.WhenAll(tasks);
+            Task.WaitAll(tasks.ToArray());
             GoalDifference = Goals - GoalsAgainst;
         }
 
-        private async Task CountMatches(int teamID)
+        public async Task CountMatches(int teamID)
         {
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT home_competitor, away_competitor, home_score, away_score, overtime, shootout " +
                                                 "FROM matches " +
                                                 "WHERE (home_competitor = " + teamID + " OR away_competitor = " + teamID + ") AND played = 1 " +
-                                                "AND qualification_id = -1 AND serie_match_number = -1 AND season_id = " + SportsData.season.id, connection);
+                                                "AND qualification_id = -1 AND serie_match_number = -1", connection);
+            if (SportsData.season.id > 0) { cmd.CommandText += " AND season_id = " + SportsData.season.id; }
             try
             {
                 connection.Open();
@@ -182,12 +186,12 @@ namespace CSharpZapoctak.ViewModels
                         {
                             if (overtime || shootout)
                             {
-                                Points += (int)SportsData.season.PointsForOTWin;
+                                if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForOTWin; }
                                 WinsOT++;
                             }
                             else
                             {
-                                Points += (int)SportsData.season.PointsForWin;
+                                if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForWin; }
                                 Wins++;
                             }
                         }
@@ -195,18 +199,18 @@ namespace CSharpZapoctak.ViewModels
                         {
                             if (overtime || shootout)
                             {
-                                Points += (int)SportsData.season.PointsForOTLoss;
+                                if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForOTLoss; }
                                 LossesOT++;
                             }
                             else
                             {
-                                Points += (int)SportsData.season.PointsForLoss;
+                                if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForLoss; }
                                 Losses++;
                             }
                         }
                         else
                         {
-                            Points += (int)SportsData.season.PointsForTie;
+                            if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForTie; }
                             Ties++;
                         }
                     }
@@ -216,12 +220,12 @@ namespace CSharpZapoctak.ViewModels
                         {
                             if (overtime || shootout)
                             {
-                                Points += (int)SportsData.season.PointsForOTLoss;
+                                if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForOTLoss; }
                                 LossesOT++;
                             }
                             else
                             {
-                                Points += (int)SportsData.season.PointsForLoss;
+                                if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForLoss; }
                                 Losses++;
                             }
                         }
@@ -229,18 +233,18 @@ namespace CSharpZapoctak.ViewModels
                         {
                             if (overtime || shootout)
                             {
-                                Points += (int)SportsData.season.PointsForOTWin;
+                                if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForOTWin; }
                                 WinsOT++;
                             }
                             else
                             {
-                                Points += (int)SportsData.season.PointsForWin;
+                                if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForWin; }
                                 Wins++;
                             }
                         }
                         else
                         {
-                            Points += (int)SportsData.season.PointsForTie;
+                            if (SportsData.season.id > 0) { Points += (int)SportsData.season.PointsForTie; }
                             Ties++;
                         }
                     }
@@ -256,13 +260,14 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private async Task CountGoals(int teamID)
+        public async Task CountGoals(int teamID)
         {
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
-                                                "WHERE m.season_id = " + SportsData.season.id + " AND team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1", connection);
+                                                "WHERE team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1", connection);
+            if (SportsData.season.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.season.id; }
             try
             {
                 connection.Open();
@@ -278,13 +283,14 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private async Task CountGoalsAgainst(int teamID)
+        public async Task CountGoalsAgainst(int teamID)
         {
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
-                                                "WHERE m.season_id = " + SportsData.season.id + " AND opponent_team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1", connection);
+                                                "WHERE opponent_team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1", connection);
+            if (SportsData.season.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.season.id; }
             try
             {
                 connection.Open();
@@ -300,18 +306,19 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private async Task CountPenaltyMinutes(int teamID)
+        public async Task CountPenaltyMinutes(int teamID)
         {
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT SUM(p.minutes) FROM penalties " +
+            MySqlCommand cmd = new MySqlCommand("SELECT COALESCE(SUM(p.minutes), 0) FROM penalties " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
                                                 "INNER JOIN penalty_type AS p ON p.code = penalty_type_id " +
-                                                "WHERE m.season_id = " + SportsData.season.id + " AND team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1", connection);
+                                                "WHERE team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1", connection);
+            if (SportsData.season.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.season.id; }
             try
             {
                 connection.Open();
-                PenaltyMinutes = (int)(long)await cmd.ExecuteScalarAsync();
+                PenaltyMinutes = Convert.ToInt32(await cmd.ExecuteScalarAsync());
             }
             catch (Exception)
             {
@@ -323,17 +330,15 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        /*
-            ORDERING RULES:
-                1.   points
-                2.   points in H2H matches
-                3.   score in H2H matches
-                4.   goals  in H2H matches
-                5.   penalty minutes
-                6.   random
-        */
         public int CompareTo(TeamTableStats other, bool onlyPoints)
         {
+            /*ORDERING RULES:
+                  1.   points
+                  2.   points in H2H matches
+                  3.   score in H2H matches
+                  4.   goals  in H2H matches
+                  5.   penalty minutes
+                  6.   random   */
             if (Points < other.Points)
             {
                 return -1;
@@ -376,20 +381,190 @@ namespace CSharpZapoctak.ViewModels
 
     class StandingsViewModel : ViewModelBase
     {
-        private ObservableCollection<Team> teams = new ObservableCollection<Team>();
-        public ObservableCollection<Team> Teams
+        private ObservableCollection<Group> groups = new ObservableCollection<Group>();
+        public ObservableCollection<Group> Groups
         {
-            get { return teams; }
+            get { return groups; }
             set
             {
-                teams = value;
+                groups = value;
                 OnPropertyChanged();
             }
         }
 
         public StandingsViewModel()
         {
+            LoadGroups();
 
+            foreach (Group g in Groups)
+            {
+                SortGroup(g);
+
+                //group teams by points
+                Dictionary<int, ObservableCollection<Team>> pointGroups = new Dictionary<int, ObservableCollection<Team>>();
+
+                if (g.Teams.Count > 1 && ((TeamTableStats)g.Teams[0].Stats).Points == ((TeamTableStats)g.Teams[1].Stats).Points)
+                {
+                    pointGroups.Add(((TeamTableStats)g.Teams[0].Stats).Points, new ObservableCollection<Team>());
+                    pointGroups[((TeamTableStats)g.Teams[0].Stats).Points].Add(g.Teams[0]);
+                }
+                for (int i = 1; i < g.Teams.Count; i++)
+                {
+                    if (((TeamTableStats)g.Teams[i].Stats).Points == ((TeamTableStats)g.Teams[i - 1].Stats).Points)
+                    {
+                        if (!pointGroups.ContainsKey(((TeamTableStats)g.Teams[i].Stats).Points))
+                        {
+                            pointGroups.Add(((TeamTableStats)g.Teams[i].Stats).Points, new ObservableCollection<Team>());
+                        }
+                        pointGroups[((TeamTableStats)g.Teams[i].Stats).Points].Add(g.Teams[i]);
+                    }
+                }
+
+                //sort them by tie-breaker criteria
+                foreach (KeyValuePair<int, ObservableCollection<Team>> pg in pointGroups)
+                {
+                    if (pg.Value.Count > 1)
+                    {
+                        //TODO: stats only from H2H matches!
+                        ObservableCollection<Team> sortedTeams = MergeSort(pg.Value, false);
+                        foreach (Team t in sortedTeams)
+                        {
+                            g.Teams.Remove(t);//dont remove, sort!
+                        }
+                        for (int i = 0; i <= g.Teams.Count; i++)
+                        {
+                            if (i == g.Teams.Count)
+                            {
+                                for (int j = 0; j < sortedTeams.Count; j++)
+                                {
+                                    g.Teams.Add(sortedTeams[j]);
+                                }
+                                break;
+                            }
+                            if (((TeamTableStats)g.Teams[i].Stats).Points < pg.Key)
+                            {
+                                for (int j = 0; j < sortedTeams.Count; j++)
+                                {
+                                    g.Teams.Insert(i + j, sortedTeams[j]);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SortGroup(Group g)
+        {
+            g.Teams = MergeSort(g.Teams, true);
+        }
+
+        private ObservableCollection<Team> MergeSort(ObservableCollection<Team> unsorted, bool onlyPoints)
+        {
+            if (unsorted.Count <= 1)
+                return unsorted;
+
+            ObservableCollection<Team> left = new ObservableCollection<Team>();
+            ObservableCollection<Team> right = new ObservableCollection<Team>();
+
+            int middle = unsorted.Count / 2;
+            for (int i = 0; i < middle; i++)
+            {
+                left.Add(unsorted[i]);
+            }
+            for (int i = middle; i < unsorted.Count; i++)
+            {
+                right.Add(unsorted[i]);
+            }
+
+            left = MergeSort(left, onlyPoints);
+            right = MergeSort(right, onlyPoints);
+            return Merge(left, right, onlyPoints);
+        }
+
+        private ObservableCollection<Team> Merge(ObservableCollection<Team> left, ObservableCollection<Team> right, bool onlyPoints)
+        {
+            ObservableCollection<Team> result = new ObservableCollection<Team>();
+
+            while (left.Count > 0 || right.Count > 0)
+            {
+                if (left.Count > 0 && right.Count > 0)
+                {
+                    if (((TeamTableStats)left.First().Stats).CompareTo((TeamTableStats)right.First().Stats, onlyPoints) > 0)
+                    {
+                        result.Add(left.First());
+                        left.Remove(left.First());
+                    }
+                    else
+                    {
+                        result.Add(right.First());
+                        right.Remove(right.First());
+                    }
+                }
+                else if (left.Count > 0)
+                {
+                    result.Add(left.First());
+                    left.Remove(left.First());
+                }
+                else if (right.Count > 0)
+                {
+                    result.Add(right.First());
+
+                    right.Remove(right.First());
+                }
+            }
+            return result;
+        }
+
+        private void LoadGroups()
+        {
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT id, name FROM groups WHERE season_id = " + SportsData.season.id, connection);
+            try
+            {
+                connection.Open();
+                DataTable dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Group g = new Group
+                    {
+                        id = int.Parse(row["id"].ToString()),
+                        SeasonID = SportsData.season.id,
+                        Name = row["name"].ToString(),
+                        Teams = new ObservableCollection<Team>()
+                    };
+                    Groups.Add(g);
+
+                    cmd = new MySqlCommand("SELECT team_id, t.name AS team_name FROM team_enlistment " +
+                                           "INNER JOIN team AS t ON t.id = team_id " +
+                                           "WHERE group_id = " + g.id, connection);
+                    DataTable teamTable = new DataTable();
+                    teamTable.Load(cmd.ExecuteReader());
+
+                    foreach (DataRow t in teamTable.Rows)
+                    {
+                        Team team = new Team
+                        {
+                            id = int.Parse(t["team_id"].ToString()),
+                            Name = t["team_name"].ToString(),
+                        };
+                        team.Stats = new TeamTableStats(team);
+                        g.Teams.Add(team);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
     }
 }

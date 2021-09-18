@@ -54,11 +54,11 @@ namespace CSharpZapoctak.ViewModels
             NavigateCompetitionDetailCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionViewModel(navigationStore)));
             NavigateSeasonsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonsSelectionViewModel(navigationStore)));
             NavigateSeasonDetailCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonViewModel(navigationStore)));
-            //NavigateStandingsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+            NavigateStandingsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new StandingsViewModel()));
             NavigateScheduleCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new ScheduleViewModel(navigationStore)));
             NavigateMatchesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new MatchesSelectionViewModel(navigationStore)));
             NavigateTeamsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new TeamsSelectionViewModel(navigationStore)));
-            //NavigatePlayersCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+            NavigatePlayersCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayersSelectionViewModel(navigationStore)));
             //NavigateGoaliesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
 
             AreButtonsChecked[buttonName] = true;

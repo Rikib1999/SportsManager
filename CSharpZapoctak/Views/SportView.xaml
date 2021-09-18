@@ -60,6 +60,9 @@
                 <DataTemplate DataType="{x:Type viewmodels:ScheduleViewModel}">
                     <views:ScheduleView/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:StandingsViewModel}">
+                    <views:StandingsView/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type viewmodels:MatchesSelectionViewModel}">
                     <views:MatchesSelectionView/>
                 </DataTemplate>
@@ -77,6 +80,12 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type viewmodels:EditTeamViewModel}">
                     <views:EditTeamView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:PlayersSelectionViewModel}">
+                    <views:PlayersSelectionView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:PlayerViewModel}">
+                    <views:PlayerView/>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

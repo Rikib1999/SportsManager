@@ -45,6 +45,8 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        public string BirthdateText { get { return Birthdate.ToString("d"); } }
+
         private string gender;
         public string Gender
         {
@@ -135,6 +137,9 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        public string StatusText { get { return Status ? "active" : "inactive"; } }
+
+
         private string info;
         public string Info
         {
@@ -153,6 +158,17 @@ namespace CSharpZapoctak.Models
             set
             {
                 photoPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private IStats stats;
+        public IStats Stats
+        {
+            get { return stats; }
+            set
+            {
+                stats = value;
                 OnPropertyChanged();
             }
         }
