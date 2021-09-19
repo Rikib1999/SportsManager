@@ -64,8 +64,11 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        public NavigationStore ns;
         public AddEditCompetitionViewModel(NavigationStore navigationStore)
         {
+            ns = navigationStore;
+
             if (SportsData.competition.id == (int)EntityState.AddNew)
             {
                 CurrentCompetition = new Competition();
@@ -199,6 +202,8 @@ namespace CSharpZapoctak.ViewModels
                         File.Copy(CurrentCompetition.LogoPath, filePath);
                         CurrentCompetition.LogoPath = filePath;
                     }
+
+                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionViewModel(ns))).Execute(null);
                 }
                 catch (Exception)
                 {

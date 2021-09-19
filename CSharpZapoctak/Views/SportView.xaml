@@ -87,6 +87,9 @@
                 <DataTemplate DataType="{x:Type viewmodels:PlayerViewModel}">
                     <views:PlayerView/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:EditPlayerViewModel}">
+                    <views:EditPlayerView/>
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
     </Grid>

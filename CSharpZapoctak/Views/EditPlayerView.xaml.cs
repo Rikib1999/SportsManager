@@ -1,16 +1,14 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace CSharpZapoctak.Views
 {
     /// <summary>
-    /// Interaction logic for TeamView.xaml
+    /// Interaction logic for EditPlayerView.xaml
     /// </summary>
-    public partial class TeamView : UserControl
+    public partial class EditPlayerView : UserControl
     {
-        public TeamView()
+        public EditPlayerView()
         {
             InitializeComponent();
         }
@@ -27,8 +25,6 @@ namespace CSharpZapoctak.Views
             int max = 250;
             int min = 1;
 
-            if (((TextBox)sender).Name == "NumberTextBox" || ((TextBox)sender).Name == "EditNumberTextBox") { max = 99; }
-
             //do not allow futher incorrect typing
             e.Handled = !(int.TryParse(((TextBox)sender).Text + e.Text, out int i) && i >= min && i <= max);
         }
@@ -37,8 +33,6 @@ namespace CSharpZapoctak.Views
         {
             int max = 250;
             int min = 1;
-
-            if (((TextBox)sender).Name == "NumberTextBox" || ((TextBox)sender).Name == "EditNumberTextBox") { max = 99; }
 
             if (!int.TryParse(((TextBox)sender).Text, out int j) || j < min || j > max)
             {

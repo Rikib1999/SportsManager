@@ -86,6 +86,10 @@ namespace CSharpZapoctak.ViewModels
                     {
                         p.PhotoPath = imgPath.First();
                     }
+                    else
+                    {
+                        p.PhotoPath = p.Gender == "M" ? SportsData.ResourcesPath + "\\male.png" : SportsData.ResourcesPath + "\\female.png";
+                    }
 
                     p.Stats = new PlayerStats(p, SportsData.season.id, SportsData.competition.id);
 

@@ -208,8 +208,8 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private PlayerStats stats;
-        public PlayerStats Stats
+        private ObservableCollection<PlayerStats> stats;
+        public ObservableCollection<PlayerStats> Stats
         {
             get { return stats; }
             set
@@ -281,8 +281,8 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private PlayerStats stats;
-        public PlayerStats Stats
+        private ObservableCollection<PlayerStats> stats;
+        public ObservableCollection<PlayerStats> Stats
         {
             get { return stats; }
             set
@@ -365,8 +365,29 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        public ICommand NavigateMatchCommand { get; set; }
+
+        private ICommand checkNavigateMatchCommand;
+        public ICommand CheckNavigateMatchCommand
+        {
+            get
+            {
+                if (checkNavigateMatchCommand == null)
+                {
+                    checkNavigateMatchCommand = new RelayCommand(param => CheckNavigateMatch());
+                }
+                return checkNavigateMatchCommand;
+            }
+        }
+
+        public Match SelectedMatch { get; set; } = null;
+
+        public ICommand NavigateEditCommand { get; }
+
         public PlayerViewModel(NavigationStore ns, Player p)
         {
+            NavigateMatchCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, SelectedMatch, new PlayerViewModel(ns, p))));
+            NavigateEditCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new EditPlayerViewModel(ns, p)));
             Player = p;
             LoadCompetitions();
             //stats all/competition/season
@@ -381,7 +402,7 @@ namespace CSharpZapoctak.ViewModels
                                                 "FROM player_enlistment " +
                                                 "INNER JOIN seasons AS s ON s.id = season_id " +
                                                 "INNER JOIN competitions AS c ON c.id = s.competition_id " +
-                                                "WHERE player_id = " + Player.id, connection);
+                                                "WHERE player_id = " + Player.id + " GROUP BY s.competition_id", connection);
 
             try
             {
@@ -396,7 +417,7 @@ namespace CSharpZapoctak.ViewModels
                     CompetitionRecord cr = new CompetitionRecord
                     {
                         Competition = c,
-                        Stats = new PlayerStats(Player, -1, c.id)
+                        Stats = new ObservableCollection<PlayerStats> { new PlayerStats(Player, -1, c.id) }
                     };
 
                     //load seasons
@@ -416,11 +437,11 @@ namespace CSharpZapoctak.ViewModels
                         SeasonRecord sr = new SeasonRecord
                         {
                             Season = s,
-                            Stats = new PlayerStats(Player, s.id, c.id)
+                            Stats = new ObservableCollection<PlayerStats> { new PlayerStats(Player, s.id, c.id) }
                         };
 
                         //load matches
-                        cmd = new MySqlCommand("SELECT h.name AS home_name, a.name AS away_name, " +
+                        cmd = new MySqlCommand("SELECT h.name AS h_name, a.name AS a_name, " +
                                                "m.id AS match_id, m.datetime AS match_datetime, m.home_score AS h_score, m.away_score AS a_score, " +
                                                "m.overtime AS match_overtime, m.shootout AS match_shootout, m.forfeit AS match_forfeit, " +
                                                "m.qualification_id AS match_qualification_id, m.serie_match_number AS match_serie_match_number " +
@@ -439,31 +460,31 @@ namespace CSharpZapoctak.ViewModels
                         foreach (DataRow mtch in matchTable.Rows)
                         {
                             Team home = new Team();
-                            home.Name = row["home_name"].ToString();
+                            home.Name = mtch["h_name"].ToString();
                             Team away = new Team();
-                            away.Name = row["away_name"].ToString();
+                            away.Name = mtch["a_name"].ToString();
 
                             Match m = new Match
                             {
-                                id = int.Parse(row["match_id"].ToString()),
+                                id = int.Parse(mtch["match_id"].ToString()),
                                 Competition = c,
                                 Season = s,
-                                Datetime = DateTime.Parse(row["match_datetime"].ToString()),
+                                Datetime = DateTime.Parse(mtch["match_datetime"].ToString()),
                                 HomeTeam = home,
                                 AwayTeam = away,
-                                HomeScore = int.Parse(row["h_score"].ToString()),
-                                AwayScore = int.Parse(row["a_score"].ToString()),
-                                Overtime = Convert.ToBoolean(int.Parse(row["match_overtime"].ToString())),
-                                Shootout = Convert.ToBoolean(int.Parse(row["match_shootout"].ToString())),
-                                Forfeit = Convert.ToBoolean(int.Parse(row["match_forfeit"].ToString()))
+                                HomeScore = int.Parse(mtch["h_score"].ToString()),
+                                AwayScore = int.Parse(mtch["a_score"].ToString()),
+                                Overtime = Convert.ToBoolean(int.Parse(mtch["match_overtime"].ToString())),
+                                Shootout = Convert.ToBoolean(int.Parse(mtch["match_shootout"].ToString())),
+                                Forfeit = Convert.ToBoolean(int.Parse(mtch["match_forfeit"].ToString()))
                             };
 
                             string partOfSeason = "Play-off";
-                            if (int.Parse(row["match_serie_match_number"].ToString()) < 1)
+                            if (int.Parse(mtch["match_serie_match_number"].ToString()) < 1)
                             {
                                 partOfSeason = "Group";
                             }
-                            else if (int.Parse(row["match_qualification_id"].ToString()) > 0)
+                            else if (int.Parse(mtch["match_qualification_id"].ToString()) > 0)
                             {
                                 partOfSeason = "Qualification";
                             }
@@ -486,13 +507,21 @@ namespace CSharpZapoctak.ViewModels
                     Competitions.Add(cr);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse."+e.Message+e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
                 connection.Close();
+            }
+        }
+
+        private void CheckNavigateMatch()
+        {
+            if (SelectedMatch != null)
+            {
+                NavigateMatchCommand.Execute(SelectedMatch);
             }
         }
     }

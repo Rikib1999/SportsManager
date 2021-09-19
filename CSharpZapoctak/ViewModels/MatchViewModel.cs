@@ -916,6 +916,9 @@ namespace CSharpZapoctak.ViewModels
                         switch (scheduleToReturnVM)
                         {
                             //TODO: add qualification and play-off schedules
+                            case PlayerViewModel:
+                                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayerViewModel(ns, ((PlayerViewModel)scheduleToReturnVM).Player))).Execute(null);
+                                break;
                             case MatchesSelectionViewModel:
                                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchesSelectionViewModel(ns))).Execute(null);
                                 break;

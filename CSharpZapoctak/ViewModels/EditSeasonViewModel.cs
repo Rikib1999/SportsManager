@@ -62,9 +62,11 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        public NavigationStore ns;
         public EditSeasonViewModel(NavigationStore navigationStore)
         {
             CurrentSeason = SportsData.season;
+            ns = navigationStore;
 
             if (CurrentSeason.LogoPath != null)
             {
@@ -149,6 +151,8 @@ namespace CSharpZapoctak.ViewModels
                     File.Copy(CurrentSeason.LogoPath, filePath);
                     CurrentSeason.LogoPath = filePath;
                 }
+
+                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new SeasonViewModel(ns))).Execute(null);
             }
             catch (Exception)
             {

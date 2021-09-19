@@ -10,7 +10,7 @@
     <UserControl.Resources>
         <converters:ObjectsConverter x:Key="ObjectsConverter"/>
     </UserControl.Resources>
-    <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="20">
 
             <!--..................TEAM...................-->
@@ -79,7 +79,7 @@
 
             <!--................PLAYERS..................-->
                                                     <DataGrid ItemsSource="{Binding Season.Item2.Players}" AutoGenerateColumns="False"
-                                                    IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50" FontSize="20">
+                                                    IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50" FontSize="20" Name="playersGridSource">
                                                         <DataGrid.ColumnHeaderStyle>
                                                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                                                 <Setter Property="FontWeight" Value="Bold"/>
@@ -106,7 +106,7 @@
                                                                     </Style>
                                                                 </DataGridTextColumn.ElementStyle>
                                                             </DataGridTextColumn>
-                                                            <DataGridTextColumn Width="*" Header="Position" Binding="{Binding Position}">
+                                                            <DataGridTextColumn Width="*" Header="Position" Binding="{Binding Position.Name}">
                                                                 <DataGridTextColumn.ElementStyle>
                                                                     <Style TargetType="TextBlock">
                                                                         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -115,11 +115,86 @@
                                                                     </Style>
                                                                 </DataGridTextColumn.ElementStyle>
                                                             </DataGridTextColumn>
+                                                            <DataGridTemplateColumn Width="40">
+                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <Button Content="X" Width="40" FontWeight="Bold" Command="{Binding DeleteCommand}">
+                                                                            <Button.CommandParameter>
+                                                                                <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                                    <Binding Path="DataContext.CurrentTeam" ElementName="competitionSource"/>
+                                                                                    <Binding Path="DataContext.SeasonID" ElementName="playersGridSource"/>
+                                                                                </MultiBinding>
+                                                                            </Button.CommandParameter>
+                                                                        </Button>
+                                                                    </DataTemplate>
+                                                                </DataGridTemplateColumn.CellTemplate>
+                                                            </DataGridTemplateColumn>
                                                         </DataGrid.Columns>
                                                     </DataGrid>
 
+            <!--................EDIT PLAYER..............-->
+                                                    <TextBlock FontWeight="Bold" Text="Edit player:" Padding="5,10,0,5"/>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="40"/>
+                                                            <RowDefinition Height="40"/>
+                                                        </Grid.RowDefinitions>
+                                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Season.Item2.EditedNumber}" x:Name="EditNumberTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
+                                                        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Number (1-99)" Margin="10,0,0,0" Foreground="DarkGray">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Text, ElementName=EditNumberTextBox}" Value="">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Positions, ElementName=competitionSource}" DisplayMemberPath="Name" SelectedItem="{Binding Season.Item2.EditedPosition}"
+                                                                   x:Name="EditPositionComboBox" IsEditable="True" IsReadOnly="True" Padding="10,0,0,0"/>
+                                                        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Position" Margin="10,0,0,0" Foreground="DarkGray">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Text, ElementName=EditPositionComboBox}" Value="">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                        <ComboBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Season.Item2.Players}" x:Name="EditPlayerComboBox" DisplayMemberPath="Name" SelectedItem="{Binding Season.Item2.EditedPlayer}" IsEditable="True" Padding="10,0,0,0"/>
+                                                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Select player" Margin="10,0,0,0" Foreground="DarkGray">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Text, ElementName=EditPlayerComboBox}" Value="">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                        <Button Grid.Row="1" Grid.Column="1" Content="Edit player" Command="{Binding Season.Item2.EditPlayerCommand}">
+                                                            <Button.CommandParameter>
+                                                                <MultiBinding Converter="{StaticResource ObjectsConverter}">
+                                                                    <Binding Path="DataContext.CurrentTeam" ElementName="competitionSource"/>
+                                                                    <Binding Path="SeasonID"/>
+                                                                </MultiBinding>
+                                                            </Button.CommandParameter>
+                                                        </Button>
+                                                    </Grid>
+
             <!--................ADD PLAYER...............-->
-                                                    <TextBlock Text="Add player:" Padding="5,10,0,5"/>
+                                                    <TextBlock FontWeight="Bold" Text="Add player:" Padding="5,10,0,5"/>
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition/>
@@ -158,7 +233,7 @@
                                                     </Grid>
 
             <!--................EXISTING.................-->
-                                                    <TextBlock Text="Existing:" Padding="5,10,0,5"/>
+                                                    <TextBlock FontWeight="Bold" Text="Existing:" Padding="5,10,0,5"/>
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition/>
@@ -167,8 +242,8 @@
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="40"/>
                                                         </Grid.RowDefinitions>
-                                                        <ComboBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Path=DataContext.Players, ElementName=competitionSource}" x:Name="SelectedPlayerComboBox" DisplayMemberPath="FullName" SelectedItem="{Binding Season.Item2.SelectedPlayer}" IsEditable="True" Padding="10,0,0,0"/>
-                                                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Select player" Margin="10,0,0,0" Foreground="DarkGray">
+                                                        <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Path=DataContext.Players, ElementName=competitionSource}" x:Name="SelectedPlayerComboBox" DisplayMemberPath="FullName" SelectedItem="{Binding Season.Item2.SelectedPlayer}" IsEditable="True" Padding="10,0,0,0"/>
+                                                        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Select player" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
                                                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -180,7 +255,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <Button Grid.Row="1" Grid.Column="1" Content="Add player" Command="{Binding Season.Item2.AddPlayerCommand}">
+                                                        <Button Grid.Row="0" Grid.Column="1" Content="Add player" Command="{Binding Season.Item2.AddPlayerCommand}">
                                                             <Button.CommandParameter>
                                                                 <MultiBinding Converter="{StaticResource ObjectsConverter}">
                                                                     <Binding Path="DataContext.CurrentTeam" ElementName="competitionSource"/>
@@ -191,7 +266,7 @@
                                                     </Grid>
 
             <!--..................NEW....................-->
-                                                    <TextBlock Text="New:" Padding="5,10,0,5"/>
+                                                    <TextBlock FontWeight="Bold" Text="New:" Padding="5,10,0,5"/>
                                                     <Grid>
                                                         <Grid.Resources>
                                                             <Style TargetType="{x:Type DatePickerTextBox}">

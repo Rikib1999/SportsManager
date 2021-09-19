@@ -5,7 +5,6 @@ using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -75,10 +74,13 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        public NavigationStore ns;
+
         public EditTeamViewModel(NavigationStore navigationStore, Team t)
         {
             CurrentTeam = t;
             Countries = SportsData.countries;
+            ns = navigationStore;
 
             if (!string.IsNullOrWhiteSpace(CurrentTeam.LogoPath))
             {
@@ -165,6 +167,8 @@ namespace CSharpZapoctak.ViewModels
                     File.Copy(CurrentTeam.LogoPath, filePath);
                     CurrentTeam.LogoPath = filePath;
                 }
+
+                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new TeamViewModel(ns, CurrentTeam))).Execute(null);
             }
             catch (Exception)
             {

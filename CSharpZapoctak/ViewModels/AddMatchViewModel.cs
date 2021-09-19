@@ -3503,11 +3503,14 @@ namespace CSharpZapoctak.ViewModels
                     switch (scheduleToReturnVM)
                     {
                         //TODO: add qualification and play-off schedules, but they cannot be not played (?)
+                        /*case PlayerViewModel:
+                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayerViewModel(ns, ((PlayerViewModel)scheduleToReturnVM).Player))).Execute(null);
+                            break;*/
                         case GroupsScheduleViewModel:
-                            scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
+                            //scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
                             scheduleViewModel.GroupsSet = true;
-                            scheduleViewModel.QualificationSet = false;
-                            scheduleViewModel.PlayOffSet = false;
+                            //scheduleViewModel.QualificationSet = false;
+                            //scheduleViewModel.PlayOffSet = false;
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
                         default:
@@ -4058,24 +4061,27 @@ namespace CSharpZapoctak.ViewModels
                 {
                     switch (scheduleToReturnVM)
                     {
+                        /*case PlayerViewModel:
+                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayerViewModel(ns, ((PlayerViewModel)scheduleToReturnVM).Player))).Execute(null);
+                            break;*/
                         case GroupsScheduleViewModel:
-                            scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
+                            //scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
                             scheduleViewModel.GroupsSet = true;
-                            scheduleViewModel.QualificationSet = false;
-                            scheduleViewModel.PlayOffSet = false;
+                            //scheduleViewModel.QualificationSet = false;
+                            //scheduleViewModel.PlayOffSet = false;
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
                         case QualificationScheduleViewModel:
                             //scheduleViewModel.CurrentViewModel = new QualificationScheduleViewModel(ns);
-                            scheduleViewModel.GroupsSet = false;
+                            //scheduleViewModel.GroupsSet = false;
                             scheduleViewModel.QualificationSet = true;
-                            scheduleViewModel.PlayOffSet = false;
+                            //scheduleViewModel.PlayOffSet = false;
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
                         case PlayOffScheduleViewModel:
-                            scheduleViewModel.CurrentViewModel = new PlayOffScheduleViewModel(ns);
-                            scheduleViewModel.GroupsSet = false;
-                            scheduleViewModel.QualificationSet = false;
+                            //scheduleViewModel.CurrentViewModel = new PlayOffScheduleViewModel(ns);
+                            //scheduleViewModel.GroupsSet = false;
+                            //scheduleViewModel.QualificationSet = false;
                             scheduleViewModel.PlayOffSet = true;
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
