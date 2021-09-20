@@ -87,7 +87,7 @@
                                                                     </ItemsControl.ItemTemplate>
                                                                 </ItemsControl>
 
-                                                                <Button Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" Visibility="{Binding AddMatchVisibility}">
+                                                                <Button IsEnabled="{Binding IsEnabled}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" Visibility="{Binding AddMatchVisibility}">
                                                                     <Button.CommandParameter>
                                                                         <MultiBinding Converter="{StaticResource ObjectsConverter}">
                                                                             <Binding Path="."/>
@@ -96,12 +96,12 @@
                                                                     </Button.CommandParameter>
                                                                 </Button>
 
-                                                                <Button Visibility="{Binding RemoveFirstTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
+                                                                <Button IsEnabled="{Binding IsEnabled}" Visibility="{Binding RemoveFirstTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                                                             </StackPanel>
 
                                                             <StackPanel IsEnabled="{Binding FirstIsEnabled}" Visibility="{Binding FirstNotSelectedVisibility}" Orientation="Horizontal">
                                                                 <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=roundSource}" SelectedItem="{Binding FirstSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
-                                                                <Button Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddFirstTeamToSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
+                                                                <Button IsEnabled="{Binding IsEnabled}" Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddFirstTeamToSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                                                             </StackPanel>
                                                         </Grid>
 
@@ -124,7 +124,7 @@
                                                                     </ItemsControl.ItemTemplate>
                                                                 </ItemsControl>
 
-                                                                <Button Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" Visibility="{Binding AddMatchVisibility}">
+                                                                <Button IsEnabled="{Binding IsEnabled}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" Visibility="{Binding AddMatchVisibility}">
                                                                     <Button.CommandParameter>
                                                                         <MultiBinding Converter="{StaticResource ObjectsConverter}">
                                                                             <Binding Path="."/>
@@ -133,12 +133,12 @@
                                                                     </Button.CommandParameter>
                                                                 </Button>
 
-                                                                <Button Visibility="{Binding RemoveSecondTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
+                                                                <Button IsEnabled="{Binding IsEnabled}" Visibility="{Binding RemoveSecondTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                                                             </StackPanel>
 
                                                             <StackPanel IsEnabled="{Binding SecondIsEnabled}" Visibility="{Binding SecondNotSelectedVisibility}" Orientation="Horizontal">
                                                                 <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=roundSource}" SelectedItem="{Binding SecondSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
-                                                                <Button Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddSecondTeamToSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
+                                                                <Button IsEnabled="{Binding IsEnabled}" Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddSecondTeamToSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                                                             </StackPanel>
                                                         </Grid>
                                                     </StackPanel>

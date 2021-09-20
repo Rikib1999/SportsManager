@@ -59,7 +59,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Winner" Binding="{Binding Winner}">
+                <DataGridTextColumn Header="Winner" Binding="{Binding WinnerName}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>

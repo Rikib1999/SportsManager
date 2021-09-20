@@ -63,6 +63,8 @@
 
             <!--..............COMPETITIONS...............-->
             <TextBlock Text="Competitions" FontSize="30" Margin="20" TextAlignment="Center"/>
+            <TextBlock Text="As player:" FontSize="30" Margin="20" TextAlignment="Left"/>
+            
             <ItemsControl ItemsSource="{Binding Competitions}" Name="competitionSource">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -79,7 +81,7 @@
                                         <TextBlock Text="{Binding Competition.Name}" FontWeight="Bold" Padding="5"/>
                                         <Button FontWeight="Bold" Command="{Binding SetCompetitionVisibilityCommand}" Content="-" Width="45" HorizontalAlignment="Right" BorderThickness="2,0,0,0" BorderBrush="Black"/>
                                     </UniformGrid>
-                                    <DataGrid ItemsSource="{Binding Stats}" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="False" AlternatingRowBackground="GhostWhite" RowHeight="40" FontSize="20">
+                                    <DataGrid Visibility="{Binding CompetitionVisibility}" ItemsSource="{Binding Stats}" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="False" AlternatingRowBackground="GhostWhite" RowHeight="40" FontSize="20">
                                         <DataGrid.ColumnHeaderStyle>
                                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                                 <Setter Property="FontWeight" Value="Bold"/>
@@ -151,7 +153,7 @@
                                                         <TextBlock FontWeight="Bold" Text="{Binding Season.Name}" Padding="5"/>
                                                         <Button FontWeight="Bold" Command="{Binding SetSeasonVisibilityCommand}" Content="-" Width="45" HorizontalAlignment="Right" BorderThickness="2,0,0,0" BorderBrush="Black"/>
                                                     </UniformGrid>
-                                                    <DataGrid ItemsSource="{Binding Stats}" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="False" AlternatingRowBackground="GhostWhite" RowHeight="40" FontSize="20">
+                                                    <DataGrid Visibility="{Binding SeasonVisibility}" ItemsSource="{Binding Stats}" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="False" AlternatingRowBackground="GhostWhite" RowHeight="40" FontSize="20">
                                                         <DataGrid.ColumnHeaderStyle>
                                                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                                                 <Setter Property="FontWeight" Value="Bold"/>
@@ -213,6 +215,357 @@
                                                     <DataGrid SelectedItem="{Binding Path=DataContext.SelectedMatch, ElementName=competitionSource}" ItemsSource="{Binding Matches}" AutoGenerateColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50" FontSize="20">
                                                         <DataGrid.InputBindings>
                                                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Path=DataContext.CheckNavigateMatchCommand, ElementName=competitionSource}"/>
+                                                        </DataGrid.InputBindings>
+                                                        <DataGrid.ColumnHeaderStyle>
+                                                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                                                <Setter Property="Padding" Value="8"/>
+                                                            </Style>
+                                                        </DataGrid.ColumnHeaderStyle>
+                                                        <DataGrid.Columns>
+                                                            <DataGridTextColumn Header="Part of season" Binding="{Binding Stats.PartOfSeason}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Date" Binding="{Binding Stats.Date}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Time" Binding="{Binding Stats.Time}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Home" Binding="{Binding HomeTeam.Name}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Score" Binding="{Binding Stats.Score}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Away" Binding="{Binding AwayTeam.Name}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Text="As goaltender:" FontSize="30" Margin="20" TextAlignment="Left"/>
+
+            <ItemsControl ItemsSource="{Binding CompetitionsAsGoalie}" Name="competitionGoalieSource">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <StackPanel Orientation="Vertical">
+                            <Border Background="CornflowerBlue" BorderBrush="Black" BorderThickness="2" Margin="20,10,20,0">
+                                <StackPanel Orientation="Vertical">
+                                    <UniformGrid Rows="1">
+                                        <TextBlock Text="{Binding Competition.Name}" FontWeight="Bold" Padding="5"/>
+                                        <Button FontWeight="Bold" Command="{Binding SetCompetitionVisibilityCommand}" Content="-" Width="45" HorizontalAlignment="Right" BorderThickness="2,0,0,0" BorderBrush="Black"/>
+                                    </UniformGrid>
+                                    <DataGrid Visibility="{Binding CompetitionVisibility}" ItemsSource="{Binding Stats}" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="False" AlternatingRowBackground="GhostWhite" RowHeight="40" FontSize="20">
+                                        <DataGrid.ColumnHeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                                <Setter Property="Padding" Value="8"/>
+                                            </Style>
+                                        </DataGrid.ColumnHeaderStyle>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Games&#10;played" Binding="{Binding GamesPlayed}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Shutouts" Binding="{Binding Shutouts}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Goals against" Binding="{Binding GoalsAgainst}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Goals against&#10;per game" Binding="{Binding GoalsAgainstPerGame}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Time in game" Binding="{Binding TimeInGameText}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Time in game&#10;per game" Binding="{Binding TimeInGamePerGame}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Time in game&#10;per goal against" Binding="{Binding TimeInGamePerGoalAgainst}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Penalty shots&#10;against" Binding="{Binding PenaltyShotsAgainst}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Penalty shot&#10;goals against" Binding="{Binding PenaltyShotGoalsAgainst}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Penalty shots&#10;percentage" Binding="{Binding PenaltyShotsPercentage}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Shootout shots&#10;against" Binding="{Binding ShootoutShotsAgainst}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Shootout shot&#10;goals against" Binding="{Binding ShootoutShotGoalsAgainst}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Shootout shots&#10;percentage" Binding="{Binding ShootoutShotsPercentage}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="8,0"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
+                            </Border>
+                            <ItemsControl Visibility="{Binding CompetitionVisibility}" ItemsSource="{Binding Seasons}" Name="seasonGoalieSource">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+
+                                        <!--.................SEASON..................-->
+                                        <StackPanel Orientation="Vertical">
+                                            <Border Background="LightBlue" BorderBrush="Black" BorderThickness="2,0,2,2" Margin="20,0,20,0">
+                                                <StackPanel Orientation="Vertical">
+                                                    <UniformGrid Rows="1">
+                                                        <TextBlock FontWeight="Bold" Text="{Binding Season.Name}" Padding="5"/>
+                                                        <Button FontWeight="Bold" Command="{Binding SetSeasonVisibilityCommand}" Content="-" Width="45" HorizontalAlignment="Right" BorderThickness="2,0,0,0" BorderBrush="Black"/>
+                                                    </UniformGrid>
+                                                    <DataGrid Visibility="{Binding SeasonVisibility}" ItemsSource="{Binding Stats}" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="False" AlternatingRowBackground="GhostWhite" RowHeight="40" FontSize="20">
+                                                        <DataGrid.ColumnHeaderStyle>
+                                                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                                                <Setter Property="Padding" Value="8"/>
+                                                            </Style>
+                                                        </DataGrid.ColumnHeaderStyle>
+                                                        <DataGrid.Columns>
+                                                            <DataGridTextColumn Header="Games&#10;played" Binding="{Binding GamesPlayed}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Shutouts" Binding="{Binding Shutouts}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Goals against" Binding="{Binding GoalsAgainst}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Goals against&#10;per game" Binding="{Binding GoalsAgainstPerGame}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Time in game" Binding="{Binding TimeInGameText}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Time in game&#10;per game" Binding="{Binding TimeInGamePerGame}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Time in game&#10;per goal against" Binding="{Binding TimeInGamePerGoalAgainst}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Penalty shots&#10;against" Binding="{Binding PenaltyShotsAgainst}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Penalty shot&#10;goals against" Binding="{Binding PenaltyShotGoalsAgainst}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Penalty shots&#10;percentage" Binding="{Binding PenaltyShotsPercentage}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Shootout shots&#10;against" Binding="{Binding ShootoutShotsAgainst}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Shootout shot&#10;goals against" Binding="{Binding ShootoutShotGoalsAgainst}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                            <DataGridTextColumn Header="Shootout shots&#10;percentage" Binding="{Binding ShootoutShotsPercentage}">
+                                                                <DataGridTextColumn.ElementStyle>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                        <Setter Property="Margin" Value="8,0"/>
+                                                                    </Style>
+                                                                </DataGridTextColumn.ElementStyle>
+                                                            </DataGridTextColumn>
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Visibility="{Binding SeasonVisibility}" BorderBrush="Black" BorderThickness="2,0,2,2" Margin="20,0">
+                                                <StackPanel Orientation="Vertical">
+
+                                                    <!--................MATCHES..................-->
+                                                    <DataGrid SelectedItem="{Binding Path=DataContext.SelectedMatch, ElementName=competitionGoalieSource}" ItemsSource="{Binding Matches}" AutoGenerateColumns="False" IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50" FontSize="20">
+                                                        <DataGrid.InputBindings>
+                                                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Path=DataContext.CheckNavigateMatchCommand, ElementName=competitionGoalieSource}"/>
                                                         </DataGrid.InputBindings>
                                                         <DataGrid.ColumnHeaderStyle>
                                                             <Style TargetType="{x:Type DataGridColumnHeader}">

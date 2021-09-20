@@ -312,6 +312,8 @@ namespace CSharpZapoctak.ViewModels
         public int qualificationID;
         public int round;
         public int bracketIndex;
+        public bool hasWinner;
+        public bool isPlayOffStarted;
 
         public MatchViewModel(NavigationStore navigationStore, Match m, ViewModelBase scheduleToReturnVM)
         {
@@ -320,10 +322,7 @@ namespace CSharpZapoctak.ViewModels
             PenaltyReasons = SportsData.LoadPenaltyReasons();
             PenaltyTypes = SportsData.LoadPenaltyTypes();
             LoadMatch(m);
-            if (bracketIndex != -1)
-            {
-                CanBeEdited();
-            }
+            CanBeEdited();
             LoadPeriodScore();
             LoadRoster("Home");
             LoadRoster("Away");
@@ -333,51 +332,61 @@ namespace CSharpZapoctak.ViewModels
 
         private void CanBeEdited()
         {
-            //Select all played matches from current bracket
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT round, bracket_index " +
-                                                "FROM matches " +
-                                                "WHERE qualification_id = " + qualificationID + " AND played = 1 AND round > " + round, connection);
-
-            try
+            if (isPlayOffStarted || hasWinner)
             {
-                connection.Open();
-                DataTable dataTable = new DataTable();
-                dataTable.Load(cmd.ExecuteReader());
+                IsEditable = false;
+                return;
+            }
 
-                List<(int, int)> macthes = new List<(int, int)>();
+            //if it is in bracket (Q or PO)
+            if (bracketIndex != -1)
+            {
+                //Select all played matches from current bracket
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlCommand cmd = new MySqlCommand("SELECT round, bracket_index " +
+                                                    "FROM matches " +
+                                                    "WHERE qualification_id = " + qualificationID + " AND played = 1 AND round > " + round, connection);
 
-                foreach (DataRow row in dataTable.Rows)
+                try
                 {
-                    macthes.Add((int.Parse(dataTable.Rows[0]["round"].ToString()), int.Parse(dataTable.Rows[0]["bracket_index"].ToString())));
-                }
+                    connection.Open();
+                    DataTable dataTable = new DataTable();
+                    dataTable.Load(cmd.ExecuteReader());
 
-                if (macthes.Count > 0)
-                {
-                    List<(int, int)> path = CreateBracketPath(round, bracketIndex, macthes.OrderByDescending(x => x.Item1).First().Item1);
+                    List<(int, int)> macthes = new List<(int, int)>();
 
-                    foreach ((int, int) m in macthes)
+                    foreach (DataRow row in dataTable.Rows)
                     {
-                        if (path.Contains(m))
+                        macthes.Add((int.Parse(dataTable.Rows[0]["round"].ToString()), int.Parse(dataTable.Rows[0]["bracket_index"].ToString())));
+                    }
+
+                    if (macthes.Count > 0)
+                    {
+                        List<(int, int)> path = CreateBracketPath(round, bracketIndex, macthes.OrderByDescending(x => x.Item1).First().Item1);
+
+                        foreach ((int, int) m in macthes)
                         {
-                            IsEditable = false;
-                            break;
+                            if (path.Contains(m))
+                            {
+                                IsEditable = false;
+                                break;
+                            }
                         }
                     }
-                }
 
-                connection.Close();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Unable to connect to databse."+e.Message+e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
                     connection.Close();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("Unable to connect to databse." + e.Message + e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                    {
+                        connection.Close();
+                    }
                 }
             }
         }
@@ -404,10 +413,11 @@ namespace CSharpZapoctak.ViewModels
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT matches.id, season_id, datetime, played, periods, period_duration, home_competitor, away_competitor, home_score, away_score, overtime, shootout, forfeit, " +
                                                 "ht.name AS home_name, at.name AS away_name, " +
-                                                "round, bracket_index, qualification_id, serie_match_number " +
+                                                "round, bracket_index, qualification_id, serie_match_number, s.play_off_started AS po_started, s.winner_id AS winner " +
                                                 "FROM matches " +
                                                 "INNER JOIN team AS ht ON ht.id = home_competitor " +
                                                 "INNER JOIN team AS at ON at.id = away_competitor " +
+                                                "INNER JOIN season AS s ON s.id = season_id " +
                                                 "WHERE matches.id = " + m.id, connection);
 
             try
@@ -437,6 +447,8 @@ namespace CSharpZapoctak.ViewModels
                 round = int.Parse(dataTable.Rows[0]["round"].ToString());
                 qualificationID = int.Parse(dataTable.Rows[0]["qualification_id"].ToString());
                 bracketIndex = int.Parse(dataTable.Rows[0]["bracket_index"].ToString());
+                hasWinner = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["winner"].ToString()));
+                isPlayOffStarted = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["po_started"].ToString()));
 
                 string[] imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + Match.HomeTeam.id + ".*");
                 if (imgPath.Length != 0)
@@ -861,7 +873,7 @@ namespace CSharpZapoctak.ViewModels
             }
             else
             {
-                MessageBox.Show("Match can not be edited because another match in bracket depends on it.", "Match can not be edited", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Match can not be edited because another match in bracket depends on it or play-off has already started or there is a winner of this season already.", "Match can not be edited", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -946,7 +958,7 @@ namespace CSharpZapoctak.ViewModels
             }
             else
             {
-                MessageBox.Show("Match can not be deleted because another match in bracket depends on it.", "Match can not be deleted", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Match can not be deleted because another match in bracket depends on it or play-off has already started or there is a winner of this season already.", "Match can not be deleted", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

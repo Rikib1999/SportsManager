@@ -146,6 +146,19 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private ICommand removeSeasonImageCommand;
+        public ICommand RemoveSeasonImageCommand
+        {
+            get
+            {
+                if (removeSeasonImageCommand == null)
+                {
+                    removeSeasonImageCommand = new RelayCommand(param => RemoveImage(CurrentSeason));
+                }
+                return removeSeasonImageCommand;
+            }
+        }
+
         private ICommand loadTeamImageCommand;
         public ICommand LoadTeamImageCommand
         {
@@ -156,6 +169,19 @@ namespace CSharpZapoctak.ViewModels
                     loadTeamImageCommand = new RelayCommand(param => LoadImage(NewTeam));
                 }
                 return loadTeamImageCommand;
+            }
+        }
+
+        private ICommand removeTeamImageCommand;
+        public ICommand RemoveTeamImageCommand
+        {
+            get
+            {
+                if (removeTeamImageCommand == null)
+                {
+                    removeTeamImageCommand = new RelayCommand(param => RemoveImage(NewTeam));
+                }
+                return removeTeamImageCommand;
             }
         }
         #endregion
@@ -1461,6 +1487,20 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Others
+        private void RemoveImage(Competition entity)
+        {
+            entity.LogoPath = "";
+            if (entity.GetType() == typeof(Team))
+            {
+                BitmapTeam = new BitmapImage();
+            }
+            else
+            {
+                BitmapSeason = new BitmapImage();
+            }
+            GC.Collect();
+        }
+
         private void ShuffleList(IList list)
         {
             int n = list.Count;

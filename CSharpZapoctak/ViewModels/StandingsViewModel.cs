@@ -1,4 +1,5 @@
-﻿using CSharpZapoctak.Models;
+﻿using CSharpZapoctak.Commands;
+using CSharpZapoctak.Models;
 using CSharpZapoctak.Others;
 using MySql.Data.MySqlClient;
 using System;
@@ -8,6 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
@@ -381,6 +383,41 @@ namespace CSharpZapoctak.ViewModels
 
     class StandingsViewModel : ViewModelBase
     {
+        private Visibility winnerIsSetVisibility = Visibility.Collapsed;
+        public Visibility WinnerIsSetVisibility
+        {
+            get { return winnerIsSetVisibility; }
+            set
+            {
+                winnerIsSetVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility winnerIsNotSetVisibility = Visibility.Visible;
+        public Visibility WinnerIsNotSetVisibility
+        {
+            get { return winnerIsNotSetVisibility; }
+            set
+            {
+                winnerIsNotSetVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ICommand declareWinnerCommand;
+        public ICommand DeclareWinnerCommand
+        {
+            get
+            {
+                if (declareWinnerCommand == null)
+                {
+                    declareWinnerCommand = new RelayCommand(param => DeclareWinner());
+                }
+                return declareWinnerCommand;
+            }
+        }
+
         private ObservableCollection<Group> groups = new ObservableCollection<Group>();
         public ObservableCollection<Group> Groups
         {
@@ -392,8 +429,37 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private ObservableCollection<Team> enlistedTeams = new ObservableCollection<Team>();
+        public ObservableCollection<Team> EnlistedTeams
+        {
+            get { return enlistedTeams; }
+            set
+            {
+                enlistedTeams = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Team winner = new Team();
+        public Team Winner
+        {
+            get { return winner; }
+            set
+            {
+                winner = value;
+                OnPropertyChanged();
+            }
+        }
+
         public StandingsViewModel()
         {
+            if (SportsData.season.WinnerID != -1)
+            {
+                Winner.Name = SportsData.season.WinnerName;
+                WinnerIsNotSetVisibility = Visibility.Collapsed;
+                WinnerIsSetVisibility = Visibility.Visible;
+            }
+
             LoadGroups();
 
             foreach (Group g in Groups)
@@ -453,6 +519,26 @@ namespace CSharpZapoctak.ViewModels
                     }
                 }
             }
+
+            LoadEnlistedTeams();
+        }
+
+        private void LoadEnlistedTeams()
+        {
+            foreach (Group g in Groups)
+            {
+                foreach (Team t in g.Teams)
+                {
+                    EnlistedTeams.Add(t);
+                }
+            }
+        }
+
+        private void DeclareWinner()
+        {
+            //update database
+            //update sportsdata season winner
+            //reload view
         }
 
         private void SortGroup(Group g)

@@ -91,13 +91,24 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private string winner;
-        public string Winner
+        private string winnerName;
+        public string WinnerName
         {
-            get { return winner; }
+            get { return winnerName; }
             set
             {
-                winner = value;
+                winnerName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int winnerID;
+        public int WinnerID
+        {
+            get { return winnerID; }
+            set
+            {
+                winnerID = value;
                 OnPropertyChanged();
             }
         }

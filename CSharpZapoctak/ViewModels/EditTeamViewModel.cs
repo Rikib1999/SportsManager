@@ -50,6 +50,19 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private ICommand removeImageCommand;
+        public ICommand RemoveImageCommand
+        {
+            get
+            {
+                if (removeImageCommand == null)
+                {
+                    removeImageCommand = new RelayCommand(param => RemoveImage());
+                }
+                return removeImageCommand;
+            }
+        }
+
         private ObservableCollection<Country> countries;
         public ObservableCollection<Country> Countries
         {
@@ -95,6 +108,10 @@ namespace CSharpZapoctak.ViewModels
                 bitmap.EndInit();
                 Bitmap = bitmap;
             }
+            else
+            {
+                CurrentTeam.LogoPath = "";
+            }
         }
 
         private void LoadImage()
@@ -121,6 +138,13 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private void RemoveImage()
+        {
+            CurrentTeam.LogoPath = "";
+            Bitmap = new BitmapImage();
+            GC.Collect();
+        }
+
         private void Save()
         {
             if (string.IsNullOrWhiteSpace(CurrentTeam.Name))
@@ -143,29 +167,43 @@ namespace CSharpZapoctak.ViewModels
                 //if logo is not selected return
                 if (string.IsNullOrWhiteSpace(CurrentTeam.LogoPath))
                 {
-                    return;
-                }
-                //get current logo
-                string[] imgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + currentTeam.id + ".*");
-                string filePath = "";
-                //if logo existed
-                if (imgPath.Length != 0)
-                {
-                    filePath = imgPath.First();
-                }
-                //if logo did not exist declare its path
-                if (string.IsNullOrWhiteSpace(filePath))
-                {
-                    filePath = SportsData.TeamLogosPath + @"\" + SportsData.sport.name + currentTeam.id + Path.GetExtension(CurrentTeam.LogoPath);
-                }
-                //if logo had changeg
-                if (CurrentTeam.LogoPath != filePath)
-                {
+                    //if there is logo in the database then delete it
+                    //get previous logo
+                    string[] previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + CurrentTeam.id + ".*");
+                    string previousFilePath = "";
+                    //if it exists
+                    if (previousImgPath.Length != 0)
+                    {
+                        previousFilePath = previousImgPath.First();
+                    }
+                    //delete logo
                     GC.Collect();
-                    File.Delete(filePath);
-                    filePath = Path.ChangeExtension(filePath, Path.GetExtension(CurrentTeam.LogoPath));
-                    File.Copy(CurrentTeam.LogoPath, filePath);
-                    CurrentTeam.LogoPath = filePath;
+                    File.Delete(previousFilePath);
+                }
+                else
+                {
+                    //get current logo
+                    string[] imgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + currentTeam.id + ".*");
+                    string filePath = "";
+                    //if logo existed
+                    if (imgPath.Length != 0)
+                    {
+                        filePath = imgPath.First();
+                    }
+                    //if logo did not exist declare its path
+                    if (string.IsNullOrWhiteSpace(filePath))
+                    {
+                        filePath = SportsData.TeamLogosPath + @"\" + SportsData.sport.name + currentTeam.id + Path.GetExtension(CurrentTeam.LogoPath);
+                    }
+                    //if logo had changeg
+                    if (CurrentTeam.LogoPath != filePath)
+                    {
+                        GC.Collect();
+                        File.Delete(filePath);
+                        filePath = Path.ChangeExtension(filePath, Path.GetExtension(CurrentTeam.LogoPath));
+                        File.Copy(CurrentTeam.LogoPath, filePath);
+                        CurrentTeam.LogoPath = filePath;
+                    }
                 }
 
                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new TeamViewModel(ns, CurrentTeam))).Execute(null);

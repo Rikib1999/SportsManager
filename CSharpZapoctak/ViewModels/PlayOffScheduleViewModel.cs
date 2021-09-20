@@ -188,9 +188,12 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        public bool IsEnabled { get; private set; } = true;
+
         public PlayOffScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
+            if (SportsData.season.PlayOffStarted || SportsData.season.WinnerID != -1) { IsEnabled = false; }
 
             if (SportsData.season.PlayOffStarted)
             {

@@ -90,6 +90,9 @@
                 <DataTemplate DataType="{x:Type viewmodels:EditPlayerViewModel}">
                     <views:EditPlayerView/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:GoaliesSelectionViewModel}">
+                    <views:GoaliesSelectionView/>
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
     </Grid>

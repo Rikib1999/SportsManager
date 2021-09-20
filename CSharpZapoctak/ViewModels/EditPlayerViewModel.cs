@@ -72,6 +72,19 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private ICommand removeImageCommand;
+        public ICommand RemoveImageCommand
+        {
+            get
+            {
+                if (removeImageCommand == null)
+                {
+                    removeImageCommand = new RelayCommand(param => RemoveImage());
+                }
+                return removeImageCommand;
+            }
+        }
+
         private ICommand saveCommand;
         public ICommand SaveCommand
         {
@@ -123,6 +136,10 @@ namespace CSharpZapoctak.ViewModels
                     bitmap.EndInit();
                     Bitmap = bitmap;
                 }
+                else
+                {
+                    Player.PhotoPath = "";
+                }
             }
         }
 
@@ -164,6 +181,13 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private void RemoveImage()
+        {
+            Player.PhotoPath = "";
+            Bitmap = new BitmapImage();
+            GC.Collect();
+        }
+
         private void Save()
         {
             if (string.IsNullOrWhiteSpace(Player.FirstName) || string.IsNullOrWhiteSpace(Player.LastName))
@@ -197,33 +221,47 @@ namespace CSharpZapoctak.ViewModels
                 connection.Open();
                 cmd.ExecuteNonQuery();
 
-                //SAVE LOGO
-                //if logo is not selected return
+                //SAVE PHOTO
+                //if logo is not selected
                 if (string.IsNullOrWhiteSpace(Player.PhotoPath))
                 {
-                    return;
-                }
-                //get current logo
-                string[] imgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + Player.id + ".*");
-                string filePath = "";
-                //if logo existed
-                if (imgPath.Length != 0)
-                {
-                    filePath = imgPath.First();
-                }
-                //if logo did not exist declare its path
-                if (string.IsNullOrWhiteSpace(filePath))
-                {
-                    filePath = SportsData.PlayerPhotosPath + @"\" + SportsData.sport.name + Player.id + Path.GetExtension(Player.PhotoPath);
-                }
-                //if logo had changeg
-                if (Player.PhotoPath != filePath)
-                {
+                    //if there is photo in the database then delete it
+                    //get previous photo
+                    string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + Player.id + ".*");
+                    string previousFilePath = "";
+                    //if it exists
+                    if (previousImgPath.Length != 0)
+                    {
+                        previousFilePath = previousImgPath.First();
+                    }
+                    //delete photo
                     GC.Collect();
-                    File.Delete(filePath);
-                    filePath = Path.ChangeExtension(filePath, Path.GetExtension(Player.PhotoPath));
-                    File.Copy(Player.PhotoPath, filePath);
-                    Player.PhotoPath = filePath;
+                    File.Delete(previousFilePath);
+                }
+                else
+                {
+                    //get current photo
+                    string[] imgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + Player.id + ".*");
+                    string filePath = "";
+                    //if photo existed
+                    if (imgPath.Length != 0)
+                    {
+                        filePath = imgPath.First();
+                    }
+                    //if photo did not exist declare its path
+                    if (string.IsNullOrWhiteSpace(filePath))
+                    {
+                        filePath = SportsData.PlayerPhotosPath + @"\" + SportsData.sport.name + Player.id + Path.GetExtension(Player.PhotoPath);
+                    }
+                    //if photo had changed
+                    if (Player.PhotoPath != filePath)
+                    {
+                        GC.Collect();
+                        File.Delete(filePath);
+                        filePath = Path.ChangeExtension(filePath, Path.GetExtension(Player.PhotoPath));
+                        File.Copy(Player.PhotoPath, filePath);
+                        Player.PhotoPath = filePath;
+                    }
                 }
 
                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayerViewModel(ns, Player))).Execute(null);

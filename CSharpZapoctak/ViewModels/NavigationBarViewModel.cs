@@ -59,7 +59,7 @@ namespace CSharpZapoctak.ViewModels
             NavigateMatchesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new MatchesSelectionViewModel(navigationStore)));
             NavigateTeamsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new TeamsSelectionViewModel(navigationStore)));
             NavigatePlayersCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayersSelectionViewModel(navigationStore)));
-            //NavigateGoaliesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore));
+            NavigateGoaliesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new GoaliesSelectionViewModel(navigationStore)));
 
             AreButtonsChecked[buttonName] = true;
             ButtonsVisibilities = buttonsVisibilities;

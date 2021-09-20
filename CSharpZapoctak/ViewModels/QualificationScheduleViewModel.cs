@@ -163,7 +163,7 @@ namespace CSharpZapoctak.ViewModels
         public QualificationScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
-            if (SportsData.season.PlayOffStarted) { IsEnabled = false; }
+            if (SportsData.season.PlayOffStarted || SportsData.season.WinnerID != -1) { IsEnabled = false; }
             LoadNotSelectedTeams();
             LoadBrackets();
         }

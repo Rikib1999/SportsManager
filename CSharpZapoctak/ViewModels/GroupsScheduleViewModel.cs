@@ -94,7 +94,7 @@ namespace CSharpZapoctak.ViewModels
         public GroupsScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
-            if (SportsData.season.PlayOffStarted) { IsEnabled = false; }
+            if (SportsData.season.PlayOffStarted || SportsData.season.WinnerID != -1) { IsEnabled = false; }
             LoadRounds();
         }
 

@@ -49,6 +49,19 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private ICommand removeImageCommand;
+        public ICommand RemoveImageCommand
+        {
+            get
+            {
+                if (removeImageCommand == null)
+                {
+                    removeImageCommand = new RelayCommand(param => RemoveImage());
+                }
+                return removeImageCommand;
+            }
+        }
+
         private ICommand saveCommand;
         public ICommand SaveCommand
         {
@@ -68,7 +81,7 @@ namespace CSharpZapoctak.ViewModels
             CurrentSeason = SportsData.season;
             ns = navigationStore;
 
-            if (CurrentSeason.LogoPath != null)
+            if (!string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
             {
                 MemoryStream ms = new MemoryStream();
                 byte[] arrbytFileContent = File.ReadAllBytes(CurrentSeason.LogoPath);
@@ -80,6 +93,10 @@ namespace CSharpZapoctak.ViewModels
                 bitmap.StreamSource = ms;
                 bitmap.EndInit();
                 Bitmap = bitmap;
+            }
+            else
+            {
+                CurrentSeason.LogoPath = "";
             }
         }
 
@@ -107,6 +124,13 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private void RemoveImage()
+        {
+            CurrentSeason.LogoPath = "";
+            Bitmap = new BitmapImage();
+            GC.Collect();
+        }
+
         private void Save()
         {
             if (string.IsNullOrWhiteSpace(CurrentSeason.Name))
@@ -127,29 +151,43 @@ namespace CSharpZapoctak.ViewModels
                 //if logo is not selected return
                 if (string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
                 {
-                    return;
-                }
-                //get current logo
-                string[] imgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + currentSeason.id + ".*");
-                string filePath = "";
-                //if logo existed
-                if (imgPath.Length != 0)
-                {
-                    filePath = imgPath.First();
-                }
-                //if logo did not exist declare its path
-                if (string.IsNullOrWhiteSpace(filePath))
-                {
-                    filePath = SportsData.SeasonLogosPath + @"\" + SportsData.sport.name + currentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
-                }
-                //if logo had changeg
-                if (CurrentSeason.LogoPath != filePath)
-                {
+                    //if there is logo in the database then delete it
+                    //get previous logo
+                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + CurrentSeason.id + ".*");
+                    string previousFilePath = "";
+                    //if it exists
+                    if (previousImgPath.Length != 0)
+                    {
+                        previousFilePath = previousImgPath.First();
+                    }
+                    //delete logo
                     GC.Collect();
-                    File.Delete(filePath);
-                    filePath = Path.ChangeExtension(filePath, Path.GetExtension(CurrentSeason.LogoPath));
-                    File.Copy(CurrentSeason.LogoPath, filePath);
-                    CurrentSeason.LogoPath = filePath;
+                    File.Delete(previousFilePath);
+                }
+                else
+                {
+                    //get current logo
+                    string[] imgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + currentSeason.id + ".*");
+                    string filePath = "";
+                    //if logo existed
+                    if (imgPath.Length != 0)
+                    {
+                        filePath = imgPath.First();
+                    }
+                    //if logo did not exist declare its path
+                    if (string.IsNullOrWhiteSpace(filePath))
+                    {
+                        filePath = SportsData.SeasonLogosPath + @"\" + SportsData.sport.name + currentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
+                    }
+                    //if logo had changeg
+                    if (CurrentSeason.LogoPath != filePath)
+                    {
+                        GC.Collect();
+                        File.Delete(filePath);
+                        filePath = Path.ChangeExtension(filePath, Path.GetExtension(CurrentSeason.LogoPath));
+                        File.Copy(CurrentSeason.LogoPath, filePath);
+                        CurrentSeason.LogoPath = filePath;
+                    }
                 }
 
                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new SeasonViewModel(ns))).Execute(null);

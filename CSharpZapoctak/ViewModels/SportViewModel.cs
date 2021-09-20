@@ -60,25 +60,21 @@ namespace CSharpZapoctak.ViewModels
                 case SeasonViewModel:
                     checkedButton = "Season";
                     break;
-                    /*
-                case CompetitionViewModel:
+                case StandingsViewModel:
                     checkedButton = "Standings";
                     break;
-                    */
                 case MatchesSelectionViewModel:
                     checkedButton = "Matches";
                     break;
                 case TeamsSelectionViewModel:
                     checkedButton = "Teams";
                     break;
-                    /*
-                case CompetitionViewModel:
+                case PlayersSelectionViewModel:
                     checkedButton = "Players";
                     break;
-                case CompetitionViewModel:
+                case GoaliesSelectionViewModel:
                     checkedButton = "Goalies";
                     break;
-                    */
                 default:
                     break;
             }
