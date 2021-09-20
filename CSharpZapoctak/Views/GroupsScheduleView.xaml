@@ -27,7 +27,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Button BorderBrush="Black" BorderThickness="0,0,2,0" HorizontalAlignment="Left" Grid.Column="0" Width="40" Content="-" Command="{Binding SetRoundVisibilityCommand}" CommandParameter="{Binding}"/>
                                 <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="{Binding Name}"/>
-                                <Button IsEnabled="{Binding IsEnabled}" BorderBrush="Black" BorderThickness="2,0,0,0" HorizontalAlignment="Right" Grid.Column="2" Width="40" Content="X" Command="{Binding Path=DataContext.DeleteRoundCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
+                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=roundSource}" BorderBrush="Black" BorderThickness="2,0,0,0" HorizontalAlignment="Right" Grid.Column="2" Width="40" Content="X" Command="{Binding Path=DataContext.DeleteRoundCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                             </Grid>
                         </Border>
 
@@ -62,7 +62,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
-                            <Button IsEnabled="{Binding IsEnabled}" Margin="0,15" Width="150" HorizontalContentAlignment="Center" Content="Add match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
+                            <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=roundSource}" Margin="0,15" Width="150" HorizontalContentAlignment="Center" Content="Add match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                         </StackPanel>
 
                     </StackPanel>

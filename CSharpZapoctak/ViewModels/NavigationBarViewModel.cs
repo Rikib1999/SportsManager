@@ -43,23 +43,23 @@ namespace CSharpZapoctak.ViewModels
         public ICommand NavigatePlayersCommand { get; }
         public ICommand NavigateGoaliesCommand { get; }
 
-        public NavigationBarViewModel(NavigationStore navigationStore, string buttonName, Dictionary<string, Visibility> buttonsVisibilities)
+        public NavigationBarViewModel(NavigationStore ns, string buttonName, Dictionary<string, Visibility> buttonsVisibilities)
         {
             /*if (SportsData.sport.name == "tennis")
             {
                 //tennis player view = navigate command
             }*/
-            NavigateSportsCommand = new NavigateCommand<SportsSelectionViewModel>(navigationStore, () => new SportsSelectionViewModel(navigationStore));
-            NavigateCompetitionsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionsSelectionViewModel(navigationStore)));
-            NavigateCompetitionDetailCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionViewModel(navigationStore)));
-            NavigateSeasonsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonsSelectionViewModel(navigationStore)));
-            NavigateSeasonDetailCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonViewModel(navigationStore)));
-            NavigateStandingsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new StandingsViewModel()));
-            NavigateScheduleCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new ScheduleViewModel(navigationStore)));
-            NavigateMatchesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new MatchesSelectionViewModel(navigationStore)));
-            NavigateTeamsCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new TeamsSelectionViewModel(navigationStore)));
-            NavigatePlayersCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayersSelectionViewModel(navigationStore)));
-            NavigateGoaliesCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new GoaliesSelectionViewModel(navigationStore)));
+            NavigateSportsCommand = new NavigateCommand<SportsSelectionViewModel>(ns, () => new SportsSelectionViewModel(ns));
+            NavigateCompetitionsCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionsSelectionViewModel(ns)));
+            NavigateCompetitionDetailCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionViewModel(ns)));
+            NavigateSeasonsCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new SeasonsSelectionViewModel(ns)));
+            NavigateSeasonDetailCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new SeasonViewModel(ns)));
+            NavigateStandingsCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new StandingsViewModel(ns)));
+            NavigateScheduleCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new ScheduleViewModel(ns)));
+            NavigateMatchesCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchesSelectionViewModel(ns)));
+            NavigateTeamsCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new TeamsSelectionViewModel(ns)));
+            NavigatePlayersCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayersSelectionViewModel(ns)));
+            NavigateGoaliesCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new GoaliesSelectionViewModel(ns)));
 
             AreButtonsChecked[buttonName] = true;
             ButtonsVisibilities = buttonsVisibilities;

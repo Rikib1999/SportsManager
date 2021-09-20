@@ -1,6 +1,7 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
 using CSharpZapoctak.Others;
+using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -418,6 +419,19 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private ICommand deleteWinnerCommand;
+        public ICommand DeleteWinnerCommand
+        {
+            get
+            {
+                if (deleteWinnerCommand == null)
+                {
+                    deleteWinnerCommand = new RelayCommand(param => DeleteWinner());
+                }
+                return deleteWinnerCommand;
+            }
+        }
+
         private ObservableCollection<Group> groups = new ObservableCollection<Group>();
         public ObservableCollection<Group> Groups
         {
@@ -451,8 +465,12 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        public StandingsViewModel()
+        public NavigationStore ns;
+
+        public StandingsViewModel(NavigationStore ns)
         {
+            this.ns = ns;
+
             if (SportsData.season.WinnerID != -1)
             {
                 Winner.Name = SportsData.season.WinnerName;
@@ -525,20 +543,96 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadEnlistedTeams()
         {
-            foreach (Group g in Groups)
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT team_id, t.name AS team_name " +
+                                                "FROM team_enlistment " +
+                                                "INNER JOIN team AS t ON t.id = team_id " +
+                                                "WHERE season_id = " + SportsData.season.id, connection);
+            try
             {
-                foreach (Team t in g.Teams)
+                connection.Open();
+                DataTable teamTable = new DataTable();
+                teamTable.Load(cmd.ExecuteReader());
+
+                foreach (DataRow t in teamTable.Rows)
                 {
-                    EnlistedTeams.Add(t);
+                    Team team = new Team
+                    {
+                        id = int.Parse(t["team_id"].ToString()),
+                        Name = t["team_name"].ToString(),
+                    };
+                    EnlistedTeams.Add(team);
                 }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
             }
         }
 
         private void DeclareWinner()
         {
+            if (Winner.id < 1) { return; }
+
             //update database
-            //update sportsdata season winner
-            //reload view
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("UPDATE seasons SET winner_id = " + Winner.id + " WHERE id = " + SportsData.season.id, connection);
+
+            try
+            {   //execute querry
+                connection.Open();
+                cmd.ExecuteNonQuery();
+
+                //update sportsdata season winner
+                SportsData.season.WinnerID = Winner.id;
+                SportsData.season.WinnerName = Winner.Name;
+
+                //reload view
+                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new StandingsViewModel(ns))).Execute(null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        private void DeleteWinner()
+        {
+            //update database
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("UPDATE seasons SET winner_id = -1 WHERE id = " + SportsData.season.id, connection);
+
+            try
+            {   //execute querry
+                connection.Open();
+                cmd.ExecuteNonQuery();
+
+                //update sportsdata season winner
+                SportsData.season.WinnerID = -1;
+                SportsData.season.WinnerName = "";
+
+                //reload view
+                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new StandingsViewModel(ns))).Execute(null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
 
         private void SortGroup(Group g)

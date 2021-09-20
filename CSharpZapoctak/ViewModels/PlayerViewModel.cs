@@ -912,9 +912,9 @@ namespace CSharpZapoctak.ViewModels
                     Competitions.Add(cr);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse." + e.Message + e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -1035,9 +1035,9 @@ namespace CSharpZapoctak.ViewModels
                     CompetitionsAsGoalie.Add(cr);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse." + e.Message + e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

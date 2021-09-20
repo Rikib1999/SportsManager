@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -97,6 +98,16 @@ namespace CSharpZapoctak.ViewModels
                         cmd = new MySqlCommand("DELETE FROM player WHERE id = " + id, connection);
                         cmd.Transaction = transaction;
                         cmd.ExecuteNonQuery();
+
+                        string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + id + ".*");
+                        string previousFilePath = "";
+                        //if it exists
+                        if (previousImgPath.Length != 0)
+                        {
+                            previousFilePath = previousImgPath.First();
+                        }
+                        //delete photo
+                        File.Delete(previousFilePath);
                     }
                 }
                 else

@@ -236,7 +236,7 @@ namespace CSharpZapoctak.ViewModels
                     if (sb.Length > 0)
                     {
                         //delete matches from DB
-                        querry = "DELETE FROM matches WHERE serie_match_number < 1 AND round = " + r.id;
+                        querry = "DELETE FROM matches WHERE bracket_index < 1 AND round = " + r.id;
                         cmd = new MySqlCommand(querry, connection);
                         cmd.Transaction = transaction;
                         cmd.ExecuteNonQuery();

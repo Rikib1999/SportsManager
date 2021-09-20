@@ -402,9 +402,9 @@ namespace CSharpZapoctak.ViewModels
                 all.Stats = new SeasonStats(Seasons);
                 Seasons.Add(all);*/
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse."+e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

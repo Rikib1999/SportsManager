@@ -377,9 +377,9 @@ namespace CSharpZapoctak.ViewModels
 
                     connection.Close();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    MessageBox.Show("Unable to connect to databse." + e.Message + e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -417,7 +417,7 @@ namespace CSharpZapoctak.ViewModels
                                                 "FROM matches " +
                                                 "INNER JOIN team AS ht ON ht.id = home_competitor " +
                                                 "INNER JOIN team AS at ON at.id = away_competitor " +
-                                                "INNER JOIN season AS s ON s.id = season_id " +
+                                                "INNER JOIN seasons AS s ON s.id = season_id " +
                                                 "WHERE matches.id = " + m.id, connection);
 
             try
@@ -447,7 +447,7 @@ namespace CSharpZapoctak.ViewModels
                 round = int.Parse(dataTable.Rows[0]["round"].ToString());
                 qualificationID = int.Parse(dataTable.Rows[0]["qualification_id"].ToString());
                 bracketIndex = int.Parse(dataTable.Rows[0]["bracket_index"].ToString());
-                hasWinner = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["winner"].ToString()));
+                hasWinner = int.Parse(dataTable.Rows[0]["winner"].ToString()) == -1 ? false : true;
                 isPlayOffStarted = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["po_started"].ToString()));
 
                 string[] imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + Match.HomeTeam.id + ".*");

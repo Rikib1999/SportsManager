@@ -49,8 +49,7 @@ namespace CSharpZapoctak
                 //Process.Start("C:/xampp/mysql/bin/mysqld.exe");
             }
 
-            Task t = new Task(LoadCountries);
-            t.Start();
+            Task.Run(() => LoadCountries());
 
             NavigationStore navigationStore = new NavigationStore();
 
