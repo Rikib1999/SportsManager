@@ -17,6 +17,7 @@
                     <TextBlock Text="Date:" Margin="0,0,10,0"/>
                     <DatePicker Height="35" SelectedDate="{Binding MatchDate}"/>
                 </StackPanel>
+                <Button Content="Generate" Command="{Binding GenerateMatchCommand}"/>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Time:" Margin="0,0,10,0"/>
                     <TextBox Height="35" Width="40" Text="{Binding MatchTimeHours}" Name="Hours" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>

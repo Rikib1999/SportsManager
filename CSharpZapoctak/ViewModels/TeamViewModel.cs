@@ -107,7 +107,10 @@ namespace CSharpZapoctak.ViewModels
                             previousFilePath = previousImgPath.First();
                         }
                         //delete photo
-                        File.Delete(previousFilePath);
+                        if (!string.IsNullOrWhiteSpace(previousFilePath))
+                        {
+                            File.Delete(previousFilePath);
+                        }
                     }
                 }
                 else

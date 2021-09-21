@@ -177,8 +177,11 @@ namespace CSharpZapoctak.ViewModels
                         previousFilePath = previousImgPath.First();
                     }
                     //delete logo
-                    GC.Collect();
-                    File.Delete(previousFilePath);
+                    if (!string.IsNullOrWhiteSpace(previousFilePath))
+                    {
+                        GC.Collect();
+                        File.Delete(previousFilePath);
+                    }
                 }
                 else
                 {

@@ -1780,6 +1780,14 @@ namespace CSharpZapoctak.ViewModels
                     }
                 }
 
+                CurrentSeason.GroupCount = GroupsCount;
+                CurrentSeason.PlayOffBestOf = PlayOffBestOf;
+                CurrentSeason.PlayOffRounds = PlayOffRoundsCount;
+                CurrentSeason.PlayOffStarted = false;
+                CurrentSeason.QualificationCount = QualificationCount;
+                CurrentSeason.QualificationRounds = QualificationRoundsCount;
+                CurrentSeason.WinnerID = -1;
+                CurrentSeason.WinnerName = "";
                 SportsData.competition = CurrentSeason.Competition;
                 SportsData.season = CurrentSeason;
 

@@ -135,19 +135,22 @@ namespace CSharpZapoctak.ViewModels
                         cmd.Transaction = transaction;
                         cmd.ExecuteNonQuery();
 
-                        foreach (int teamID in teams)
+                        for (int i = teams.Count - 1; i >= 0; i--)
                         {
                             //count if there is any team enlistment
-                            cmd = new MySqlCommand("SELECT COUNT(*) FROM team_enlistment WHERE team_id = " + teamID, connection);
+                            cmd = new MySqlCommand("SELECT COUNT(*) FROM team_enlistment WHERE team_id = " + teams[i], connection);
                             cmd.Transaction = transaction;
 
                             if ((int)(long)cmd.ExecuteScalar() == 0)
                             {
                                 //delete team
-                                cmd = new MySqlCommand("DELETE FROM team WHERE id = " + teamID, connection);
+                                cmd = new MySqlCommand("DELETE FROM team WHERE id = " + teams[i], connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
-                                //TODO: delete photo after transaction!
+                            }
+                            else
+                            {
+                                teams.RemoveAt(i);
                             }
                         }
                     }
@@ -171,19 +174,22 @@ namespace CSharpZapoctak.ViewModels
                         cmd.Transaction = transaction;
                         cmd.ExecuteNonQuery();
 
-                        foreach (int playerID in players)
+                        for (int i = players.Count - 1; i >= 0; i--)
                         {
                             //count if there is any player enlistment
-                            cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + playerID, connection);
+                            cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + players[i], connection);
                             cmd.Transaction = transaction;
 
                             if ((int)(long)cmd.ExecuteScalar() == 0)
                             {
                                 //delete player
-                                cmd = new MySqlCommand("DELETE FROM player WHERE id = " + playerID, connection);
+                                cmd = new MySqlCommand("DELETE FROM player WHERE id = " + players[i], connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
-                                //TODO: delete photo after transaction!
+                            }
+                            else
+                            {
+                                players.RemoveAt(i);
                             }
                         }
                     }

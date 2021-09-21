@@ -2829,7 +2829,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.EVENTS", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -4101,6 +4101,219 @@ namespace CSharpZapoctak.ViewModels
                 {
                     connection.Close();
                 }
+            }
+        }
+        #endregion
+
+        #region Testing
+        private ICommand generateMatchCommand;
+        public ICommand GenerateMatchCommand
+        {
+            get
+            {
+                if (generateMatchCommand == null)
+                {
+                    generateMatchCommand = new RelayCommand(param => GenerateMatch());
+                }
+                return generateMatchCommand;
+            }
+        }
+
+        public void GenerateMatch()
+        {
+            Random r = new Random();
+
+            //date and time
+            DateTime start = new DateTime(2019, 10, 1);
+            int range = (new DateTime(2020, 3, 15) - start).Days;
+            MatchDate = start.AddDays(r.Next(range));
+            MatchTimeHours = r.Next(8, 14);
+            int randomMinute = r.Next(0, 3);
+            switch (randomMinute)
+            {
+                case 0:
+                    MatchTimeMinutes = 0;
+                    break;
+                case 1:
+                    MatchTimeMinutes = 15;
+                    break;
+                case 2:
+                    MatchTimeMinutes = 30;
+                    break;
+                case 3:
+                    MatchTimeMinutes = 45;
+                    break;
+                default:
+                    break;
+            }
+
+            //select goalies
+            int homeGoalieID = HomePlayers.Where(x => x.Position == "goaltender").OrderBy(x => r.Next()).First().id;
+            int awayGoalieID = AwayPlayers.Where(x => x.Position == "goaltender").OrderBy(x => r.Next()).First().id;
+            HomePlayers.Where(x => x.id == homeGoalieID).First().Present = true;
+            AwayPlayers.Where(x => x.id == awayGoalieID).First().Present = true;
+
+            //player rosters
+            foreach (PlayerInRoster p in HomePlayers.OrderBy(x => r.Next()).Take(r.Next(HomePlayers.Count / 2, HomePlayers.Count)))
+            {
+                p.Present = true;
+            }
+            foreach (PlayerInRoster p in AwayPlayers.OrderBy(x => r.Next()).Take(r.Next(AwayPlayers.Count / 2, AwayPlayers.Count)))
+            {
+                p.Present = true;
+            }
+
+            //periods
+            PeriodCount = 3;
+            PeriodDuration = 10;
+
+            foreach (Period p in Periods)
+            {
+                bool homeTimeOut = false;
+                bool awayTimeOut = false;
+
+                //randomly simulate each second in period
+                for (int i = 0; i < PeriodDuration * 60; i++)
+                {
+                    //average 13 goals, 10.75 assists, 3.5 penalty minutes per match
+                    //average 16 events per match
+                    //average 5 events per period
+                    //on average event occurs each 2 minutes
+                    //on average event occurs each 120th second
+                    //probability was decreased 2 times
+                    if (r.Next(1, 120 * 2) == 100)
+                    {
+                        //side probability 50-50
+                        string side = r.Next(1, 10) % 2 == 0 ? "Home" : "Away";
+
+                        //75% goals, 15% penalties, 5% saved penalty shots, 5% timeout
+                        int eventType = r.Next(1, 100);
+                        if (eventType <= 75)
+                        {
+                            //goal
+                            //time, side, player, assists, penalty_shot, own_goal, delayed_penalty
+                            p.Goals.Add(new Goal
+                            {
+                                Minute = i / 60,
+                                Second = i % 60,
+                                Side = side,
+                                Scorer = side == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
+                                DelayedPenalty = r.Next(1, 50) == 1 ? true : false
+                            });
+                            //80% with assist
+                            if (r.Next(1, 100) <= 80)
+                            {
+                                int scorerID = p.Goals.Last().Scorer.id;
+                                p.Goals.Last().Assist = side == "Home" ? HomeRoster.Where(x => x.id != scorerID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != scorerID).OrderBy(x => r.Next()).First();
+                            }
+                            else
+                            {
+                                p.Goals.Last().Assist = new PlayerInRoster { id = -1 };
+                            }
+                            //if no assist, penalty shot = 10%, own goal = 3%
+                            if (p.Goals.Last().Assist.id > 0)
+                            {
+                                int probability = r.Next(1, 100);
+                                if (probability <= 10)
+                                {
+                                    p.Goals.Last().PenaltyShot = true;
+                                }
+                                else if (probability <= 13)
+                                {
+                                    p.Goals.Last().OwnGoal = true;
+                                }
+                            }
+                        }
+                        else if (eventType <= 90)
+                        {
+                            //penalty
+                            //time, side, player, reason, type
+                            p.Penalties.Add(new Penalty
+                            {
+                                Minute = i / 60,
+                                Second = i % 60,
+                                Side = side,
+                                Player = side == "Home" ? HomeRoster.OrderBy(x => r.Next()).First() : AwayRoster.OrderBy(x => r.Next()).First(),
+                                PenaltyReason = PenaltyReasons.OrderBy(x => r.Next()).First()
+                            });
+                            int penaltyType = r.Next(1, 100);
+                            if (penaltyType <= 80)
+                            {
+                                p.Penalties.Last().PenaltyType = PenaltyTypes.First(x => x.Minutes == 2);
+                            }
+                            else if (penaltyType <= 90)
+                            {
+                                p.Penalties.Last().PenaltyType = PenaltyTypes.First(x => x.Minutes == 5);
+                            }
+                            else if (penaltyType <= 95)
+                            {
+                                p.Penalties.Last().PenaltyType = PenaltyTypes.First(x => x.Minutes == 10);
+                            }
+                            else
+                            {
+                                p.Penalties.Last().PenaltyType = PenaltyTypes.OrderBy(x => r.Next()).First(x => x.Minutes == 20);
+                            }
+                        }
+                        else if (eventType <= 95)
+                        {
+                            //saved penalty shot
+                            //time, side, player, no_goal
+                            p.PenaltyShots.Add(new PenaltyShot
+                            {
+                                Minute = i / 60,
+                                Second = i % 60,
+                                Side = side,
+                                Player = side == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
+                                WasGoal = false
+                            });
+                        }
+                        else
+                        {
+                            //timeout
+                            //time, side
+                            if ((side == "Home" && homeTimeOut) || (side == "Away" && awayTimeOut))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                p.TimeOuts.Add(new TimeOut
+                                {
+                                    Minute = i / 60,
+                                    Second = i % 60,
+                                    Side = side,
+                                });
+
+                                if (side == "Home") { homeTimeOut = true; } else { awayTimeOut = true; }
+                            }
+                        }
+                    }
+                }
+
+                p.Goals.Sort();
+                p.Penalties.Sort();
+                p.PenaltyShots.Sort();
+                p.TimeOuts.Sort();
+
+                p.GoalieShifts.Add(new GoalieShift
+                {
+                    Side = "Home",
+                    Player = HomeRoster.Where(x => x.id == homeGoalieID).First(),
+                    StartMinute = 0,
+                    StartSecond = 0,
+                    EndMinute = 9,
+                    EndSecond = 59
+                });
+
+                p.GoalieShifts.Add(new GoalieShift
+                {
+                    Side = "Away",
+                    Player = AwayRoster.Where(x => x.id == awayGoalieID).First(),
+                    StartMinute = 0,
+                    StartSecond = 0,
+                    EndMinute = 9,
+                    EndSecond = 59
+                });
             }
         }
         #endregion

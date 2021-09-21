@@ -74,9 +74,9 @@ namespace CSharpZapoctak.ViewModels
                         Height = int.Parse(row["height"].ToString()),
                         Weight = int.Parse(row["weight"].ToString()),
                         PlaysWith = row["plays_with"].ToString(),
-                        Citizenship = new Country { CodeTwo = row["citizenship"].ToString() },
+                        Citizenship = SportsData.countries.Where(x => x.CodeTwo == row["citizenship"].ToString()).First(),
                         BirthplaceCity = row["birthplace_city"].ToString(),
-                        BirthplaceCountry = new Country { CodeTwo = row["birthplace_country"].ToString() },
+                        BirthplaceCountry = SportsData.countries.Where(x => x.CodeTwo == row["birthplace_country"].ToString()).First(),
                         Status = Convert.ToBoolean(int.Parse(row["status"].ToString())),
                         Info = row["info"].ToString()
                     };

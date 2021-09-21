@@ -550,24 +550,31 @@ namespace CSharpZapoctak.ViewModels
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT e.number AS player_number, pos.code AS position_code, p.first_name AS player_first_name, p.last_name AS player_last_name " +
+            MySqlCommand cmd = new MySqlCommand("SELECT e.number AS player_number, e.player_id AS p_id, p.first_name AS player_first_name, p.last_name AS player_last_name " +
                                                 "FROM player_matches " +
                                                 "INNER JOIN player AS p ON p.id = player_matches.player_id " +
-                                                "INNER JOIN player_enlistment AS e ON e.player_id = player_matches.player_id AND e.team_id = player_matches.team_id AND e.season_id = " + Match.Season.id + " " +
-                                                "INNER JOIN position AS pos ON pos.code = e.position_code " +
+                                                "INNER JOIN player_enlistment AS e ON e.player_id = player_matches.player_id AND e.team_id = " + teamID + " AND e.season_id = " + Match.Season.id + " " +
                                                 "WHERE match_id = " + Match.id + " AND player_matches.team_id = " + teamID, connection);
-
             try
             {
                 connection.Open();
                 DataTable dataTable = new DataTable();
                 dataTable.Load(cmd.ExecuteReader());
-                connection.Close();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    roster.Add(row["player_number"].ToString() + "# " + row["player_first_name"].ToString() + " " + row["player_last_name"].ToString() + " (" + row["position_code"].ToString() + ")");
+                    int playerID = int.Parse(row["p_id"].ToString());
+                    cmd = new MySqlCommand("SELECT pos.name AS position_name " +
+                                           "FROM player_enlistment " +
+                                           "INNER JOIN position AS pos ON pos.code = position_code " +
+                                           "WHERE player_id = " + playerID + " AND team_id = " + teamID + " AND season_id = " + Match.Season.id, connection);
+                    DataTable position = new DataTable();
+                    position.Load(cmd.ExecuteReader());
+
+                    roster.Add(row["player_number"].ToString() + "# " + row["player_first_name"].ToString() + " " + row["player_last_name"].ToString() + " (" + position.Rows[0]["position_name"].ToString() + ")");
                 }
+
+                connection.Close();
 
                 if (side == "Home")
                 {
@@ -578,9 +585,9 @@ namespace CSharpZapoctak.ViewModels
                     AwayRoster = roster;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse."+e.Message+e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

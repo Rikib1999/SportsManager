@@ -795,6 +795,7 @@ namespace CSharpZapoctak.ViewModels
             NavigateMatchCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, SelectedMatch, new PlayerViewModel(ns, p))));
             NavigateEditCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new EditPlayerViewModel(ns, p)));
             Player = p;
+            if (string.IsNullOrEmpty(p.PhotoPath)) { p.PhotoPath = p.Gender == "M" ? SportsData.ResourcesPath + "\\male.png" : SportsData.ResourcesPath + "\\female.png"; }
             LoadCompetitions();
             LoadCompetitionsAsGoalie();
         }
