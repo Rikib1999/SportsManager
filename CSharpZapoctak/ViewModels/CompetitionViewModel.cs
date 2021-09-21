@@ -52,7 +52,7 @@ namespace CSharpZapoctak.ViewModels
             ns = navigationStore;
             CurrentCompetition = SportsData.competition;
 
-            if (!string.IsNullOrWhiteSpace(CurrentCompetition.LogoPath) && CurrentCompetition.LogoPath != SportsData.ResourcesPath + "\\add_icon.png")
+            if (!string.IsNullOrWhiteSpace(CurrentCompetition.LogoPath) && CurrentCompetition.LogoPath != SportsData.ResourcesPath + "/add_icon.png")
             {
                 MemoryStream ms = new MemoryStream();
                 byte[] arrbytFileContent = File.ReadAllBytes(CurrentCompetition.LogoPath);
