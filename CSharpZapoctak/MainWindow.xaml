@@ -6,7 +6,9 @@
         xmlns:viewmodels="clr-namespace:CSharpZapoctak.ViewModels"
         xmlns:views="clr-namespace:CSharpZapoctak.Views"
         mc:Ignorable="d"
-        Title="Sports manager" Height="650" Width="1024"
+        Title="Sports manager"
+        Icon="/Resources/SportManager_logo_32x32.png"
+        Height="650" Width="1024"
         FontFamily="Ebrima"
         MinHeight="695" MinWidth="695"
         RenderOptions.EdgeMode="Aliased">
