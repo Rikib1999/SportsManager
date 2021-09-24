@@ -141,6 +141,15 @@ namespace CSharpZapoctak.Models
         {
             if (round < Series.Count)
             {
+                if (Series[round][index].winner.id != -1)
+                {
+                    return true;
+                }
+                //if there are not winners before
+                if (round != 0 && (Series[round - 1][index * 2].winner.id == -1 || Series[round - 1][(index * 2) + 1].winner.id == -1))
+                {
+                    return false;
+                }
                 if (Series[round][index].FirstTeam.id != -1 && Series[round][index].SecondTeam.id == -1)
                 {
                     Series[round][index].winner = Series[round][index].FirstTeam;
@@ -154,32 +163,6 @@ namespace CSharpZapoctak.Models
             }
             return false;
         }
-
-        public void LockSeriesBefore(int round, int index)
-        {
-            if (round == -1) { return; }
-
-            //Series[round][index].IsEnabled = false;
-
-            LockSeriesBefore(round - 1, index * 2);
-            LockSeriesBefore(round - 1, (index * 2) + 1);
-        }
-
-        public void LockSeriesAfter(int round, int index)
-        {
-            if (round == Series.Count) { return; }
-
-            //Series[round][index].IsEnabled = false;
-
-            LockSeriesAfter(round + 1, index / 2);
-        }
-
-        /*public void PrepareSeries()
-        {
-            //SeedCompetitors();
-            //FindSeriesToLock(Series.Count - 1, 0);
-            //EnableAddMatchButtons();
-        }*/
 
         public void PrepareSeries()
         {
@@ -284,48 +267,6 @@ namespace CSharpZapoctak.Models
             int newPosition = 2;
             if (index % 2 == 0) { newPosition = 1; }
             ResetSeriesAdvanced(round + 1, index / 2, newPosition);
-        }
-
-        private void FindSeriesToLock(int round, int index)
-        {
-            if (round == -1) { return; }
-
-            if (Series[round][index].Matches.Count > 0)
-            {
-                if (Series[round][index].FirstTeam.id != -1 && Series[round][index].SecondTeam.id == -1)
-                {
-                    LockSeriesBefore(round - 1, index * 2);
-                }
-                else if (Series[round][index].FirstTeam.id == -1 && Series[round][index].SecondTeam.id != -1)
-                {
-                    LockSeriesBefore(round - 1, (index * 2) + 1);
-                }
-                else
-                {
-                    LockSeriesBefore(round - 1, index * 2);
-                    LockSeriesBefore(round - 1, (index * 2) + 1);
-                    LockSeriesAfter(round + 1, index / 2);
-                }
-            }
-            else
-            {
-                FindSeriesToLock(round - 1, index * 2);
-                FindSeriesToLock(round - 1, (index * 2) + 1);
-            }
-        }
-
-        private void EnableAddMatchButtons()
-        {
-            foreach (List<Serie> r in Series)
-            {
-                foreach (Serie s in r)
-                {
-                    if (s.winner.id == -1 && s.FirstTeam.id != -1 && s.SecondTeam.id != -1)
-                    {
-                        s.AddMatchVisibility = Visibility.Visible;
-                    }
-                }
-            }
         }
         #endregion
 

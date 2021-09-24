@@ -208,25 +208,30 @@ namespace CSharpZapoctak.Models
             }
             else
             {
-                for (int i = 0; i < Matches.Count; i++)
+                int matchCount = Matches.Count;
+                for (int i = 0; i < matchCount; i++)
                 {
                     if (Matches[i].serieNumber > m.serieNumber)
                     {
                         Matches.Insert(i, m);
 
                         int insertAt = i;
-                        if (Matches.Count(x => !x.Played) == 0) { insertAt--; }
+                        if (Matches.Count(x => !x.Played) > 0 && insertAt != 0) { insertAt--; }
 
-                        if (m.HomeTeam.id == FirstTeam.id)
+                        if (m.Played)
                         {
-                            FirstScore.Insert(insertAt, new Score(m.AwayScore, m));
-                            SecondScore.Insert(insertAt, new Score(m.AwayScore, m));
+                            if (m.HomeTeam.id == FirstTeam.id)
+                            {
+                                FirstScore.Insert(insertAt, new Score(m.HomeScore, m));
+                                SecondScore.Insert(insertAt, new Score(m.AwayScore, m));
+                            }
+                            else
+                            {
+                                FirstScore.Insert(insertAt, new Score(m.AwayScore, m));
+                                SecondScore.Insert(insertAt, new Score(m.HomeScore, m));
+                            }
                         }
-                        else
-                        {
-                            FirstScore.Insert(insertAt, new Score(m.AwayScore, m));
-                            SecondScore.Insert(insertAt, new Score(m.AwayScore, m));
-                        }
+                        break;
                     }
                 }
             }

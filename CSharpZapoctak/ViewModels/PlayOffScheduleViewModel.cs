@@ -74,7 +74,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (addMatchCommand == null)
                 {
-                    addMatchCommand = new RelayCommand(param => AddMatch(param));
+                    addMatchCommand = new RelayCommand(param => AddMatch((Serie)param));
                 }
                 return addMatchCommand;
             }
@@ -193,7 +193,7 @@ namespace CSharpZapoctak.ViewModels
         public PlayOffScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
-            if (SportsData.season.PlayOffStarted || SportsData.season.WinnerID != -1) { IsEnabled = false; }
+            if (SportsData.season.WinnerID != -1) { IsEnabled = false; }
 
             if (SportsData.season.PlayOffStarted)
             {
@@ -492,11 +492,12 @@ namespace CSharpZapoctak.ViewModels
                     }
                     //create matches
                     //for each place from 0 to number of teams
-                    for (int i = 0; i < allTeams.Count; i += 2)
+                    for (int i = 0; i < places.Length; i += 2)
                     {
                         //if there is team in current place
                         int first = places[i] > allTeams.Count - 1 ? -1 : allTeams[places[i]].id;
                         int second = places[i + 1] > allTeams.Count - 1 ? -1 : allTeams[places[i + 1]].id;
+                        if(first == -1 && second == -1) { continue; }
 
                         querry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
                                               "VALUES (" + SportsData.season.id + ", 0, -1, " + (places[i] / 2) + ", 0, -1, " + first + ", " + second + ", " + first + ")";
@@ -551,7 +552,7 @@ namespace CSharpZapoctak.ViewModels
                 cmd.CommandText += " INNER JOIN team AS h ON h.id = matches.home_competitor";
                 cmd.CommandText += " INNER JOIN team AS a ON a.id = matches.away_competitor";
             }
-            cmd.CommandText += " WHERE qualification_id = -1 AND bracket_index <> -1 ORDER BY round, bracket_index";
+            cmd.CommandText += " WHERE qualification_id = -1 AND bracket_index <> -1 AND season_id = " + SportsData.season.id + " ORDER BY round, bracket_index";
 
             try
             {
@@ -585,7 +586,7 @@ namespace CSharpZapoctak.ViewModels
                     int index = int.Parse(dtRow["bracket_index"].ToString());
                     int firstTeamID = int.Parse(dtRow["bracket_first_team"].ToString());
 
-                    Bracket.Series[round][index].InsertMatch(m, firstTeamID, 1);
+                    Bracket.Series[round][index].InsertMatch(m, firstTeamID, (SportsData.season.PlayOffBestOf / 2) + 1);
 
                     if (firstTeamID != -1)
                     {
@@ -630,16 +631,13 @@ namespace CSharpZapoctak.ViewModels
             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, m, new PlayOffScheduleViewModel(ns)))).Execute(null);
         }
 
-        private void AddMatch(object param)
+        private void AddMatch(Serie s)
         {
-            IList serieAndBracket = (IList)param;
-            Serie s = (Serie)serieAndBracket[0];
-            Bracket b = (Bracket)serieAndBracket[1];
-            (int, int) roundIndex = b.GetSerieRoundIndex(s);
+            (int, int) roundIndex = Bracket.GetSerieRoundIndex(s);
 
             int matchNumber = s.Matches.Count(x => x.Played) + 1;
 
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, new PlayOffScheduleViewModel(ns), b.id, roundIndex.Item2, roundIndex.Item1, matchNumber, s.FirstTeam, s.SecondTeam))).Execute(null);
+            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, new PlayOffScheduleViewModel(ns), Bracket.id, roundIndex.Item2, roundIndex.Item1, matchNumber, s.FirstTeam, s.SecondTeam))).Execute(null);
         }
 
         private void RemoveFirstTeamFromSerie(Serie s)

@@ -332,7 +332,13 @@ namespace CSharpZapoctak.ViewModels
 
         private void CanBeEdited()
         {
-            if (isPlayOffStarted || hasWinner)
+            if (hasWinner)
+            {
+                IsEditable = false;
+                return;
+            }
+
+            if (isPlayOffStarted && !(qualificationID == -1 && bracketIndex != -1))
             {
                 IsEditable = false;
                 return;
@@ -934,7 +940,6 @@ namespace CSharpZapoctak.ViewModels
                         ScheduleViewModel scheduleViewModel = new ScheduleViewModel(ns);
                         switch (scheduleToReturnVM)
                         {
-                            //TODO: add qualification and play-off schedules
                             case PlayerViewModel:
                                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayerViewModel(ns, ((PlayerViewModel)scheduleToReturnVM).Player))).Execute(null);
                                 break;
@@ -943,6 +948,14 @@ namespace CSharpZapoctak.ViewModels
                                 break;
                             case GroupsScheduleViewModel:
                                 scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
+                                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
+                                break;
+                            case QualificationScheduleViewModel:
+                                scheduleViewModel.CurrentViewModel = new QualificationScheduleViewModel(ns);
+                                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
+                                break;
+                            case PlayOffScheduleViewModel:
+                                scheduleViewModel.CurrentViewModel = new PlayOffScheduleViewModel(ns);
                                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                                 break;
                             default:

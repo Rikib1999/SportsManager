@@ -1,10 +1,13 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -12,16 +15,162 @@ namespace CSharpZapoctak.ViewModels
 {
     class MatchesSelectionViewModel : ViewModelBase
     {
-        //season    partOfSeason    date    time    home    score   away    goals   assists     penalties
-        public class MatchStats : IStats
+        public class MatchStats : ViewModelBase, IStats
         {
-            public string PartOfSeason { get; set; }
-            public string Date { get; set; }
-            public string Time { get; set; }
-            public string Score { get; set; }
-            public int Goals { get; set; }
-            public int Assists { get; set; }
-            public int Penalties { get; set; }
+            #region Properties
+            private string partOfSeason = "";
+            public string PartOfSeason
+            {
+                get { return partOfSeason; }
+                set
+                {
+                    partOfSeason = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private string date = "";
+            public string Date
+            {
+                get { return date; }
+                set
+                {
+                    date = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private string time = "";
+            public string Time
+            {
+                get { return time; }
+                set
+                {
+                    time = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private string score = "";
+            public string Score
+            {
+                get { return score; }
+                set
+                {
+                    score = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int goals = 0;
+            public int Goals
+            {
+                get { return goals; }
+                set
+                {
+                    goals = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int assists = 0;
+            public int Assists
+            {
+                get { return assists; }
+                set
+                {
+                    assists = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int penalties = 0;
+            public int Penalties
+            {
+                get { return penalties; }
+                set
+                {
+                    penalties = value;
+                    OnPropertyChanged();
+                }
+            }
+            #endregion
+
+            public MatchStats(Match m)
+            {
+                CalculateStats(m.id).Await();
+            }
+
+            public async Task CalculateStats(int matchID)
+            {
+                List<Task> tasks = new List<Task>();
+                tasks.Add(Task.Run(() => CountGoals(matchID)));
+                tasks.Add(Task.Run(() => CountAssists(matchID)));
+                tasks.Add(Task.Run(() => CountPenalties(matchID)));
+                await Task.WhenAll(tasks);
+            }
+            private async Task CountGoals(int matchID)
+            {
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
+                                                    "WHERE match_id = " + matchID, connection);
+                try
+                {
+                    connection.Open();
+                    Goals = (int)(long)await cmd.ExecuteScalarAsync();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            private async Task CountAssists(int matchID)
+            {
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
+                                                    "WHERE assist_player_id <> -1 AND match_id = " + matchID, connection);
+                try
+                {
+                    connection.Open();
+                    Assists = (int)(long)await cmd.ExecuteScalarAsync();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            private async Task CountPenalties(int matchID)
+            {
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM penalties " +
+                                                    "WHERE match_id = " + matchID, connection);
+                try
+                {
+                    connection.Open();
+                    Penalties = (int)(long)await cmd.ExecuteScalarAsync();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
         }
 
         public ICommand NavigateMatchCommand { get; set; }
@@ -122,17 +271,11 @@ namespace CSharpZapoctak.ViewModels
                         partOfSeason = "Qualification";
                     }
 
-                    MatchStats mStats = new MatchStats
-                    {
-                        PartOfSeason = partOfSeason,
-                        Date = m.Datetime.ToLongDateString(),
-                        Time = m.Datetime.ToShortTimeString(),
-                        Score = m.Score()
-                        /*goals
-                         assists
-                        penaties*/
-                    };
-                    m.Stats = mStats;
+                    m.Stats = new MatchStats(m);
+                    ((MatchStats)m.Stats).PartOfSeason = partOfSeason;
+                    ((MatchStats)m.Stats).Date = m.Datetime.ToLongDateString();
+                    ((MatchStats)m.Stats).Time = m.Datetime.ToShortTimeString();
+                    ((MatchStats)m.Stats).Score = m.Score();
 
                     Matches.Add(m);
                 }

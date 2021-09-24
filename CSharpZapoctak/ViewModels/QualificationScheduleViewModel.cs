@@ -257,7 +257,7 @@ namespace CSharpZapoctak.ViewModels
                 cmd.CommandText += " INNER JOIN team AS h ON h.id = matches.home_competitor";
                 cmd.CommandText += " INNER JOIN team AS a ON a.id = matches.away_competitor";
             }
-            cmd.CommandText += " WHERE qualification_id = " + b.id + " ORDER BY round, bracket_index";
+            cmd.CommandText += " WHERE qualification_id = " + b.id + " AND season_id = " + SportsData.season.id + " ORDER BY round, bracket_index";
 
             DataTable dt = new DataTable();
             dt.Load(await cmd.ExecuteReaderAsync());

@@ -63,6 +63,9 @@ namespace CSharpZapoctak.ViewModels
                 case StandingsViewModel:
                     checkedButton = "Standings";
                     break;
+                case ScheduleViewModel:
+                    checkedButton = "Schedule";
+                    break;
                 case MatchesSelectionViewModel:
                     checkedButton = "Matches";
                     break;

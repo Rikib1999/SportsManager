@@ -111,7 +111,6 @@ namespace CSharpZapoctak.ViewModels
                     CurrentCompetition.LogoPath = "";
                 }
             }
-            //TODO: SportsData.season = new Season(); needed? maybe not
         }
 
         private void LoadImage()

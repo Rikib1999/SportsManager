@@ -374,11 +374,11 @@ namespace CSharpZapoctak.ViewModels
             if (GamesPlayed != 0)
             {
                 TimeInGamePerGame = (TimeInGame / GamesPlayed / 60) + ":" + (TimeInGame / GamesPlayed % 60).ToString("00");
-                GoalsAgainstPerGame = (float)GoalsAgainst / (float)GamesPlayed;
+                GoalsAgainstPerGame = (float)Math.Round((float)GoalsAgainst / (float)GamesPlayed, 2);
             }
             TimeInGamePerGoalAgainst = GoalsAgainst != 0 ? (TimeInGame / GoalsAgainst / 60) + ":" + (TimeInGame / GoalsAgainst % 60).ToString("00") : "no goal against";
-            if (PenaltyShotsAgainst != 0) { PenaltyShotsPercentage = (float)(PenaltyShotsAgainst - PenaltyShotGoalsAgainst) / (float)PenaltyShotsAgainst * 100; }
-            if (ShootoutShotsAgainst != 0) { ShootoutShotsPercentage = (float)(ShootoutShotsAgainst - ShootoutShotGoalsAgainst) / (float)ShootoutShotsAgainst * 100; }
+            PenaltyShotsPercentage = PenaltyShotsAgainst != 0 ? (float)Math.Round((float)(PenaltyShotsAgainst - PenaltyShotGoalsAgainst) / (float)PenaltyShotsAgainst * 100, 2) : float.NaN;
+            ShootoutShotsPercentage = ShootoutShotsAgainst != 0 ? (float)Math.Round((float)(ShootoutShotsAgainst - ShootoutShotGoalsAgainst) / (float)ShootoutShotsAgainst * 100, 2) : float.NaN;
         }
 
         public async Task CountGamesPlayed(int playerID, int seasonID, int competitionID)
@@ -895,14 +895,11 @@ namespace CSharpZapoctak.ViewModels
                                 partOfSeason = "Qualification";
                             }
 
-                            MatchStats mStats = new MatchStats
-                            {
-                                PartOfSeason = partOfSeason,
-                                Date = m.Datetime.ToLongDateString(),
-                                Time = m.Datetime.ToShortTimeString(),
-                                Score = m.Score()
-                            };
-                            m.Stats = mStats;
+                            m.Stats = new MatchStats(m);
+                            ((MatchStats)m.Stats).PartOfSeason = partOfSeason;
+                            ((MatchStats)m.Stats).Date = m.Datetime.ToLongDateString();
+                            ((MatchStats)m.Stats).Time = m.Datetime.ToShortTimeString();
+                            ((MatchStats)m.Stats).Score = m.Score();
 
                             sr.Matches.Add(m);
                         }
@@ -1018,14 +1015,11 @@ namespace CSharpZapoctak.ViewModels
                                 partOfSeason = "Qualification";
                             }
 
-                            MatchStats mStats = new MatchStats
-                            {
-                                PartOfSeason = partOfSeason,
-                                Date = m.Datetime.ToLongDateString(),
-                                Time = m.Datetime.ToShortTimeString(),
-                                Score = m.Score()
-                            };
-                            m.Stats = mStats;
+                            m.Stats = new MatchStats(m);
+                            ((MatchStats)m.Stats).PartOfSeason = partOfSeason;
+                            ((MatchStats)m.Stats).Date = m.Datetime.ToLongDateString();
+                            ((MatchStats)m.Stats).Time = m.Datetime.ToShortTimeString();
+                            ((MatchStats)m.Stats).Score = m.Score();
 
                             sr.Matches.Add(m);
                         }

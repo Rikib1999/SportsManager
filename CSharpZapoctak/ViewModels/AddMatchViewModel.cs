@@ -646,7 +646,7 @@ namespace CSharpZapoctak.ViewModels
                 MessageBox.Show("Goaltender shift must last at least 1 second.", "Shift is too short", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (NewGoalieShift.EndTimeInSeconds >= duration * 60 || NewGoalieShift.StartTimeInSeconds >= duration * 60)
+            if (NewGoalieShift.EndTimeInSeconds > duration * 60 || NewGoalieShift.StartTimeInSeconds > duration * 60)
             {
                 MessageBoxResult msgResult = MessageBox.Show("Goaltender shift exceeds period duration.", "Shift exceeds period duration", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -1414,6 +1414,14 @@ namespace CSharpZapoctak.ViewModels
             GoalieRoster = goalieRoster;
         }
 
+        public ShootoutShot(int number, string side, PlayerInRoster player, PlayerInRoster goalie)
+        {
+            Number = number;
+            Side = side;
+            Player = player;
+            Goalie = goalie;
+        }
+
         private int number;
         public int Number
         {
@@ -2008,7 +2016,7 @@ namespace CSharpZapoctak.ViewModels
             get { return shootoutSeries; }
             set
             {
-                if (value == Shootout.Count)
+                if (value == (Shootout.Count / 2) + 1)
                 {
                     shootoutSeries = value;
                 }
@@ -3502,15 +3510,8 @@ namespace CSharpZapoctak.ViewModels
                 {
                     switch (scheduleToReturnVM)
                     {
-                        //TODO: add qualification and play-off schedules, but they cannot be not played (?)
-                        /*case PlayerViewModel:
-                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayerViewModel(ns, ((PlayerViewModel)scheduleToReturnVM).Player))).Execute(null);
-                            break;*/
                         case GroupsScheduleViewModel:
-                            //scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
                             scheduleViewModel.GroupsSet = true;
-                            //scheduleViewModel.QualificationSet = false;
-                            //scheduleViewModel.PlayOffSet = false;
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
                         default:
@@ -4061,27 +4062,15 @@ namespace CSharpZapoctak.ViewModels
                 {
                     switch (scheduleToReturnVM)
                     {
-                        /*case PlayerViewModel:
-                            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayerViewModel(ns, ((PlayerViewModel)scheduleToReturnVM).Player))).Execute(null);
-                            break;*/
                         case GroupsScheduleViewModel:
-                            //scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
                             scheduleViewModel.GroupsSet = true;
-                            //scheduleViewModel.QualificationSet = false;
-                            //scheduleViewModel.PlayOffSet = false;
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
                         case QualificationScheduleViewModel:
-                            //scheduleViewModel.CurrentViewModel = new QualificationScheduleViewModel(ns);
-                            //scheduleViewModel.GroupsSet = false;
                             scheduleViewModel.QualificationSet = true;
-                            //scheduleViewModel.PlayOffSet = false;
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
                         case PlayOffScheduleViewModel:
-                            //scheduleViewModel.CurrentViewModel = new PlayOffScheduleViewModel(ns);
-                            //scheduleViewModel.GroupsSet = false;
-                            //scheduleViewModel.QualificationSet = false;
                             scheduleViewModel.PlayOffSet = true;
                             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                             break;
@@ -4167,6 +4156,8 @@ namespace CSharpZapoctak.ViewModels
             PeriodCount = 3;
             PeriodDuration = 10;
 
+            List<Goal> allGoals = new List<Goal>();
+
             foreach (Period p in Periods)
             {
                 bool homeTimeOut = false;
@@ -4211,7 +4202,7 @@ namespace CSharpZapoctak.ViewModels
                                 p.Goals.Last().Assist = new PlayerInRoster { id = -1 };
                             }
                             //if no assist, penalty shot = 10%, own goal = 3%
-                            if (p.Goals.Last().Assist.id > 0)
+                            if (p.Goals.Last().Assist.id == -1)
                             {
                                 int probability = r.Next(1, 100);
                                 if (probability <= 10)
@@ -4223,6 +4214,8 @@ namespace CSharpZapoctak.ViewModels
                                     p.Goals.Last().OwnGoal = true;
                                 }
                             }
+
+                            allGoals.Add(p.Goals.Last());
                         }
                         else if (eventType <= 90)
                         {
@@ -4311,9 +4304,104 @@ namespace CSharpZapoctak.ViewModels
                     Player = AwayRoster.Where(x => x.id == awayGoalieID).First(),
                     StartMinute = 0,
                     StartSecond = 0,
-                    EndMinute = 9,
-                    EndSecond = 59
+                    EndMinute = 10,
+                    EndSecond = 0
                 });
+            }
+
+            int homeScore = allGoals.Count(x => x.Side == "Home" && !x.OwnGoal) + allGoals.Count(x => x.Side == "Away" && x.OwnGoal);
+            int awayScore = allGoals.Count(x => x.Side == "Away" && !x.OwnGoal) + allGoals.Count(x => x.Side == "Home" && x.OwnGoal);
+            //if it is a tie
+            if (homeScore == awayScore)
+            {
+                IsShootout = true;
+
+                //simulate shootout
+                bool end = false;
+                string firstSide = "Home";
+                string secondSide = "Away";
+                if (r.Next() % 2 == 0)
+                {
+                    firstSide = "Away";
+                    secondSide = "Home";
+                }
+                int firstGoals = 0;
+                int secondGoals = 0;
+                int number = 1;
+
+                while (!end)
+                {
+                    ShootoutShot firstShot = new ShootoutShot(number, firstSide,
+                        firstSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
+                        firstSide == "Home" ? HomeRoster.Where(x => x.id == homeGoalieID).First() : AwayRoster.Where(x => x.id == awayGoalieID).First());
+                    ShootoutShot secondShot = new ShootoutShot(number, secondSide,
+                        secondSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
+                        secondSide == "Home" ? HomeRoster.Where(x => x.id == homeGoalieID).First() : AwayRoster.Where(x => x.id == awayGoalieID).First());
+
+                    if (Shootout.Count < 2)
+                    {
+                        //simulate both shots
+                        firstShot.WasGoal = r.Next() % 2 == 0 ? true : false;
+                        if (firstShot.WasGoal) { firstGoals++; }
+                        Shootout.Add(firstShot);
+                        secondShot.WasGoal = r.Next() % 2 == 0 ? true : false;
+                        if (secondShot.WasGoal) { secondGoals++; }
+                        Shootout.Add(secondShot);
+                    }
+                    else if (Shootout.Count < 4)
+                    {
+                        //simulate both shots
+                        firstShot.WasGoal = r.Next() % 2 == 0 ? true : false;
+                        if (firstShot.WasGoal) { firstGoals++; }
+                        Shootout.Add(firstShot);
+                        secondShot.WasGoal = r.Next() % 2 == 0 ? true : false;
+                        if (secondShot.WasGoal) { secondGoals++; }
+                        Shootout.Add(secondShot);
+
+                        //check for win (if goal difference is 2 -> end)
+                        if (Math.Abs(firstGoals - secondGoals) == 2) { end = true; }
+                    }
+                    else if (Shootout.Count < 6)
+                    {
+                        int firstGoalsBefore = firstGoals;
+
+                        //simulate first shot
+                        firstShot.WasGoal = r.Next() % 2 == 0 ? true : false;
+                        if (firstShot.WasGoal) { firstGoals++; }
+                        Shootout.Add(firstShot);
+
+                        //check for win
+                        //if first is losing by 1 goal and missed the shot
+                        if (firstGoalsBefore == secondGoals - 1 && !firstShot.WasGoal)
+                        { end = true; continue; }
+                        //if first is winning by 1 goal and shots a goal
+                        if (firstGoalsBefore == secondGoals + 1 && firstShot.WasGoal)
+                        { end = true; continue; }
+
+                        //simulate second shot
+                        secondShot.WasGoal = r.Next() % 2 == 0 ? true : false;
+                        if (secondShot.WasGoal) { secondGoals++; }
+                        Shootout.Add(secondShot);
+
+                        //check for win
+                        if (firstGoals != secondGoals) { end = true; }
+                    }
+                    else
+                    {
+                        //simulate both shots
+                        firstShot.WasGoal = r.Next() % 2 == 0 ? true : false;
+                        if (firstShot.WasGoal) { firstGoals++; }
+                        Shootout.Add(firstShot);
+                        secondShot.WasGoal = r.Next() % 2 == 0 ? true : false;
+                        if (secondShot.WasGoal) { secondGoals++; }
+                        Shootout.Add(secondShot);
+
+                        //check for win
+                        if (firstGoals != secondGoals) { end = true; }
+                    }
+                    number++;
+                }
+                ShootoutSeries = (Shootout.Count / 2) + 1;
             }
         }
         #endregion

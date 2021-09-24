@@ -169,7 +169,7 @@ namespace CSharpZapoctak.ViewModels
                                 Overview = m.Overview(),
                                 Datetime = m.Datetime.ToString("g"),
                                 HomeScore = m.HomeTeam.Name + "   " + m.HomeScore,
-                                AwayScore = m.AwayScore + "   " + m.AwayTeam.Name
+                                AwayScore = m.AwayScore + m.ResultType() + "   " + m.AwayTeam.Name
                             };
                             if (!m.Played)
                             {

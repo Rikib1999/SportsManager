@@ -87,14 +87,8 @@
                                                                     </ItemsControl.ItemTemplate>
                                                                 </ItemsControl>
 
-                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=roundSource}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" Visibility="{Binding AddMatchVisibility}">
-                                                                    <Button.CommandParameter>
-                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                            <Binding Path="."/>
-                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                        </MultiBinding>
-                                                                    </Button.CommandParameter>
-                                                                </Button>
+                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=roundSource}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add"
+                                                                        Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" Visibility="{Binding AddMatchVisibility}" CommandParameter="{Binding}"/>
 
                                                                 <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=roundSource}" Visibility="{Binding RemoveFirstTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                                                             </StackPanel>
@@ -124,14 +118,8 @@
                                                                     </ItemsControl.ItemTemplate>
                                                                 </ItemsControl>
 
-                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=roundSource}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" Visibility="{Binding AddMatchVisibility}">
-                                                                    <Button.CommandParameter>
-                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                            <Binding Path="."/>
-                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                        </MultiBinding>
-                                                                    </Button.CommandParameter>
-                                                                </Button>
+                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=roundSource}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match"
+                                                                        Command="{Binding Path=DataContext.AddMatchCommand, ElementName=roundSource}" Visibility="{Binding AddMatchVisibility}" CommandParameter="{Binding}"/>
 
                                                                 <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=roundSource}" Visibility="{Binding RemoveSecondTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=roundSource}" CommandParameter="{Binding}"/>
                                                             </StackPanel>

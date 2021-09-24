@@ -181,5 +181,13 @@ namespace CSharpZapoctak.Models
         {
             return Datetime.ToString("g") + " " + HomeTeam.Name + " " + Score() + " " + AwayTeam.Name;
         }
+
+        public string ResultType()
+        {
+            if (Overtime) { return " ot"; }
+            if (Shootout) { return " so"; }
+            if (Forfeit) { return " ff"; }
+            return "";
+        }
     }
 }

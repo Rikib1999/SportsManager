@@ -9,11 +9,13 @@ namespace CSharpZapoctak.ViewModels
     class NavigationBarViewModel : ViewModelBase
     {
         public Dictionary<string, bool> AreButtonsChecked { get; set; } = new Dictionary<string, bool>() {
+            { "Sports", false },
             { "CompetitionsSelection", false },
             { "Competition", false },
             { "SeasonsSelection", false },
             { "Season", false },
             { "Standings", false },
+            { "Schedule", false },
             { "Matches", false },
             { "Teams", false },
             { "Players", false },
@@ -24,6 +26,7 @@ namespace CSharpZapoctak.ViewModels
             { "Competition", Visibility.Visible },
             { "Season", Visibility.Visible },
             { "Standings", Visibility.Visible },
+            { "Schedule", Visibility.Visible },
             { "Teams", Visibility.Visible },
             { "Goalies", Visibility.Visible }
         };
@@ -45,10 +48,6 @@ namespace CSharpZapoctak.ViewModels
 
         public NavigationBarViewModel(NavigationStore ns, string buttonName, Dictionary<string, Visibility> buttonsVisibilities)
         {
-            /*if (SportsData.sport.name == "tennis")
-            {
-                //tennis player view = navigate command
-            }*/
             NavigateSportsCommand = new NavigateCommand<SportsSelectionViewModel>(ns, () => new SportsSelectionViewModel(ns));
             NavigateCompetitionsCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionsSelectionViewModel(ns)));
             NavigateCompetitionDetailCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionViewModel(ns)));
