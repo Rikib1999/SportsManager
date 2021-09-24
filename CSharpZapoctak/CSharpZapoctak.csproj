@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\create_database_sports_manager.sql" />
     <None Remove="Resources\female.png" />
     <None Remove="Resources\male.png" />
     <None Remove="Resources\SportManager_logo_32x32.png" />
