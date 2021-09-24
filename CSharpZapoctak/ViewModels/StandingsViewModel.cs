@@ -1,6 +1,5 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
-using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
@@ -509,11 +508,10 @@ namespace CSharpZapoctak.ViewModels
                 {
                     if (pg.Value.Count > 1)
                     {
-                        //TODO: stats only from H2H matches!
                         ObservableCollection<Team> sortedTeams = MergeSort(pg.Value, false);
                         foreach (Team t in sortedTeams)
                         {
-                            g.Teams.Remove(t);//dont remove, sort!
+                            g.Teams.Remove(t);
                         }
                         for (int i = 0; i <= g.Teams.Count; i++)
                         {

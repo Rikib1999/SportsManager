@@ -137,27 +137,6 @@ namespace CSharpZapoctak.ViewModels
                 CalculateStats(s.id).Await();
             }
 
-            /*TODO:
-            public SeasonStats(ObservableCollection<Season> seasons)
-            {
-                foreach (Season s in seasons)
-                {
-                    Matches += ((SeasonStats)s.Stats).Matches;
-                    Teams += ((SeasonStats)s.Stats).Teams;
-                    Players += ((SeasonStats)s.Stats).Players;
-                    Goals += ((SeasonStats)s.Stats).Goals;
-                    Assists += ((SeasonStats)s.Stats).Assists;
-                    Penalties += ((SeasonStats)s.Stats).Penalties;
-                }
-
-                if (Matches != 0)
-                {
-                    GoalsPerGame = (float)Math.Round((float)Goals / (float)Matches, 2);
-                    AssistsPerGame = (float)Math.Round((float)Assists / (float)Matches, 2);
-                    PenaltiesPerGame = (float)Math.Round((float)Penalties / (float)Matches, 2);
-                }
-            }*/
-
             public async Task CalculateStats(int seasonID)
             {
                 List<Task> tasks = new List<Task>();
@@ -355,9 +334,6 @@ namespace CSharpZapoctak.ViewModels
 
                 Seasons = new ObservableCollection<Season>();
 
-                //name  format  winner  #matches    #teams      #players    goals   goals/g     assists     assists/g   penalties   penalties/g
-                //name  format  winner  #matches    #teams      #players    goals   goals/g     assists     assists/g   yellow cards   red cards
-                //name  format  winner  #matches    #players    #sets       service%            breaks      ...
                 foreach (DataRow row in dataTable.Rows)
                 {
                     Competition c = new Competition();
@@ -393,14 +369,6 @@ namespace CSharpZapoctak.ViewModels
                     s.Stats = new SeasonStats(s); ;
                     Seasons.Add(s);
                 }
-                /*
-                Season all = new Season
-                {
-                    id = (int)EntityState.NotSelected,
-                    Name = "All (" + Seasons.Count + ")",
-                };
-                all.Stats = new SeasonStats(Seasons);
-                Seasons.Add(all);*/
             }
             catch (Exception)
             {

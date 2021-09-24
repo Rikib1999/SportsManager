@@ -175,6 +175,7 @@ namespace CSharpZapoctak.Models
 
         public void InsertMatch(Match m, int firstTeam, int firstToWin)
         {
+            //set teams
             if (FirstTeam.id == -1 || SecondTeam.id == -1)
             {
                 if (m.HomeTeam.id == firstTeam)
@@ -189,6 +190,7 @@ namespace CSharpZapoctak.Models
                 }
             }
 
+            //add match
             if (Matches.Count == 0 || Matches[Matches.Count - 1].serieNumber < m.serieNumber)
             {
                 Matches.Add(m);
@@ -236,6 +238,7 @@ namespace CSharpZapoctak.Models
                 }
             }
 
+            //check winner
             int firstWins = 0;
             int secondWins = 0;
             foreach (Match match in matches)

@@ -28,7 +28,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 sName = " - " + sName;
             }
-            Header = char.ToUpper(SportsData.sport.name[0]) + SportsData.sport.name.Substring(1) + cName + sName;
+            Header = char.ToUpper(SportsData.sport.name[0]) + SportsData.sport.name.Substring(1).Replace('_', '-') + cName + sName;
         }
 
         public SportViewModel(NavigationStore navigationStore, ViewModelBase newViewModel)

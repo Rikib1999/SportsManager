@@ -966,7 +966,7 @@ namespace CSharpZapoctak.ViewModels
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id, name" +/*, info, status, country, date_of_creation*/ " FROM team", connection);
+            MySqlCommand cmd = new MySqlCommand("SELECT id, name FROM team", connection);
 
             try
             {
@@ -981,13 +981,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         id = int.Parse(tm["id"].ToString()),
                         Name = tm["name"].ToString(),
-                        //Info = tm["info"].ToString(),
-                        //Status = bool.Parse(tm["status"].ToString()),
-                        //DateOfCreation = DateTime.Parse(tm["date_of_creation"].ToString())
                     };
-
-                    //string country = tm["country"].ToString();
-                    //t.Country = Countries.First(x => x.CodeTwo == country);
 
                     string[] imgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + t.id + ".*");
                     if (imgPath.Length != 0)

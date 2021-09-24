@@ -50,30 +50,15 @@ namespace CSharpZapoctak.Models
             Name = name;
             SeasonID = seasonID;
 
-            Series = new ObservableCollection<List<Serie>>();
-            int pow = 1;
-            for (int i = 0; i < rounds; i++)
-            {
-                List<Serie> round = new List<Serie>();
-                for (int j = 0; j < pow; j++)
-                {
-                    Serie s = new Serie();
-                    round.Add(s);
-                    if (i == 0)
-                    {
-                        s.PostLineVisibility = Visibility.Collapsed;
-                    }
-                    if (i == rounds - 1)
-                    {
-                        s.PreLineVisibility = Visibility.Collapsed;
-                    }
-                }
-                Series.Insert(0, round);
-                pow *= 2;
-            }
+            CreateBRacket(rounds);
         }
 
         public Bracket(int rounds)
+        {
+            CreateBRacket(rounds);
+        }
+
+        private void CreateBRacket(int rounds)
         {
             Series = new ObservableCollection<List<Serie>>();
             int pow = 1;
@@ -141,6 +126,7 @@ namespace CSharpZapoctak.Models
         {
             if (round < Series.Count)
             {
+                //if has winner
                 if (Series[round][index].winner.id != -1)
                 {
                     return true;
@@ -247,6 +233,7 @@ namespace CSharpZapoctak.Models
             CollapseAllRemoveButton(round - 1, (index * 2) + 1);
         }
 
+        //sets advancing team of the serie after serie modification
         public void ResetSeriesAdvanced(int round, int index, int position)
         {
             if (round == Series.Count) { return; }

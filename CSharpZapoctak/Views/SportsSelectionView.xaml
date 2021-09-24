@@ -17,14 +17,14 @@
         <Border Grid.Row="1" Background="Black" Width="auto" Margin="10,0" />
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <WrapPanel RenderOptions.EdgeMode="Aliased" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border BorderBrush="Black" BorderThickness="1" Margin="10">
+                <!--<Border BorderBrush="Black" BorderThickness="1" Margin="10">
                     <Button Command="{Binding NavigateSportCommand}" CommandParameter="{Binding Football}" Background="LightGreen">
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Football" TextAlignment="Center"/>
                             <Image Source="/Resources/football.png" Width="200"/>
                         </StackPanel>
                     </Button>
-                </Border>
+                </Border>-->
                 <Border BorderBrush="Black" BorderThickness="1" Margin="10">
                     <Button Command="{Binding NavigateSportCommand}" CommandParameter="{Binding IceHockey}" Background="AliceBlue">
                         <StackPanel Orientation="Vertical">
@@ -33,14 +33,14 @@
                         </StackPanel>
                     </Button>
                 </Border>
-                <Border BorderBrush="Black" BorderThickness="1" Margin="10">
+                <!--<Border BorderBrush="Black" BorderThickness="1" Margin="10">
                     <Button Command="{Binding NavigateSportCommand}" CommandParameter="{Binding Tennis}" Background="Coral">
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Tennis" TextAlignment="Center"/>
                             <Image Source="/Resources/tennis.png" Width="200"/>
                         </StackPanel>
                     </Button>
-                </Border>
+                </Border> -->
                 <Border BorderBrush="Black" BorderThickness="1" Margin="10">
                     <Button Command="{Binding NavigateSportCommand}" CommandParameter="{Binding Floorball}" Background="CornflowerBlue">
                         <StackPanel Orientation="Vertical">

@@ -6,32 +6,32 @@ namespace CSharpZapoctak.ViewModels
 {
     public class SportsSelectionViewModel : ViewModelBase
     {
+        /*
         private Sport football = new Sport { name = "football" };
-
         public Sport Football
         {
             get { return football; }
             set { football = value; }
         }
+        */
 
-        private Sport iceHockey = new Sport { name = "iceHockey" };
-
+        private Sport iceHockey = new Sport { name = "ice_hockey" };
         public Sport IceHockey
         {
             get { return iceHockey; }
             set { iceHockey = value; }
         }
-
+        
+        /*
         private Sport tennis = new Sport { name = "tennis" };
-
         public Sport Tennis
         {
             get { return tennis; }
             set { tennis = value; }
         }
+        */
 
         private Sport floorball = new Sport { name = "floorball" };
-
         public Sport Floorball
         {
             get { return floorball; }

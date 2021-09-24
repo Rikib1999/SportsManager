@@ -605,7 +605,6 @@ namespace CSharpZapoctak.ViewModels
 
         private void AddNewPlayer(object param)
         {
-            //TODO:
             IList teamSeasonIDViewModel = param as IList;
             int teamID = ((Team)teamSeasonIDViewModel[0]).id;
             int seasonID = (int)teamSeasonIDViewModel[1];

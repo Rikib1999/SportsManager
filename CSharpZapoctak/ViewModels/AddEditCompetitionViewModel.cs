@@ -243,6 +243,7 @@ namespace CSharpZapoctak.ViewModels
                         }
                     }
 
+                    SportsData.competition = CurrentCompetition;
                     new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionViewModel(ns))).Execute(null);
                 }
                 catch (Exception)

@@ -12,7 +12,7 @@
         <converters:ObjectsConverter x:Key="ObjectsConverter"/>
     </UserControl.Resources>
     <VirtualizingStackPanel Orientation="Vertical">
-        <!--
+        <!-- RENDERING AND SHOWING ALL BRACKETS AT ONCE
         <ItemsControl ItemsSource="{Binding Brackets}" Name="bracketSource">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>

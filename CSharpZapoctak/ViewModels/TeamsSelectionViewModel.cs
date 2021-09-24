@@ -144,7 +144,6 @@ namespace CSharpZapoctak.ViewModels
 
                 Teams = new ObservableCollection<Team>();
 
-                //logo      name      status      country     dateOfCreation      GP  W   WO  T   LO  L   G   GA  GD  A   PM  
                 foreach (DataRow row in dataTable.Rows)
                 {
                     Team t = new Team

@@ -17,6 +17,7 @@ namespace CSharpZapoctak.Commands
 
         public override void Execute(object parameter)
         {
+            //sets current competition/season
             SportsData.Set(parameter);
             _navigationStore.CurrentViewModel = _createViewModel();
         }

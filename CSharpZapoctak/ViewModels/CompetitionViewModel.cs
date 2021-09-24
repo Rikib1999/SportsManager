@@ -156,7 +156,6 @@ namespace CSharpZapoctak.ViewModels
                                 cmd = new MySqlCommand("DELETE FROM team WHERE id = " + teamID, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
-                                //TODO: delete photo after transaction!
                             }
                         }
                     }
@@ -196,7 +195,6 @@ namespace CSharpZapoctak.ViewModels
                                 cmd = new MySqlCommand("DELETE FROM player WHERE id = " + playerID, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
-                                //TODO: delete photo after transaction!
                             }
                         }
                     }

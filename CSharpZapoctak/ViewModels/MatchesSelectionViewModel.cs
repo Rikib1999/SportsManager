@@ -232,9 +232,6 @@ namespace CSharpZapoctak.ViewModels
 
                 Matches = new ObservableCollection<Match>();
 
-                //season    partOfSeason    date    time    home    score   away    goals   assists     penalties
-                //season    partOfSeason    date    time    home    score   away    goals   assists     yellow cards   red cards
-                //season    partOfSeason    date    time    home    score   away    #sets   service%    breaks  ...
                 foreach (DataRow row in dataTable.Rows)
                 {
                     Competition c = new Competition();

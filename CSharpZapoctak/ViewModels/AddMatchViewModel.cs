@@ -1717,7 +1717,6 @@ namespace CSharpZapoctak.ViewModels
                 }
 
                 ShootoutSeries = 0;
-                //TODO:
                 OnPropertyChanged();
             }
         }
@@ -1769,7 +1768,6 @@ namespace CSharpZapoctak.ViewModels
                 }
 
                 ShootoutSeries = 0;
-                //TODO:
                 OnPropertyChanged();
             }
         }
@@ -1967,7 +1965,6 @@ namespace CSharpZapoctak.ViewModels
                         }
                     }
                 }
-                //TODO:
                 OnPropertyChanged();
             }
         }
@@ -2310,7 +2307,6 @@ namespace CSharpZapoctak.ViewModels
             LoadStrengths();
             PenaltyReasons = SportsData.LoadPenaltyReasons();
             PenaltyTypes = SportsData.LoadPenaltyTypes();
-            //TODO: set different overtime duration
         }
 
         //ADD for bracket
@@ -2336,7 +2332,6 @@ namespace CSharpZapoctak.ViewModels
             LoadStrengths();
             PenaltyReasons = SportsData.LoadPenaltyReasons();
             PenaltyTypes = SportsData.LoadPenaltyTypes();
-            //TODO: set different overtime duration
         }
 
         //EDIT
@@ -2399,8 +2394,6 @@ namespace CSharpZapoctak.ViewModels
                 //load shootout
                 LoadExistingShootout(m.id);
             }
-
-            //TODO: set different overtime duration, load from db
         }
         #endregion
 
@@ -2899,6 +2892,7 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Validating
+        //group all events together and sorts them by time
         private void Process()
         {
             if (PeriodCount == 0)
@@ -3066,6 +3060,7 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        //sets event properties according to state they happened in, chcecks penalty end collisions with events
         private void Check()
         {
             SaveButtonVisibility = Visibility.Visible;
@@ -3325,7 +3320,7 @@ namespace CSharpZapoctak.ViewModels
 
                     foreach (Event collidingE in Events)
                     {
-                        //  all events except period end                    occured at the same time
+                        //  all events except period end          &&        occured at the same time
                         if (collidingE.Stat.GetType() != typeof(Period) && collidingE.Stat.TimeInSeconds == fullPenalties[i].endTime)
                         {
                             penaltyEnd.SwapEvents.Add(new SwapEvent(collidingE));
