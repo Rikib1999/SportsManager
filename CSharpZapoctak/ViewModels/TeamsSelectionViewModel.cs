@@ -61,11 +61,11 @@ namespace CSharpZapoctak.ViewModels
             public new async Task CalculateStats(int teamID)
             {
                 List<Task> tasks = new List<Task>();
-                tasks.Add(Task.Run(() => CountMatches(teamID)));
-                tasks.Add(Task.Run(() => CountGoals(teamID)));
+                tasks.Add(Task.Run(() => CountMatches(teamID, int.MaxValue)));
+                tasks.Add(Task.Run(() => CountGoals(teamID, int.MaxValue)));
                 tasks.Add(Task.Run(() => CountAssists(teamID)));
-                tasks.Add(Task.Run(() => CountGoalsAgainst(teamID)));
-                tasks.Add(Task.Run(() => CountPenaltyMinutes(teamID)));
+                tasks.Add(Task.Run(() => CountGoalsAgainst(teamID, int.MaxValue)));
+                tasks.Add(Task.Run(() => CountPenaltyMinutes(teamID, int.MaxValue)));
                 await Task.WhenAll(tasks);
                 GoalDifference = Goals - GoalsAgainst;
             }

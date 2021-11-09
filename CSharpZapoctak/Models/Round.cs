@@ -80,6 +80,5 @@ namespace CSharpZapoctak.Models
                 OnPropertyChanged();
             }
         }
-
     }
 }
