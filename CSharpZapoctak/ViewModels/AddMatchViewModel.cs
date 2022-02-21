@@ -1,6 +1,7 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
 using CSharpZapoctak.Stores;
+using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -1608,7 +1609,7 @@ namespace CSharpZapoctak.ViewModels
         #region Properties
 
         #region DateTime
-        private DateTime matchDate = DateTime.Now;
+        private DateTime matchDate = DateTime.Today;
         public DateTime MatchDate
         {
             get { return matchDate; }
@@ -2251,6 +2252,33 @@ namespace CSharpZapoctak.ViewModels
                 return notPlayedSaveCommand;
             }
         }
+
+        private ICommand exportGamesheetCommand;
+        public ICommand ExportGamesheetCommand
+        {
+            get
+            {
+                if (exportGamesheetCommand == null)
+                {
+                    exportGamesheetCommand = new RelayCommand(param => ExportGamesheet());
+                }
+                return exportGamesheetCommand;
+            }
+        }
+
+        private ICommand loadGamesheetCommand;
+        public ICommand LoadGamesheetCommand
+        {
+            get
+            {
+                if (loadGamesheetCommand == null)
+                {
+                    loadGamesheetCommand = new RelayCommand(param => LoadGamesheet());
+                }
+                return loadGamesheetCommand;
+            }
+        }
+
         #endregion
 
         #region MatchEvents
@@ -2373,6 +2401,10 @@ namespace CSharpZapoctak.ViewModels
             PenaltyReasons = SportsData.LoadPenaltyReasons();
             PenaltyTypes = SportsData.LoadPenaltyTypes();
 
+            //set teams
+            HomeTeam = AvailableTeamsHome.First(x => x.id == m.HomeTeam.id);
+            AwayTeam = AvailableTeamsAway.First(x => x.id == m.AwayTeam.id);
+
             if (m.Played)
             {
                 Played = m.Played;
@@ -2383,9 +2415,7 @@ namespace CSharpZapoctak.ViewModels
                 PeriodCount = m.Periods;
                 PeriodDuration = m.PeriodDuration;
 
-                //set teams, rosters
-                HomeTeam = AvailableTeamsHome.First(x => x.id == m.HomeTeam.id);
-                AwayTeam = AvailableTeamsAway.First(x => x.id == m.AwayTeam.id);
+                //set rosters
                 LoadExistingRosters(m.id);
 
                 //load all period events
@@ -2614,7 +2644,6 @@ namespace CSharpZapoctak.ViewModels
                 connection.Open();
                 DataTable dataTable = new DataTable();
                 dataTable.Load(cmd.ExecuteReader());
-                connection.Close();
 
                 qualificationID = int.Parse(dataTable.Rows[0]["qualification_id"].ToString());
                 bracketIndex = int.Parse(dataTable.Rows[0]["bracket_index"].ToString());
@@ -2888,6 +2917,38 @@ namespace CSharpZapoctak.ViewModels
                     connection.Close();
                 }
             }
+        }
+
+        private void LoadGamesheet()
+        {
+            //TODO:
+            if (HomeTeam == null)
+            {
+                MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (AwayTeam == null)
+            {
+                MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            //warning: all filled data will be overwriten
+            if (MessageBox.Show("Warning: All filled data will be overwriten. Do you wish to continue?", "Overwrite data", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            //select file (png, jpg, pdf?)
+            //incorrect file
+
+            //run python script(s?) on it
+
+            //retrieve results
+
+            //validate results
+
+            //load data
         }
         #endregion
 
@@ -3428,6 +3489,97 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Saving
+        private void ExportGamesheet()
+        {
+            if (HomeTeam == null)
+            {
+                MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (AwayTeam == null)
+            {
+                MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            //load excel file
+            string tempPath = System.IO.Path.GetTempFileName();
+            System.IO.File.WriteAllBytes(tempPath, Properties.Resources.gamesheet);
+            Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
+            Microsoft.Office.Interop.Excel._Workbook excelWorkbook;
+            excelWorkbook = excelApplication.Workbooks.Open(tempPath);
+
+            //fill data, datetime, teams, rosters
+            Microsoft.Office.Interop.Excel.Worksheet gamesheet = (Microsoft.Office.Interop.Excel.Worksheet)excelWorkbook.Worksheets[1];
+
+            //match info
+            gamesheet.Range["G" + 8].Value = SportsData.competition.Name;
+            gamesheet.Range["J" + 9].Value = SportsData.season.Name;
+
+            if (serieMatchNumber < 1)
+            {
+                gamesheet.Range["J" + 10].Value = "Group";
+            }
+            else if (qualificationID > 0)
+            {
+                gamesheet.Range["J" + 10].Value = "Qualification";
+            }
+            else
+            {
+                gamesheet.Range["J" + 10].Value = "Play-off";
+            }
+
+            //teams
+            gamesheet.Range["A" + 3].Value = HomeTeam.Name;
+            gamesheet.Range["G" + 3].Value = AwayTeam.Name;
+
+            //datetime
+            gamesheet.Range["C" + 1].Value = MatchDateTime.ToString("d");
+            gamesheet.Range["I" + 1].Value = MatchDateTime.ToString("HH:mm");
+
+            //rosters
+            int row;
+            for (int i = 0; i < HomePlayers.Count; i++)
+            {
+                row = i + 18;
+                //number
+                gamesheet.Range["A" + row].Value = HomePlayers[i].Number;
+                //name
+                gamesheet.Range["C" + row].Value = HomePlayers[i].Name;
+            }
+            for (int i = 0; i < AwayPlayers.Count; i++)
+            {
+                row = i + 18;
+                //number
+                gamesheet.Range["L" + row].Value = AwayPlayers[i].Number;
+                //name
+                gamesheet.Range["N" + row].Value = AwayPlayers[i].Name;
+            }
+
+            //select path
+            string gamesheetPath = "";
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PDF Files | *.pdf";
+            saveFileDialog.DefaultExt = "pdf";
+            saveFileDialog.FileName = MatchDateTime.ToString("yyyy_MM_dd_HH_mm") + "_" + HomeTeam.Name + "_vs_" + AwayTeam.Name;
+
+            bool? result = saveFileDialog.ShowDialog();
+            if (result.ToString() != string.Empty)
+            {
+                gamesheetPath = saveFileDialog.FileName;
+
+                //export to pdf
+                try
+                {
+                    excelWorkbook.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, gamesheetPath);
+                }
+                catch (Exception) { }
+            }
+
+            excelWorkbook.Close(false);
+        }
+
         private void NotPlayedSave()
         {
             //validation

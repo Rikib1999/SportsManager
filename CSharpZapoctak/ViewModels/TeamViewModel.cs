@@ -275,10 +275,13 @@ namespace CSharpZapoctak.ViewModels
             get { return editedPlayer; }
             set
             {
-                editedPlayer = value;
-                EditedNumber = editedPlayer.Number;
-                EditedPosition = editedPlayer.Position;
-                OnPropertyChanged();
+                if (value != null)
+                {
+                    editedPlayer = value;
+                    EditedNumber = editedPlayer.Number;
+                    EditedPosition = editedPlayer.Position;
+                    OnPropertyChanged();
+                }
             }
         }
 

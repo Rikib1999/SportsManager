@@ -73,6 +73,15 @@ namespace CSharpZapoctak.ViewModels
         }
         #endregion
 
+        public PlayerStats(int gamesPlayed, int goals, int assists, int penaltyMinutes)
+        {
+            this.gamesPlayed = gamesPlayed;
+            this.goals = goals;
+            this.assists = assists;
+            this.penaltyMinutes = penaltyMinutes;
+            this.points = goals + assists;
+        }
+
         public PlayerStats(Player player, int seasonID, int competitionID)
         {
             CalculateStats(player.id, seasonID, competitionID).Await();
@@ -86,7 +95,7 @@ namespace CSharpZapoctak.ViewModels
             tasks.Add(Task.Run(() => CountAssists(playerID, seasonID, competitionID)));
             tasks.Add(Task.Run(() => CountPenaltyMinutes(playerID, seasonID, competitionID)));
             await Task.WhenAll(tasks);
-            Points = Assists + Assists;
+            Points = Goals + Assists;
         }
 
         public async Task CountGamesPlayed(int playerID, int seasonID, int competitionID)

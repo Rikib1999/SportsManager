@@ -33,7 +33,7 @@ namespace CSharpZapoctak
     public interface IStats { };
 
     /// <summary>
-    /// static data for database and current settings
+    /// Static data for database and current settings.
     /// </summary>
     public static class SportsData
     {
@@ -41,7 +41,7 @@ namespace CSharpZapoctak
         public static string UID = "root";
         public static string password = "";
 
-        public static string AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/SportsManager";
+        public static string AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/SportsManager";
         public static string ImagesPath = AppDataPath + "/Images";
         public static string ResourcesPath = "/Resources";
         public static string CompetitionLogosPath = AppDataPath + "/Images/Competition_Logos";

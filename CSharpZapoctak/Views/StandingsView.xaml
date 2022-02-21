@@ -31,7 +31,7 @@
                 <Button Grid.Column="2" Command="{Binding DeleteWinnerCommand}" Content="Delete" Width="200"/>
             </Grid>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Visibility="{Binding RoundsVisibility}" Orientation="Horizontal">
                 <TextBlock Text="After round:" TextAlignment="Left"/>
                 <ComboBox ItemsSource="{Binding Rounds}" DisplayMemberPath="Name" SelectedItem="{Binding LastRound}" Margin="10,0,0,0" HorizontalAlignment="Stretch" IsEditable="True"/>
             </StackPanel>

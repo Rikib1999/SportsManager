@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -353,7 +352,7 @@ namespace CSharpZapoctak.ViewModels
                         PlayOffBestOf = int.Parse(row["play_off_best_of"].ToString()),
                         WinnerName = row["winner"].ToString(),
                         WinnerID = int.Parse(row["winner_id"].ToString()),
-                        PlayOffStarted = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["play_off_started"].ToString())),
+                        PlayOffStarted = Convert.ToBoolean(int.Parse(row["play_off_started"].ToString())),
                         PointsForWin = int.Parse(row["points_for_W"].ToString()),
                         PointsForOTWin = int.Parse(row["points_for_OW"].ToString()),
                         PointsForTie = int.Parse(row["points_for_T"].ToString()),

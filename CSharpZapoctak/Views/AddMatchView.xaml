@@ -17,7 +17,7 @@
                     <TextBlock Text="Date:" Margin="0,0,10,0"/>
                     <DatePicker Height="35" SelectedDate="{Binding MatchDate}"/>
                 </StackPanel>
-                <Button Width="50" FontSize="10" Content="Generate" Command="{Binding GenerateMatchCommand}"/>
+                <Button Width="50" Height="35" FontSize="10" Content="Generate" Command="{Binding GenerateMatchCommand}"/>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Time:" Margin="0,0,10,0"/>
                     <TextBox Height="35" Width="40" Text="{Binding MatchTimeHours}" Name="Hours" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged"/>
@@ -32,6 +32,12 @@
                 <TextBlock Text="Away team:"/>
                 <ComboBox ItemsSource="{Binding AvailableTeamsHome}" SelectedItem="{Binding HomeTeam}" DisplayMemberPath="Name" Margin="0,0,20,0"/>
                 <ComboBox ItemsSource="{Binding AvailableTeamsAway}" SelectedItem="{Binding AwayTeam}" DisplayMemberPath="Name"/>
+            </UniformGrid>
+            <Border BorderBrush="Black" BorderThickness="0.5" Margin="0,0,0,20"/>
+
+            <UniformGrid Rows="1" Margin="0,0,0,20">
+                <Button Width="240" Content="Export gamesheet" Command="{Binding ExportGamesheetCommand}"/>
+                <Button Width="240" Content="Load gamesheet" Command="{Binding LoadGamesheetCommand}"/>
             </UniformGrid>
             <Border BorderBrush="Black" BorderThickness="0.5" Margin="0,0,0,20"/>
 

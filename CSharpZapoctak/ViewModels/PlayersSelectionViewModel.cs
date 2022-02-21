@@ -39,20 +39,89 @@ namespace CSharpZapoctak.ViewModels
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT p.* " +
-                                                "FROM player_enlistment " +
-                                                "INNER JOIN player AS p ON p.id = player_id " +
-                                                "INNER JOIN seasons AS s ON s.id = season_id", connection);
-            cmd.CommandText += " WHERE player_id <> -1";
+            MySqlCommand cmd = new MySqlCommand("", connection);
+
+            ////////////////////////
+            string query = "SELECT p.* " +
+                           "FROM player_enlistment " +
+                           "INNER JOIN player AS p ON p.id = player_id " +
+                           "INNER JOIN seasons AS s ON s.id = season_id";
+            query += " WHERE player_id <> -1";
             if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
             {
-                cmd.CommandText += " AND competition_id = " + SportsData.competition.id;
+                query += " AND competition_id = " + SportsData.competition.id;
                 if (SportsData.season.id != (int)EntityState.NotSelected && SportsData.season.id != (int)EntityState.AddNew)
                 {
-                    cmd.CommandText += " AND season_id = " + SportsData.season.id;
+                    query += " AND season_id = " + SportsData.season.id;
                 }
             }
-            cmd.CommandText += " GROUP BY player_id";
+            query += " GROUP BY player_id";
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            string matchCountQuery = "SELECT player_id, COUNT(*) AS match_count " +
+                                    "FROM player_matches " +
+                                    "INNER JOIN matches ON matches.id = match_id " +
+                                    "INNER JOIN seasons ON seasons.id = matches.season_id";
+            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { matchCountQuery += " WHERE"; }
+            if (SportsData.season.id > 0) { matchCountQuery += " matches.season_id = " + SportsData.season.id; }
+            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { matchCountQuery += " AND"; }
+            if (SportsData.competition.id > 0) { matchCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            matchCountQuery += " GROUP BY player_id";
+
+            string goalCountQuery = "SELECT player_id, COUNT(*) AS goal_count " +
+                                "FROM goals " +
+                                "INNER JOIN matches ON matches.id = match_id " +
+                                "INNER JOIN seasons ON seasons.id = matches.season_id";
+            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { goalCountQuery += " WHERE"; }
+            if (SportsData.season.id > 0) { goalCountQuery += " matches.season_id = " + SportsData.season.id; }
+            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { goalCountQuery += " AND"; }
+            if (SportsData.competition.id > 0) { goalCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            goalCountQuery += " GROUP BY player_id";
+
+            string assistCountQuery = "SELECT assist_player_id, COUNT(*) AS assist_count " +
+                                "FROM goals " +
+                                "INNER JOIN matches ON matches.id = match_id " +
+                                "INNER JOIN seasons ON seasons.id = matches.season_id";
+            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { assistCountQuery += " WHERE"; }
+            if (SportsData.season.id > 0) { assistCountQuery += " matches.season_id = " + SportsData.season.id; }
+            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { assistCountQuery += " AND"; }
+            if (SportsData.competition.id > 0) { assistCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            assistCountQuery += " GROUP BY assist_player_id";
+
+            string penaltyMinutesQuery = "SELECT player_id, COALESCE(SUM(penalty_type.minutes), 0) AS penalty_minutes " +
+                                                "FROM penalties " +
+                                                "INNER JOIN matches ON matches.id = match_id " +
+                                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                                "INNER JOIN penalty_type ON penalty_type.code = penalty_type_id";
+            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { penaltyMinutesQuery += " WHERE"; }
+            if (SportsData.season.id > 0) { penaltyMinutesQuery += " matches.season_id = " + SportsData.season.id; }
+            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { penaltyMinutesQuery += " AND"; }
+            if (SportsData.competition.id > 0) { penaltyMinutesQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            penaltyMinutesQuery += " GROUP BY player_id";
+
+            string playerStatsQuery = "SELECT p.*, IFNULL(match_count, 0) AS match_count, IFNULL(goal_count, 0) AS goal_count, IFNULL(assist_count, 0) AS assist_count, IFNULL(penalty_minutes, 0) AS penalty_minutes " +
+                          "FROM player_enlistment " +
+                          "RIGHT JOIN player AS p ON p.id = player_id " +
+                          "INNER JOIN seasons AS s ON s.id = season_id";
+
+            playerStatsQuery += " LEFT JOIN (" + matchCountQuery + ") AS m ON m.player_id = p.id " +
+                                "LEFT JOIN (" + goalCountQuery + ") AS g ON g.player_id = p.id " +
+                                "LEFT JOIN (" + assistCountQuery + ") AS a ON a.assist_player_id = p.id " +
+                                "LEFT JOIN (" + penaltyMinutesQuery + ") AS pm ON pm.player_id = p.id";
+
+            playerStatsQuery += " WHERE p.id <> -1";
+            if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
+            {
+                playerStatsQuery += " AND competition_id = " + SportsData.competition.id;
+                if (SportsData.season.id != (int)EntityState.NotSelected && SportsData.season.id != (int)EntityState.AddNew)
+                {
+                    playerStatsQuery += " AND season_id = " + SportsData.season.id;
+                }
+            }
+            playerStatsQuery += " GROUP BY p.id";
+
+            cmd.CommandText = playerStatsQuery;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             try
             {
@@ -91,7 +160,8 @@ namespace CSharpZapoctak.ViewModels
                         p.PhotoPath = p.Gender == "M" ? SportsData.ResourcesPath + "\\male.png" : SportsData.ResourcesPath + "\\female.png";
                     }
 
-                    p.Stats = new PlayerStats(p, SportsData.season.id, SportsData.competition.id);
+                    //p.Stats = new PlayerStats(p, SportsData.season.id, SportsData.competition.id);
+                    p.Stats = new PlayerStats(int.Parse(row["match_count"].ToString()), int.Parse(row["goal_count"].ToString()), int.Parse(row["assist_count"].ToString()), int.Parse(row["penalty_minutes"].ToString()));
 
                     Players.Add(p);
                 }
