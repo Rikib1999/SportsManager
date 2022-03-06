@@ -9,6 +9,8 @@
   <ItemGroup>
     <None Remove="Resources\create_database_sports_manager.sql" />
     <None Remove="Resources\female.png" />
+    <None Remove="Resources\gamesheet.xlsx" />
+    <None Remove="Resources\GamesheetOCR.py" />
     <None Remove="Resources\male.png" />
     <None Remove="Resources\SportManager_logo_32x32.png" />
     <None Remove="Resources\SportsManager_logo.png" />
@@ -37,6 +39,15 @@
       <VersionMajor>2</VersionMajor>
       <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
     </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\gamesheet.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\GamesheetOCR.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

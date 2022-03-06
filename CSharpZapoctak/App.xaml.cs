@@ -4,6 +4,7 @@ using CSharpZapoctak.ViewModels;
 using MySql.Data.MySqlClient;
 using System.Data;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -40,6 +41,13 @@ namespace CSharpZapoctak
             if (!Directory.Exists(SportsData.PlayerPhotosPath))
             {
                 Directory.CreateDirectory(SportsData.PlayerPhotosPath);
+            }
+            if (!File.Exists(SportsData.PythonOCRPath))
+            {
+                FileStream f = File.Create(SportsData.PythonOCRPath);
+                f.Write(CSharpZapoctak.Properties.Resources.GamesheetOCR);
+                f.Close();
+                f.Dispose();
             }
 
             Task.Run(() => LoadCountries());

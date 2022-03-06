@@ -69,5 +69,15 @@ namespace CSharpZapoctak.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] GamesheetOCR {
+            get {
+                object obj = ResourceManager.GetObject("GamesheetOCR", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

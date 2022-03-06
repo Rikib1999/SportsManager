@@ -48,6 +48,7 @@ namespace CSharpZapoctak
         public static string SeasonLogosPath = AppDataPath + "/Images/Season_Logos";
         public static string TeamLogosPath = AppDataPath + "/Images/Team_Logos";
         public static string PlayerPhotosPath = AppDataPath + "/Images/Player_Photos";
+        public static string PythonOCRPath = AppDataPath + "/GamesheetOCR.py";
 
         public static Sport sport = new Sport { name = "" };
         public static Competition competition = new Competition();

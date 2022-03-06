@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -344,7 +345,7 @@ namespace CSharpZapoctak.ViewModels
                 MessageBox.Show("Own goal or delayed penalty goal can not be scored on penalty shot.", "Own goal or delayed penalty goal on penalty shot", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (NewGoal.TimeInSeconds >= duration * 60 || NewGoal.TimeInSeconds >= duration * 60)
+            if (NewGoal.TimeInSeconds >= duration * 60)
             {
                 MessageBoxResult msgResult = MessageBox.Show("Time exceeds period duration.", "Time exceeds period duration", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -450,7 +451,7 @@ namespace CSharpZapoctak.ViewModels
                 MessageBox.Show("Please select penalty reason and type.", "Penalty not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (NewPenalty.TimeInSeconds >= duration * 60 || NewPenalty.TimeInSeconds >= duration * 60)
+            if (NewPenalty.TimeInSeconds >= duration * 60)
             {
                 MessageBoxResult msgResult = MessageBox.Show("Time exceeds period duration.", "Time exceeds period duration", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -546,7 +547,7 @@ namespace CSharpZapoctak.ViewModels
                 MessageBox.Show("Please select player.", "Player not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (NewPenaltyShot.TimeInSeconds >= duration * 60 || NewPenaltyShot.TimeInSeconds >= duration * 60)
+            if (NewPenaltyShot.TimeInSeconds >= duration * 60)
             {
                 MessageBoxResult msgResult = MessageBox.Show("Time exceeds period duration.", "Time exceeds period duration", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -718,7 +719,7 @@ namespace CSharpZapoctak.ViewModels
                 MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (NewTimeOut.TimeInSeconds >= duration * 60 || NewTimeOut.TimeInSeconds >= duration * 60)
+            if (NewTimeOut.TimeInSeconds >= duration * 60)
             {
                 MessageBoxResult msgResult = MessageBox.Show("Time exceeds period duration.", "Time exceeds period duration", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -2562,6 +2563,7 @@ namespace CSharpZapoctak.ViewModels
 
                     roster.Add(p);
                 }
+                roster = new ObservableCollection<PlayerInRoster>(roster.OrderBy(x => x.Number));
 
                 if (side == "Home")
                 {
@@ -2921,7 +2923,6 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadGamesheet()
         {
-            //TODO:
             if (HomeTeam == null)
             {
                 MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -2939,16 +2940,559 @@ namespace CSharpZapoctak.ViewModels
                 return;
             }
 
-            //select file (png, jpg, pdf?)
-            //incorrect file
+            //select file (png, jpg)
+            string gamesheetPath = "";
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Pictures (*.jpg;*.png)|*.jpg;*.png";
+            openFileDialog.DefaultExt = ".png";
 
-            //run python script(s?) on it
+            bool? result = openFileDialog.ShowDialog();
+            if (result.ToString() != string.Empty)
+            {
+                gamesheetPath = openFileDialog.FileName;
+            }
+
+            //run python script on it
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.RedirectStandardInput = true;
+            cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.UseShellExecute = false;
+            cmd.Start();
+
+            cmd.StandardInput.WriteLine("py " + SportsData.PythonOCRPath + " " + gamesheetPath + " " + HomePlayers.Count + " " + AwayPlayers.Count);
+            cmd.StandardInput.Flush();
+            cmd.StandardInput.Close();
+            cmd.WaitForExit();
+            string output = cmd.StandardOutput.ReadToEnd();
 
             //retrieve results
+            output = output.Replace("[", string.Empty);
+            output = output.Replace("'", string.Empty);
+            output = output.Replace("]", string.Empty);
 
-            //validate results
+            string[] data = output.Split("END", StringSplitOptions.RemoveEmptyEntries).Skip(1).ToArray();
+            Array.Resize(ref data, data.Length - 1);
 
-            //load data
+            List<string> errorList = new List<string>();
+
+            //MATCH INFO
+            data[0] = data[0].Replace("\r\n", string.Empty).Replace("\r", string.Empty).Replace("\n", string.Empty);
+            string[] info = data[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            Played = true;
+            PeriodCount = 0;
+            IsShootout = false;
+
+            if (info[0] == "T") { Forfeit = true; } else if (info[0] == "F" || info[0] == "empty") { Forfeit = false; } else { Forfeit = false; errorList.Add("- Match forfeited"); }
+            if (int.TryParse(info[3], out int periodCount)) { PeriodCount = periodCount; } else { PeriodCount = 0; errorList.Add("- Period count"); }
+            if (int.TryParse(info[4], out int periodDuration)) { PeriodDuration = periodDuration; } else { PeriodDuration = 0; errorList.Add("- Period duration"); }
+            if (info[1] == "T") { Overtime = true; } else if (info[1] == "F" || info[1] == "empty") { Overtime = false; } else { Overtime = false; errorList.Add("- Overtime played"); }
+            if (info[2] == "T") { IsShootout = true; } else if (info[2] == "F" || info[2] == "empty") { IsShootout = false; } else { IsShootout = false; errorList.Add("- Shootout happened"); }
+
+            //HOME ROSTER
+            data[1] = data[1].Replace(" ", string.Empty);
+            string[] homeRoster = data[1].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < homeRoster.Length; i++)
+            {
+                if (i == HomePlayers.Count) { errorList.Add("- There are more players in home roster than there are in home team"); break; }
+                if (homeRoster[i] == "T") { HomePlayers[i].Present = true; } else if (homeRoster[i] == "F" || homeRoster[i] == "empty") { HomePlayers[i].Present = false; } else { HomePlayers[i].Present = false; errorList.Add("- Home roster: player " + HomePlayers[i].Name + " #" + HomePlayers[i].Number); }
+            }
+
+            //AWAY ROSTER
+            data[2] = data[2].Replace(" ", string.Empty);
+            string[] awayRoster = data[2].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < awayRoster.Length; i++)
+            {
+                if (i == AwayPlayers.Count) { errorList.Add("- There are more players in away roster than there are in away team"); break; }
+                if (awayRoster[i] == "T") { AwayPlayers[i].Present = true; } else if (awayRoster[i] == "F" || awayRoster[i] == "empty") { AwayPlayers[i].Present = false; } else { AwayPlayers[i].Present = false; errorList.Add("- Away roster: player " + AwayPlayers[i].Name + " #" + AwayPlayers[i].Number); }
+            }
+
+            //SHOOTOUT SHOTS
+            if (IsShootout)
+            {
+                string[] shootoutShots = data[8].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+                string[] last = shootoutShots.Last().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                int emptyCellsInRow = 0;
+
+                if (!ProcessSideCell(last[0], out _)) { emptyCellsInRow++; }
+                if (!int.TryParse(last[1], out _)) { emptyCellsInRow++; }
+                if (!int.TryParse(last[2], out _)) { emptyCellsInRow++; }
+                if (!ProcessBooleanCell(last[3], out _, out _)) { emptyCellsInRow++; }
+
+                if (emptyCellsInRow > 1) { Array.Resize(ref shootoutShots, shootoutShots.Length - 1); }
+
+                ShootoutSeries = (shootoutShots.Length + 1) / 2;
+
+                for (int i = 0; i < shootoutShots.Length; i++)
+                {
+                    string[] shootoutShot = shootoutShots[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    string errorMessage = "- Shootout shot in serie " + ((i / 2) + 1);
+
+                    if (!ProcessSideCell(shootoutShot[0], out string side)) { errorList.Add(errorMessage); continue; }
+                    if (!ProcessPlayerCell(shootoutShot[1], side, out PlayerInRoster player)) { errorList.Add(errorMessage); continue; }
+                    if (!ProcessPlayerCell(shootoutShot[2], SwapSide(side), out PlayerInRoster goalie)) { errorList.Add(errorMessage); continue; }
+                    if (!ProcessBooleanCell(shootoutShot[3], out bool wasGoal, out bool emptyWasGoal) && !emptyWasGoal) { errorList.Add(errorMessage); continue; }
+
+                    //first is always home shot, then away
+                    int index = side == "Home" ? (i / 2) * 2 : (i / 2) * 2 + 1;
+
+                    Shootout[index].Number = (i / 2) + 1;
+                    Shootout[index].Side = side;
+                    Shootout[index].Player = Shootout[index].PlayerRoster.First(x => x.Number == player.Number);
+                    Shootout[index].Goalie = Shootout[index].GoalieRoster.First(x => x.Number == goalie.Number);
+                    Shootout[index].WasGoal = wasGoal;
+                }
+            }
+
+            if (PeriodCount == 0 || PeriodDuration == 0)
+            {
+                return;
+            }
+
+            //GOALS
+            string[] goals = data[3].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            string[] lastRow = goals.Last().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            int emptyCells = 0;
+
+            if (!ProcessPeriodCell(lastRow[0], out _, out _)) { emptyCells++; }
+            if (!ProcessPeriodTimeCell(lastRow[1], out _, out _)) { emptyCells++; }
+            if (!ProcessSideCell(lastRow[2], out _)) { emptyCells++; }
+            if (!int.TryParse(lastRow[3], out _)) { emptyCells++; }
+            if (!int.TryParse(lastRow[4], out _) && lastRow[4] != "X") { emptyCells++; }
+            if (!ProcessGoalTypeCell(lastRow[5], out _)) { emptyCells++; }
+
+            if (emptyCells > 1) { Array.Resize(ref goals, goals.Length - 1); }
+
+            for (int i = 0; i < goals.Length; i++)
+            {
+                //process
+                string[] goal = goals[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string errorMessage = "- Goal: ";
+
+                if (!ProcessPeriodCell(goal[0], out int period, out bool overtime)) { errorList.Add(errorMessage + "unrecognized period"); continue; }
+                errorMessage += overtime ? "Overtime" : "period " + period;
+                if (!ProcessPeriodTimeCell(goal[1], out int minute, out int second)) { errorList.Add(errorMessage + ", unrecognized time"); continue; }
+                errorMessage += ", time " + minute + ":" + second;
+                if (!ProcessSideCell(goal[2], out string side)) { errorList.Add(errorMessage + ", unrecognized side"); continue; }
+                errorMessage += ", " + side;
+                if (!ProcessPlayerCell(goal[3], side, out PlayerInRoster player)) { errorList.Add(errorMessage + ", unrecognized player"); continue; }
+                errorMessage += ", " + player.Name;
+                if (!ProcessAssistCell(goal[4], side, out PlayerInRoster assist, out bool wasAssist)) { errorList.Add(errorMessage + ", unrecognized assist"); continue; }
+                if (player.Number == assist.Number) { errorList.Add(errorMessage + ", Goal and assist can not be made by the same player."); continue; }
+                if (!ProcessGoalTypeCell(goal[5], out string goalType)) { errorList.Add(errorMessage +", unrecognized goal type"); continue; }
+
+                //insert
+                Goal g = new Goal();
+                g.Minute = minute;
+                g.Second = second;
+                g.Side = side;
+                g.Scorer = player;
+                g.Assist = wasAssist ? assist : new PlayerInRoster { id = -1 };
+                switch (goalType)
+                {
+                    case "N":
+                        break;
+                    case "PS":
+                        g.PenaltyShot = true;
+                        break;
+                    case "DP":
+                        g.DelayedPenalty = true;
+                        break;
+                    case "OG":
+                        g.OwnGoal = true;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (g.PenaltyShot || g.OwnGoal)
+                {
+                    g.Assist = new PlayerInRoster { id = -1 };
+                }
+
+                Period p = Periods.Last();
+                if (!overtime) { p = Periods[period - 1]; }
+                p.Goals.Add(g);
+            }
+
+            //sort
+            foreach (Period p in Periods)
+            {
+                if (p.Goals.Count > 0) { p.Goals.Sort(); }
+            }
+
+            //PENALTIES
+            string[] penalties = data[4].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            lastRow = penalties.Last().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            emptyCells = 0;
+
+            if (!ProcessPeriodCell(lastRow[0], out _, out _)) { emptyCells++; }
+            if (!ProcessPeriodTimeCell(lastRow[1], out _, out _)) { emptyCells++; }
+            if (!ProcessSideCell(lastRow[2], out _)) { emptyCells++; }
+            if (!int.TryParse(lastRow[3], out _)) { emptyCells++; }
+            if (!ProcessPenaltyReasonCell(lastRow[4], out _)) { emptyCells++; }
+            if (!ProcessPenaltyTypeCell(lastRow[5], out _)) { emptyCells++; }
+
+            if (emptyCells > 1) { Array.Resize(ref penalties, penalties.Length - 1); }
+
+            for (int i = 0; i < penalties.Length; i++)
+            {
+                //process
+                string[] penalty = penalties[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string errorMessage = "- Penalty: ";
+
+                if (!ProcessPeriodCell(penalty[0], out int period, out bool overtime)) { errorList.Add(errorMessage + "unrecognized period"); continue; }
+                errorMessage += overtime ? "Overtime" : "period " + period;
+                if (!ProcessPeriodTimeCell(penalty[1], out int minute, out int second)) { errorList.Add(errorMessage + ", unrecognized time"); continue; }
+                errorMessage += ", time " + minute + ":" + second;
+                if (!ProcessSideCell(penalty[2], out string side)) { errorList.Add(errorMessage + ", unrecognized side"); continue; }
+                errorMessage += ", " + side;
+                if (!ProcessPlayerCell(penalty[3], side, out PlayerInRoster player)) { errorList.Add(errorMessage + ", unrecognized player"); continue; }
+                errorMessage += ", " + player.Name;
+                if (!ProcessPenaltyReasonCell(penalty[5], out PenaltyReason penaltyReason)) { errorList.Add(errorMessage + ", unrecognized penalty reason"); continue; }
+                if (!ProcessPenaltyTypeCell(penalty[5], out PenaltyType penaltyType)) { errorList.Add(errorMessage + ", unrecognized penalty type"); continue; }
+
+                //insert
+                Penalty pn = new Penalty();
+                pn.Minute = minute;
+                pn.Second = second;
+                pn.Side = side;
+                pn.Player = player;
+                pn.PenaltyReason = penaltyReason;
+                pn.PenaltyType = penaltyType;
+
+                Period p = Periods.Last();
+                if (!overtime) { p = Periods[period - 1]; }
+                p.Penalties.Add(pn);
+            }
+
+            //sort
+            foreach (Period p in Periods)
+            {
+                if (p.Penalties.Count > 0) { p.Penalties.Sort(); }
+            }
+
+            //PENALTY SHOTS
+            string[] penaltyShots = data[5].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            lastRow = penaltyShots.Last().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            emptyCells = 0;
+
+            if (!ProcessPeriodCell(lastRow[0], out _, out _)) { emptyCells++; }
+            if (!ProcessPeriodTimeCell(lastRow[1], out _, out _)) { emptyCells++; }
+            if (!ProcessSideCell(lastRow[2], out _)) { emptyCells++; }
+            if (!int.TryParse(lastRow[3], out _)) { emptyCells++; }
+            if (!ProcessBooleanCell(lastRow[4], out _, out _)) { emptyCells++; }
+
+            if (emptyCells > 1) { Array.Resize(ref penaltyShots, penaltyShots.Length - 1); }
+
+            for (int i = 0; i < penaltyShots.Length; i++)
+            {
+                //process
+                string[] penaltyShot = penaltyShots[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string errorMessage = "- Penalty shot: ";
+
+                if (!ProcessPeriodCell(penaltyShot[0], out int period, out bool overtime)) { errorList.Add(errorMessage + "unrecognized period"); continue; }
+                errorMessage += overtime ? "Overtime" : "period " + period;
+                if (!ProcessPeriodTimeCell(penaltyShot[1], out int minute, out int second)) { errorList.Add(errorMessage + ", unrecognized time"); continue; }
+                errorMessage += ", time " + minute + ":" + second;
+                if (!ProcessSideCell(penaltyShot[2], out string side)) { errorList.Add(errorMessage + ", unrecognized side"); continue; }
+                errorMessage += ", " + side;
+                if (!ProcessPlayerCell(penaltyShot[3], side, out PlayerInRoster player)) { errorList.Add(errorMessage + ", unrecognized player"); continue; }
+                errorMessage += ", " + player.Name;
+                if (!ProcessBooleanCell(penaltyShot[4], out bool scored, out bool empty) && !empty) { errorList.Add(errorMessage + ", can not tell if it was scored"); continue; }
+
+                //insert
+                PenaltyShot ps = new PenaltyShot();
+                ps.Minute = minute;
+                ps.Second = second;
+                ps.Side = side;
+                ps.Player = player;
+                ps.WasGoal = scored;
+
+                Period p = Periods.Last();
+                if (!overtime) { p = Periods[period - 1]; }
+                p.PenaltyShots.Add(ps);
+            }
+
+            //sort
+            foreach (Period p in Periods)
+            {
+                if (p.PenaltyShots.Count > 0) { p.PenaltyShots.Sort(); }
+            }
+
+            //GOALTENDER SHIFTS
+            string[] goaltenderShifts = data[6].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            lastRow = goaltenderShifts.Last().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            emptyCells = 0;
+
+            if (!ProcessPeriodCell(lastRow[0], out _, out _)) { emptyCells++; }
+            if (!int.TryParse(lastRow[1], out _)) { emptyCells++; }
+            if (!ProcessSideCell(lastRow[2], out _)) { emptyCells++; }
+            if (!ProcessPeriodTimeCell(lastRow[3], out _, out _)) { emptyCells++; }
+            if (!ProcessPeriodTimeCell(lastRow[4], out _, out _)) { emptyCells++; }
+
+            if (emptyCells > 1) { Array.Resize(ref goaltenderShifts, goaltenderShifts.Length - 1); }
+
+            for (int i = 0; i < goaltenderShifts.Length; i++)
+            {
+                //process
+                string[] goaltenderShift = goaltenderShifts[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string errorMessage = "- Goaltender shift: ";
+
+                if (!ProcessPeriodCell(goaltenderShift[0], out int period, out bool overtime)) { errorList.Add(errorMessage + "unrecognized period"); continue; }
+                errorMessage += overtime ? "Overtime" : "period " + period;
+                if (!ProcessSideCell(goaltenderShift[2], out string side)) { errorList.Add(errorMessage + ", unrecognized side"); continue; }
+                errorMessage += ", " + side;
+                if (!ProcessPlayerCell(goaltenderShift[1], side, out PlayerInRoster player)) { errorList.Add(errorMessage + ", unrecognized player"); continue; }
+                errorMessage += ", " + player.Name;
+                if (!ProcessPeriodTimeCell(goaltenderShift[3], out int startMinute, out int startSecond)) { errorList.Add(errorMessage + ", unrecognized start time"); continue; }
+                if (!ProcessPeriodTimeCell(goaltenderShift[4], out int endMinute, out int endSecond)) { errorList.Add(errorMessage + ", unrecognized end time"); continue; }
+
+                //insert
+                GoalieShift shift = new GoalieShift();
+                shift.Player = player;
+                shift.Side = side;
+                shift.StartMinute = startMinute;
+                shift.StartSecond = startSecond;
+                shift.EndMinute = endMinute;
+                shift.EndSecond = endSecond;
+
+                if (shift.EndTimeInSeconds - shift.StartTimeInSeconds < 1) { errorList.Add(errorMessage + ", goaltender shift is too short"); continue; }
+
+                Period p = Periods.Last();
+                if (!overtime) { p = Periods[period - 1]; }
+                p.GoalieShifts.Add(shift);
+            }
+
+            //sort
+            foreach (Period p in Periods)
+            {
+                if (p.GoalieShifts.Count > 0) { p.GoalieShifts.Sort(); }
+            }
+
+            //TIME-OUTS
+            string[] timeOuts = data[7].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            lastRow = timeOuts.Last().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            emptyCells = 0;
+
+            if (!ProcessPeriodCell(lastRow[0], out _, out _)) { emptyCells++; }
+            if (!ProcessPeriodTimeCell(lastRow[1], out _, out _)) { emptyCells++; }
+            if (!ProcessSideCell(lastRow[2], out _)) { emptyCells++; }
+
+            if (emptyCells > 1) { Array.Resize(ref timeOuts, timeOuts.Length - 1); }
+
+            for (int i = 0; i < timeOuts.Length; i++)
+            {
+                //process
+                string[] timeOut = timeOuts[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string errorMessage = "- Time-out: ";
+
+                if (!ProcessPeriodCell(timeOut[0], out int period, out bool overtime)) { errorList.Add(errorMessage + "unrecognized period"); continue; }
+                errorMessage += overtime ? "Overtime" : "period " + period;
+                if (!ProcessPeriodTimeCell(timeOut[1], out int minute, out int second)) { errorList.Add(errorMessage + ", unrecognized time"); continue; }
+                errorMessage += ", time " + minute + ":" + second;
+                if (!ProcessSideCell(timeOut[2], out string side)) { errorList.Add(errorMessage + ", unrecognized side"); continue; }
+
+                //insert
+                TimeOut to = new TimeOut();
+                to.Minute = minute;
+                to.Second = second;
+                to.Side = side;
+
+                Period p = Periods.Last();
+                if (!overtime) { p = Periods[period - 1]; }
+                p.TimeOuts.Add(to);
+            }
+
+            //sort
+            foreach (Period p in Periods)
+            {
+                if (p.TimeOuts.Count > 0) { p.TimeOuts.Sort(); }
+            }
+
+            //ERROR LIST
+            string s = "";
+            foreach (var item in errorList)
+            {
+                s += item + "\n";
+            }
+            MessageBox.Show(s, "Error list", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        bool ProcessPeriodCell(string cellValue, out int period, out bool overtime)
+        {
+            period = 0;
+            overtime = false;
+
+            if (int.TryParse(cellValue, out int periodNumber))
+            {
+                period = periodNumber;
+                if (period > 0 && period <= PeriodCount)
+                {
+                    return true;
+                }
+            }
+            else if (cellValue == "OT" && Overtime == true)
+            {
+                overtime = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        bool ProcessPeriodTimeCell(string cellValue, out int minute, out int second)
+        {
+            minute = -1;
+            second = -1;
+
+            string[] time = cellValue.Split(':');
+            if (time.Length != 2) { return false; }
+
+            if (!int.TryParse(time[0], out int m)) { return false; }
+            if (!int.TryParse(time[1], out int s)) { return false; }
+
+            if (m < 0 || m > PeriodDuration) { return false; }
+            if (s < 0 || s > 59) { return false; }
+
+            minute = m;
+            second = s;
+            return true;
+        }
+
+        bool ProcessSideCell(string cellValue, out string side)
+        {
+            side = "";
+
+            if (cellValue == "H") { side = "Home"; return true; }
+            if (cellValue == "A") { side = "Away"; return true; }
+
+            return false;
+        }
+
+        bool ProcessPlayerCell(string cellValue, string side, out PlayerInRoster player)
+        {
+            player = new PlayerInRoster();
+
+            if (!int.TryParse(cellValue, out int p)) { return false; }
+
+            switch (side)
+            {
+                case "Home":
+                    player = HomeRoster.FirstOrDefault(x => x.Number == p);
+                    if (player == null) { return false; }
+                    return true;
+                case "Away":
+                    player = AwayRoster.FirstOrDefault(x => x.Number == p);
+                    if (player == null) { return false; }
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        bool ProcessAssistCell(string cellValue, string side, out PlayerInRoster player, out bool exist)
+        {
+            player = new PlayerInRoster();
+            exist = false;
+
+            if (!int.TryParse(cellValue, out int p))
+            {
+                if (cellValue == "X") { return true; }
+            }
+
+            switch (side)
+            {
+                case "Home":
+                    player = HomeRoster.FirstOrDefault(x => x.Number == p);
+                    if (player == null) { return false; }
+                    exist = true;
+                    return true;
+                case "Away":
+                    player = AwayRoster.FirstOrDefault(x => x.Number == p);
+                    if (player == null) { return false; }
+                    exist = true;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        bool ProcessGoalTypeCell(string cellValue, out string type)
+        {
+            type = "";
+
+            switch (cellValue)
+            {
+                case "N":
+                case "OG":
+                case "DP":
+                case "PS":
+                    type = cellValue;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        bool ProcessBooleanCell(string cellValue, out bool boolean, out bool empty)
+        {
+            boolean = false;
+            empty = false;
+
+            switch (cellValue)
+            {
+                case "T":
+                    boolean = true;
+                    return true;
+                case "F":
+                    boolean = false;
+                    return true;
+                case "empty":
+                    empty = true;
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
+        bool ProcessPenaltyReasonCell(string cellValue, out PenaltyReason reason)
+        {
+            reason = PenaltyReasons.FirstOrDefault(x => x.Code == cellValue);
+
+            if (reason == null) { return false; }
+            return true;
+        }
+
+        bool ProcessPenaltyTypeCell(string cellValue, out PenaltyType type)
+        {
+            type = PenaltyTypes.FirstOrDefault(x => x.Code == cellValue);
+
+            if (type == null) { return false; }
+            return true;
+        }
+
+        string SwapSide(string side)
+        {
+            switch (side)
+            {
+                case "Home":
+                    return "Away";
+                case "Away":
+                    return "Home";
+                default:
+                    return "";
+            }
         }
         #endregion
 
@@ -3823,6 +4367,7 @@ namespace CSharpZapoctak.ViewModels
 
             //shootout
             int decidingShootoutGoalIndex = 0;
+            string decidingShootoutGoalSide = "";
             if (IsShootout && ShootoutSeries > 0)
             {
                 int homeGoals = 0;
@@ -3840,11 +4385,13 @@ namespace CSharpZapoctak.ViewModels
                 {
                     homeScore++;
                     decidingShootoutGoalIndex = Shootout.Where(x => x.Side == "Home" && x.WasGoal).ElementAt(awayGoals).Number;
+                    decidingShootoutGoalSide = "Home";
                 }
                 if (homeGoals < awayGoals)
                 {
                     awayScore++;
                     decidingShootoutGoalIndex = Shootout.Where(x => x.Side == "Away" && x.WasGoal).ElementAt(homeGoals).Number;
+                    decidingShootoutGoalSide = "Away";
                 }
             }
 
@@ -4042,7 +4589,7 @@ namespace CSharpZapoctak.ViewModels
                 {
                     int teamID = ss.Side == "Home" ? HomeTeam.id : AwayTeam.id;
                     int opponentTeamID = ss.Side == "Home" ? AwayTeam.id : HomeTeam.id;
-                    int decidingGoal = decidingShootoutGoalIndex == ss.Number ? 1 : 0;
+                    int decidingGoal = decidingShootoutGoalIndex == ss.Number && ss.Side == decidingShootoutGoalSide ? 1 : 0;
 
                     string querry = "INSERT INTO shootout_shots(match_id, player_id, goalie_id, number, team_id, opponent_team_id, was_goal, deciding_goal) " +
                                               "VALUES (" + matchID + ", " + ss.Player.id + ", " + ss.Goalie.id + ", " + ss.Number + ", " + teamID + ", " + opponentTeamID + ", " + Convert.ToInt32(ss.WasGoal) + ", " + decidingGoal + ")";
