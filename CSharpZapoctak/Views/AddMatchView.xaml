@@ -51,8 +51,11 @@
                 <Border BorderBrush="Black" BorderThickness="0.5" Margin="0,0,0,20"/>
 
                 <UniformGrid Rows="1" Margin="0,0,0,20">
-                    <Button Width="240" Content="Export gamesheet" Command="{Binding ExportGamesheetCommand}"/>
-                    <Button Width="240" Content="Load gamesheet" Command="{Binding LoadGamesheetCommand}"/>
+                    <StackPanel Orientation="Horizontal" Width="245">
+                        <Button Width="190" Content="Export gamesheet (PDF)" FontSize="17" Command="{Binding ExportGamesheetCommand}"/>
+                        <Button Width="55" Content="(XLSX)" FontSize="17" Command="{Binding ExportGamesheetXLSXCommand}"/>
+                    </StackPanel>
+                    <Button Width="245" Content="Load gamesheet" FontSize="21" Command="{Binding LoadGamesheetCommand}"/>
                 </UniformGrid>
                 <Border BorderBrush="Black" BorderThickness="0.5" Margin="0,0,0,20"/>
 

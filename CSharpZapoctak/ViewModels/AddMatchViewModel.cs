@@ -2302,6 +2302,19 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private ICommand exportGamesheetXLSXCommand;
+        public ICommand ExportGamesheetXLSXCommand
+        {
+            get
+            {
+                if (exportGamesheetXLSXCommand == null)
+                {
+                    exportGamesheetXLSXCommand = new RelayCommand(param => ExportGamesheet("XLSX"));
+                }
+                return exportGamesheetXLSXCommand;
+            }
+        }
+
         private ICommand loadGamesheetCommand;
         public ICommand LoadGamesheetCommand
         {
@@ -4084,7 +4097,7 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Saving
-        private void ExportGamesheet()
+        private void ExportGamesheet(string format = "PDF")
         {
             if (HomeTeam == null)
             {
@@ -4155,8 +4168,19 @@ namespace CSharpZapoctak.ViewModels
             string gamesheetPath = "";
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "PDF Files | *.pdf";
-            saveFileDialog.DefaultExt = "pdf";
+            switch (format)
+            {
+                case "PDF":
+                    saveFileDialog.Filter = "PDF Files | *.pdf";
+                    saveFileDialog.DefaultExt = "pdf";
+                    break;
+                case "XLSX":
+                    saveFileDialog.Filter = "XLSX | *.xlsx";
+                    saveFileDialog.DefaultExt = "xlsx";
+                    break;
+                default:
+                    break;
+            }
             saveFileDialog.FileName = MatchDateTime.ToString("yyyy_MM_dd_HH_mm") + "_" + HomeTeam.Name + "_vs_" + AwayTeam.Name;
 
             bool? result = saveFileDialog.ShowDialog();
@@ -4164,12 +4188,22 @@ namespace CSharpZapoctak.ViewModels
             {
                 gamesheetPath = saveFileDialog.FileName;
 
-                //export to pdf
-                try
+                switch (format)
                 {
-                    excelWorkbook.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, gamesheetPath);
+                    case "PDF":
+                        //export to pdf
+                        try
+                        {
+                            excelWorkbook.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, gamesheetPath);
+                        }
+                        catch (Exception) { }
+                        break;
+                    case "XLSX":
+                        excelWorkbook.SaveCopyAs(gamesheetPath);
+                        break;
+                    default:
+                        break;
                 }
-                catch (Exception) { }
             }
 
             excelWorkbook.Close(false);
