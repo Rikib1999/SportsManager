@@ -9,7 +9,9 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
@@ -163,6 +165,8 @@ namespace CSharpZapoctak.ViewModels
 
     class Period : ViewModelBase
     {
+        private static readonly object _lock = new object();
+
         public Period(AddMatchViewModel vm, bool overtime = false)
         {
             this.vm = vm;
@@ -174,18 +178,27 @@ namespace CSharpZapoctak.ViewModels
             HomeRoster = vm.HomeRoster;
             AwayRoster = vm.AwayRoster;
             Goals = new ObservableCollection<Goal>();
+            BindingOperations.EnableCollectionSynchronization(Goals, _lock);
             NewGoal = new Goal();
             GoalsRoster = new ObservableCollection<PlayerInRoster>();
+            BindingOperations.EnableCollectionSynchronization(GoalsRoster, _lock);
             Penalties = new ObservableCollection<Penalty>();
+            BindingOperations.EnableCollectionSynchronization(Penalties, _lock);
             NewPenalty = new Penalty();
             PenaltyRoster = new ObservableCollection<PlayerInRoster>();
+            BindingOperations.EnableCollectionSynchronization(PenaltyRoster, _lock);
             PenaltyShots = new ObservableCollection<PenaltyShot>();
+            BindingOperations.EnableCollectionSynchronization(PenaltyShots, _lock);
             NewPenaltyShot = new PenaltyShot();
             PenaltyShotRoster = new ObservableCollection<PlayerInRoster>();
+            BindingOperations.EnableCollectionSynchronization(PenaltyShotRoster, _lock);
             GoalieShifts = new ObservableCollection<GoalieShift>();
+            BindingOperations.EnableCollectionSynchronization(GoalieShifts, _lock);
             NewGoalieShift = new GoalieShift();
             GoalieShiftRoster = new ObservableCollection<PlayerInRoster>();
+            BindingOperations.EnableCollectionSynchronization(GoalieShiftRoster, _lock);
             TimeOuts = new ObservableCollection<TimeOut>();
+            BindingOperations.EnableCollectionSynchronization(TimeOuts, _lock);
             NewTimeOut = new TimeOut();
         }
 
@@ -2072,6 +2085,28 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Visibilities
+        public Visibility loadingVisibility = Visibility.Collapsed;
+        public Visibility LoadingVisibility
+        {
+            get { return loadingVisibility; }
+            set
+            {
+                loadingVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility pageVisibility = Visibility.Visible;
+        public Visibility PageVisibility
+        {
+            get { return pageVisibility; }
+            set
+            {
+                pageVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Visibility notPlayedSaveButtonVisibility = Visibility.Visible;
         public Visibility NotPlayedSaveButtonVisibility
         {
@@ -2274,7 +2309,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (loadGamesheetCommand == null)
                 {
-                    loadGamesheetCommand = new RelayCommand(param => LoadGamesheet());
+                    loadGamesheetCommand = new RelayCommand(param => Task.Run(() => LoadGamesheet()));
                 }
                 return loadGamesheetCommand;
             }
@@ -2322,6 +2357,8 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Constructors
+        private static readonly object _lock = new object();
+
         //ADD for group
         public AddMatchViewModel(NavigationStore navigationStore, int round)
         {
@@ -2330,7 +2367,9 @@ namespace CSharpZapoctak.ViewModels
             scheduleToReturnVM = new GroupsScheduleViewModel(ns);
             this.round = round;
             Periods = new ObservableCollection<Period>();
+            BindingOperations.EnableCollectionSynchronization(Periods, _lock);
             Shootout = new ObservableCollection<ShootoutShot>();
+            BindingOperations.EnableCollectionSynchronization(Shootout, _lock);
             LoadTeams();
             LoadSides();
             LoadStrengths();
@@ -2350,7 +2389,9 @@ namespace CSharpZapoctak.ViewModels
             this.serieMatchNumber = serieMatchNumber;
             bracketFirstTeam = first.id;
             Periods = new ObservableCollection<Period>();
+            BindingOperations.EnableCollectionSynchronization(Periods, _lock);
             Shootout = new ObservableCollection<ShootoutShot>();
+            BindingOperations.EnableCollectionSynchronization(Shootout, _lock);
             AvailableTeamsHome = new ObservableCollection<Team>();
             availableTeamsHome.Add(first);
             availableTeamsHome.Add(second);
@@ -2378,7 +2419,9 @@ namespace CSharpZapoctak.ViewModels
             MatchTimeMinutes = m.Datetime.Minute;
 
             Periods = new ObservableCollection<Period>();
+            BindingOperations.EnableCollectionSynchronization(Periods, _lock);
             Shootout = new ObservableCollection<ShootoutShot>();
+            BindingOperations.EnableCollectionSynchronization(Shootout, _lock);
 
             if (serieMatchNumber == -1)
             {
@@ -2952,6 +2995,10 @@ namespace CSharpZapoctak.ViewModels
                 gamesheetPath = openFileDialog.FileName;
             }
 
+            //show loading screen
+            PageVisibility = Visibility.Collapsed;
+            LoadingVisibility = Visibility.Visible;
+
             //run python script on it
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
@@ -2982,7 +3029,7 @@ namespace CSharpZapoctak.ViewModels
             string[] info = data[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             Played = true;
-            PeriodCount = 0;
+            //PeriodCount = 0;
             IsShootout = false;
 
             if (info[0] == "T") { Forfeit = true; } else if (info[0] == "F" || info[0] == "empty") { Forfeit = false; } else { Forfeit = false; errorList.Add("- Match forfeited"); }
@@ -3319,6 +3366,10 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (p.TimeOuts.Count > 0) { p.TimeOuts.Sort(); }
             }
+
+            //hide loading screen
+            LoadingVisibility = Visibility.Collapsed;
+            PageVisibility = Visibility.Visible;
 
             //ERROR LIST
             string s = "";

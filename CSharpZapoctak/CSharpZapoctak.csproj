@@ -11,6 +11,7 @@
     <None Remove="Resources\female.png" />
     <None Remove="Resources\gamesheet.xlsx" />
     <None Remove="Resources\GamesheetOCR.py" />
+    <None Remove="Resources\loading.gif" />
     <None Remove="Resources\male.png" />
     <None Remove="Resources\SportManager_logo_32x32.png" />
     <None Remove="Resources\SportsManager_logo.png" />
@@ -56,6 +57,9 @@
 
   <ItemGroup>
     <Resource Include="Resources\add_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\loading.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\male.png">
