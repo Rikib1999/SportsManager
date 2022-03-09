@@ -64,7 +64,7 @@ namespace CSharpZapoctak.ViewModels
                                     "INNER JOIN seasons ON seasons.id = matches.season_id";
             if (SportsData.season.id > 0 || SportsData.competition.id > 0) { matchCountQuery += " WHERE"; }
             if (SportsData.season.id > 0) { matchCountQuery += " matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { matchCountQuery += " AND"; }
+            if (SportsData.season.id > 0 && SportsData.competition.id > 0) { matchCountQuery += " AND"; }
             if (SportsData.competition.id > 0) { matchCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
             matchCountQuery += " GROUP BY player_id";
 
@@ -74,7 +74,7 @@ namespace CSharpZapoctak.ViewModels
                                 "INNER JOIN seasons ON seasons.id = matches.season_id";
             if (SportsData.season.id > 0 || SportsData.competition.id > 0) { goalCountQuery += " WHERE"; }
             if (SportsData.season.id > 0) { goalCountQuery += " matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { goalCountQuery += " AND"; }
+            if (SportsData.season.id > 0 && SportsData.competition.id > 0) { goalCountQuery += " AND"; }
             if (SportsData.competition.id > 0) { goalCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
             goalCountQuery += " GROUP BY player_id";
 
@@ -84,7 +84,7 @@ namespace CSharpZapoctak.ViewModels
                                 "INNER JOIN seasons ON seasons.id = matches.season_id";
             if (SportsData.season.id > 0 || SportsData.competition.id > 0) { assistCountQuery += " WHERE"; }
             if (SportsData.season.id > 0) { assistCountQuery += " matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { assistCountQuery += " AND"; }
+            if (SportsData.season.id > 0 && SportsData.competition.id > 0) { assistCountQuery += " AND"; }
             if (SportsData.competition.id > 0) { assistCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
             assistCountQuery += " GROUP BY assist_player_id";
 
@@ -95,11 +95,11 @@ namespace CSharpZapoctak.ViewModels
                                                 "INNER JOIN penalty_type ON penalty_type.code = penalty_type_id";
             if (SportsData.season.id > 0 || SportsData.competition.id > 0) { penaltyMinutesQuery += " WHERE"; }
             if (SportsData.season.id > 0) { penaltyMinutesQuery += " matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { penaltyMinutesQuery += " AND"; }
+            if (SportsData.season.id > 0 && SportsData.competition.id > 0) { penaltyMinutesQuery += " AND"; }
             if (SportsData.competition.id > 0) { penaltyMinutesQuery += " seasons.competition_id = " + SportsData.competition.id; }
             penaltyMinutesQuery += " GROUP BY player_id";
 
-            string playerStatsQuery = "SELECT p.*, IFNULL(match_count, 0) AS match_count, IFNULL(goal_count, 0) AS goal_count, IFNULL(assist_count, 0) AS assist_count, IFNULL(penalty_minutes, 0) AS penalty_minutes " +
+            string playerStatsQuery = "SELECT p.*, s.competition_id, IFNULL(match_count, 0) AS match_count, IFNULL(goal_count, 0) AS goal_count, IFNULL(assist_count, 0) AS assist_count, IFNULL(penalty_minutes, 0) AS penalty_minutes " +
                           "FROM player_enlistment " +
                           "RIGHT JOIN player AS p ON p.id = player_id " +
                           "INNER JOIN seasons AS s ON s.id = season_id";
@@ -112,7 +112,7 @@ namespace CSharpZapoctak.ViewModels
             playerStatsQuery += " WHERE p.id <> -1";
             if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
             {
-                playerStatsQuery += " AND competition_id = " + SportsData.competition.id;
+                playerStatsQuery += " AND s.competition_id = " + SportsData.competition.id;
                 if (SportsData.season.id != (int)EntityState.NotSelected && SportsData.season.id != (int)EntityState.AddNew)
                 {
                     playerStatsQuery += " AND season_id = " + SportsData.season.id;

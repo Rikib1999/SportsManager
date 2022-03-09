@@ -8,20 +8,25 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer x:Name="scrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="10">
         <Grid>
-            <Image Source="/Resources/loading.gif" MaxWidth="150" MaxHeight="150" RenderTransformOrigin="0.5, 0.5" Visibility="{Binding LoadingVisibility}">
-                <Image.RenderTransform>
-                    <RotateTransform x:Name="noFreeze" />
-                </Image.RenderTransform>
-                <Image.Triggers>
-                    <EventTrigger RoutedEvent="Loaded">
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)" To="360" Duration="0:0:5" RepeatBehavior="Forever" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Image.Triggers>
-            </Image>
+            <!--.................LOADING.................-->
+            <StackPanel Orientation="Vertical" Visibility="{Binding LoadingVisibility}">
+                <Image Source="/Resources/loading.gif" MaxWidth="150" MaxHeight="150" RenderTransformOrigin="0.5, 0.5">
+                    <Image.RenderTransform>
+                        <RotateTransform x:Name="noFreeze" />
+                    </Image.RenderTransform>
+                    <Image.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)" To="360" Duration="0:0:5" RepeatBehavior="Forever" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Image.Triggers>
+                </Image>
+                <Button Width="120" Height="35" Margin="0,20,0,0" Content="Cancel" Command="{Binding CancelGamesheetLoadingCommand}"/>
+            </StackPanel>
+
             <StackPanel Orientation="Vertical" Visibility="{Binding PageVisibility}">
                 <TextBlock Text="Match" FontSize="35" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 <Border BorderBrush="Black" BorderThickness="0.5" Margin="0,0,0,20"/>
