@@ -124,4 +124,7 @@
   <data name="GamesheetOCR" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GamesheetOCR.py;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="match_summary" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\match_summary.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

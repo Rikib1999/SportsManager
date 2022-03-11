@@ -1,6 +1,7 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
 using CSharpZapoctak.Stores;
+using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -83,6 +84,61 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
+    class ShootoutEvent : ViewModelBase, IComparable
+    {
+        public int number = 0;
+
+        private string result = "";
+        public string Result
+        {
+            get { return result; }
+            set
+            {
+                result = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string homeEvent = "";
+        public string HomeEvent
+        {
+            get { return homeEvent; }
+            set
+            {
+                homeEvent = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string awayEvent = "";
+        public string AwayEvent
+        {
+            get { return awayEvent; }
+            set
+            {
+                awayEvent = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int CompareTo(object obj)
+        {
+            int otherOrder = ((ShootoutEvent)obj).number;
+            if (number < otherOrder)
+            {
+                return -1;
+            }
+            else if (number == otherOrder)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+    }
+
     class PeriodEvents : ViewModelBase
     {
         private int period;
@@ -121,10 +177,6 @@ namespace CSharpZapoctak.ViewModels
 
     class MatchViewModel : ViewModelBase
     {
-        public Competition CurrentSeason { get; set; }
-
-        public ICommand NavigateEditCompetitionCommand { get; }
-
         private Match match;
         public Match Match
         {
@@ -202,24 +254,13 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ObservableCollection<string> shootoutHome;
-        public ObservableCollection<string> ShootoutHome
+        private ObservableCollection<ShootoutEvent> shootoutEvents;
+        public ObservableCollection<ShootoutEvent> ShootoutEvents
         {
-            get { return shootoutHome; }
+            get { return shootoutEvents; }
             set
             {
-                shootoutHome = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private ObservableCollection<string> shootoutAway;
-        public ObservableCollection<string> ShootoutAway
-        {
-            get { return shootoutAway; }
-            set
-            {
-                shootoutAway = value;
+                shootoutEvents = value;
                 OnPropertyChanged();
             }
         }
@@ -276,6 +317,19 @@ namespace CSharpZapoctak.ViewModels
                     return Match.AwayScore.ToString();
                 }
                 return "-";
+            }
+        }
+
+        private ICommand exportCommand;
+        public ICommand ExportCommand
+        {
+            get
+            {
+                if (exportCommand == null)
+                {
+                    exportCommand = new RelayCommand(param => Export());
+                }
+                return exportCommand;
             }
         }
 
@@ -417,13 +471,14 @@ namespace CSharpZapoctak.ViewModels
         {
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT matches.id, season_id, datetime, played, periods, period_duration, home_competitor, away_competitor, home_score, away_score, overtime, shootout, forfeit, " +
+            MySqlCommand cmd = new MySqlCommand("SELECT matches.id, season_id, s.name AS season_name, c.id AS competition_id, c.name AS competition_name, datetime, played, periods, period_duration, home_competitor, away_competitor, home_score, away_score, overtime, shootout, forfeit, " +
                                                 "ht.name AS home_name, at.name AS away_name, " +
                                                 "round, bracket_index, qualification_id, serie_match_number, s.play_off_started AS po_started, s.winner_id AS winner " +
                                                 "FROM matches " +
                                                 "INNER JOIN team AS ht ON ht.id = home_competitor " +
                                                 "INNER JOIN team AS at ON at.id = away_competitor " +
                                                 "INNER JOIN seasons AS s ON s.id = season_id " +
+                                                "INNER JOIN competitions AS c ON c.id = s.competition_id " +
                                                 "WHERE matches.id = " + m.id, connection);
 
             try
@@ -435,7 +490,8 @@ namespace CSharpZapoctak.ViewModels
                 Match = new Match
                 {
                     id = int.Parse(dataTable.Rows[0]["id"].ToString()),
-                    Season = new Season { id = int.Parse(dataTable.Rows[0]["season_id"].ToString()) },
+                    Season = new Season { id = int.Parse(dataTable.Rows[0]["season_id"].ToString()), Name = dataTable.Rows[0]["season_name"].ToString() },
+                    Competition = new Competition { id = int.Parse(dataTable.Rows[0]["competition_id"].ToString()), Name = dataTable.Rows[0]["competition_name"].ToString() },
                     Datetime = DateTime.Parse(dataTable.Rows[0]["datetime"].ToString()),
                     Played = Convert.ToBoolean(int.Parse(dataTable.Rows[0]["played"].ToString())),
                     Periods = int.Parse(dataTable.Rows[0]["periods"].ToString()),
@@ -461,10 +517,27 @@ namespace CSharpZapoctak.ViewModels
                 {
                     Match.HomeTeam.LogoPath = imgPath.First();
                 }
+                else
+                {
+                    match.Competition.LogoPath = "";
+                }
                 imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + Match.AwayTeam.id + ".*");
                 if (imgPath.Length != 0)
                 {
                     Match.AwayTeam.LogoPath = imgPath.First();
+                }
+                else
+                {
+                    match.Competition.LogoPath = "";
+                }
+                imgPath = System.IO.Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.sport.name + match.Competition.id.ToString() + ".*");
+                if (imgPath.Length != 0)
+                {
+                    match.Competition.LogoPath = imgPath.First();
+                }
+                else
+                {
+                    match.Competition.LogoPath = "";
                 }
 
                 connection.Close();
@@ -488,7 +561,7 @@ namespace CSharpZapoctak.ViewModels
 
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM period_score WHERE match_id = " + Match.id, connection);
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM period_score WHERE match_id = " + Match.id + " ORDER BY period", connection);
 
             try
             {
@@ -824,8 +897,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadShootout()
         {
-            ShootoutHome = new ObservableCollection<string>();
-            ShootoutAway = new ObservableCollection<string>();
+            ShootoutEvents = new ObservableCollection<ShootoutEvent>();
 
             if (Match.Shootout)
             {
@@ -834,7 +906,7 @@ namespace CSharpZapoctak.ViewModels
                 string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
                 MySqlCommand cmd = new MySqlCommand("SELECT p.first_name AS player_first_name, p.last_name AS player_last_name, " +
-                                                    "team_id, was_goal " +
+                                                    "team_id, was_goal, number " +
                                                     "FROM shootout_shots " +
                                                     "INNER JOIN player AS p ON p.id = player_id " +
                                                     "WHERE match_id = " + Match.id + " " +
@@ -848,20 +920,22 @@ namespace CSharpZapoctak.ViewModels
 
                     foreach (DataRow row in dataTable.Rows)
                     {
-                        string s = "GOAL";
-                        if (int.Parse(row["was_goal"].ToString()) == 0) { s = "MISS"; }
+                        int n = int.Parse(row["number"].ToString());
+                        string r = "GOAL";
+                        if (int.Parse(row["was_goal"].ToString()) == 0) { r = "MISS"; }
 
                         if (int.Parse(row["team_id"].ToString()) == Match.HomeTeam.id)
                         {
-                            ShootoutHome.Add(s + " - " + row["player_first_name"].ToString().Substring(0, 1) + ". " + row["player_last_name"].ToString());
-                            ShootoutAway.Add("");
+                            ShootoutEvents.Add(new ShootoutEvent { number = n - 1, Result = r, HomeEvent = row["player_first_name"].ToString().Substring(0, 1) + ". " + row["player_last_name"].ToString() });
                         }
                         else
                         {
-                            ShootoutHome.Add("");
-                            ShootoutAway.Add(s + " - " + row["player_first_name"].ToString().Substring(0, 1) + ". " + row["player_last_name"].ToString());
+                            ShootoutEvents.Add(new ShootoutEvent { number = n, Result = r, AwayEvent = row["player_first_name"].ToString().Substring(0, 1) + ". " + row["player_last_name"].ToString() });
                         }
                     }
+
+                    ShootoutEvents.Sort();
+
                     connection.Close();
                 }
                 catch (Exception)
@@ -876,6 +950,204 @@ namespace CSharpZapoctak.ViewModels
                     }
                 }
             }
+        }
+
+        private void Export()
+        {
+            //load excel file
+            string tempPath = System.IO.Path.GetTempFileName();
+            System.IO.File.WriteAllBytes(tempPath, Properties.Resources.match_summary);
+            Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
+            Microsoft.Office.Interop.Excel._Workbook excelWorkbook;
+            excelWorkbook = excelApplication.Workbooks.Open(tempPath);
+
+            //fill data, datetime, teams, rosters
+            Microsoft.Office.Interop.Excel.Worksheet summary = (Microsoft.Office.Interop.Excel.Worksheet)excelWorkbook.Worksheets[1];
+
+            //match info
+            summary.Range["A" + 2].Value = match.Competition.Name + " - " + match.Season.Name;
+
+            if (match.serieNumber < 1)
+            {
+                summary.Range["A" + 1].Value = "Group";
+            }
+            else if (qualificationID > 0)
+            {
+                summary.Range["A" + 1].Value = "Qualification";
+            }
+            else
+            {
+                summary.Range["A" + 1].Value = "Play-off";
+            }
+
+            //datetime
+            summary.Range["E" + 1].Value = match.Datetime.ToString("d");
+            summary.Range["H" + 1].Value = match.Datetime.ToString("HH:mm");
+
+            //periods info
+            summary.Range["K" + 1].Value = match.Periods + "x" + match.PeriodDuration + " min.";
+
+            //teams
+            summary.Range["B" + 9].Value = match.HomeTeam.Name;
+            summary.Range["G" + 9].Value = match.AwayTeam.Name;
+
+            //score
+            summary.Range["E" + 11].Value = HomeScore;
+            summary.Range["G" + 11].Value = AwayScore + " " + GameType;
+            summary.Range["E" + 13].Value = periodScores;
+
+            //logos
+            InsertLogo(match.HomeTeam.LogoPath, 123.0, 100.0, "B3", summary);
+            InsertLogo(match.AwayTeam.LogoPath, 123.0, 100.0, "I3", summary);
+            InsertLogo(match.Competition.LogoPath, 207, 100.0, "E3", summary);
+
+            //compute how many pages and copy them
+            //1+39 rows
+            int numberOfEvents = 0;
+            int rowsLeft = 40;
+            for (int i = 0; i < PeriodEvents.Count; i++)
+            {
+                int eventsLeft = PeriodEvents[i].Events.Count;
+                //fill pages
+                while (eventsLeft >= rowsLeft - 1)
+                {
+                    //period name
+                    numberOfEvents++;
+                    //events
+                    numberOfEvents += rowsLeft;
+                    eventsLeft -= rowsLeft;
+                    rowsLeft = 40;
+                }
+
+                //fill all what is left
+                //period name
+                if (eventsLeft > 0)
+                {
+                    numberOfEvents++;
+                    rowsLeft--;
+                    //events
+                    numberOfEvents += eventsLeft;
+                    rowsLeft -= eventsLeft;
+                }
+
+                //fill empty row
+                if(rowsLeft == 1) { numberOfEvents += rowsLeft; rowsLeft = 40; }
+            }
+            //shootout
+            if (ShootoutEvents.Count > 0)
+            {
+                int eventsLeft = ShootoutEvents.Count;
+                //fill pages
+                while (eventsLeft >= rowsLeft - 1)
+                {
+                    //period name
+                    numberOfEvents++;
+                    //events
+                    numberOfEvents += rowsLeft;
+                    eventsLeft -= rowsLeft;
+                    rowsLeft = 40;
+                }
+
+                //fill all what is left
+                //period name
+                if (eventsLeft > 0)
+                {
+                    numberOfEvents++;
+                    rowsLeft--;
+                    //events
+                    numberOfEvents += eventsLeft;
+                    rowsLeft -= eventsLeft;
+                }
+
+                //fill empty rows
+                if (rowsLeft <= 2) { numberOfEvents += rowsLeft; rowsLeft = 40; }
+            }
+
+            //copy pages
+            Microsoft.Office.Interop.Excel.Range copyRange = summary.Range["A1:K55"];
+            int numberOfPages = (int)Math.Ceiling((double)numberOfEvents / 40.0);
+            for (int i = 1; i < numberOfPages; i++)
+            {
+                Microsoft.Office.Interop.Excel.Range dest = summary.Range["A" + ((i * 55) + 1) + ":" + "K" + ((i * 55) + 55)];
+                copyRange.Copy(dest);
+                summary.Range["K" + ((i * 55) + 55)].Value = (i + 1) + "/" + numberOfPages;
+            }
+            summary.Range["K" + 55].Value = "1/" + numberOfPages;
+
+            //periods
+            //shootout
+
+            //select path
+            string summaryPath = "";
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PDF Files | *.pdf";
+            saveFileDialog.DefaultExt = "pdf";
+            saveFileDialog.FileName = "summary_" + match.Datetime.ToString("yyyy_MM_dd_HH_mm") + "_" + match.HomeTeam.Name + "_vs_" + match.AwayTeam.Name;
+
+            bool? result = saveFileDialog.ShowDialog();
+            if (result.ToString() != string.Empty)
+            {
+                summaryPath = saveFileDialog.FileName;
+
+                //export to pdf
+                try
+                {
+                    excelWorkbook.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, summaryPath);
+                }
+                catch (Exception) { }
+            }
+
+            excelWorkbook.Close(false);
+        }
+
+        private void InsertLogo(string logoPath, double width, double height, string range, Microsoft.Office.Interop.Excel.Worksheet sheet)
+        {
+            if (logoPath == "") { return; }
+            object missing = System.Reflection.Missing.Value;
+            Microsoft.Office.Interop.Excel.Range picPosition = sheet.get_Range(range);
+            Microsoft.Office.Interop.Excel.Pictures p = sheet.Pictures(missing) as Microsoft.Office.Interop.Excel.Pictures;
+            Microsoft.Office.Interop.Excel.Picture pic = null;
+            pic = p.Insert(logoPath, missing);
+            //1 unit = 1.33 pixels
+            double ratio = 1.0 + (1.0 / 3.0);
+            double maxWidth = width / ratio;
+            double maxHeight = height / ratio;
+            if (pic.Height >= pic.Width)
+            {
+                pic.Height = maxHeight;
+                if(pic.Width > maxWidth)
+                {
+                    pic.Width = maxWidth;
+                    double offset = (maxHeight - pic.Height) / 2.0;
+                    pic.Left = Convert.ToDouble(picPosition.Left);
+                    pic.Top = Convert.ToDouble(picPosition.Top) + offset;
+                }
+                else
+                {
+                    double offset = (maxWidth - pic.Width) / 2.0;
+                    pic.Left = Convert.ToDouble(picPosition.Left) + offset;
+                    pic.Top = Convert.ToDouble(picPosition.Top);
+                }
+            }
+            else
+            {
+                pic.Width = maxWidth;
+                if (pic.Height > maxHeight)
+                {
+                    pic.Height = maxHeight;
+                    double offset = (maxWidth - pic.Width) / 2.0;
+                    pic.Left = Convert.ToDouble(picPosition.Left) + offset;
+                    pic.Top = Convert.ToDouble(picPosition.Top);
+                }
+                else
+                {
+                    double offset = (maxHeight - pic.Height) / 2.0;
+                    pic.Left = Convert.ToDouble(picPosition.Left);
+                    pic.Top = Convert.ToDouble(picPosition.Top) + offset;
+                }
+
+            }
+            pic.Placement = Microsoft.Office.Interop.Excel.XlPlacement.xlMove;
         }
 
         private void Edit()

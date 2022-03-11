@@ -2028,7 +2028,7 @@ namespace CSharpZapoctak.ViewModels
             get { return shootoutSeries; }
             set
             {
-                if (value == (Shootout.Count / 2) + 1)
+                if (value == Math.Round((float)Shootout.Count / 2.0))
                 {
                     shootoutSeries = value;
                 }
@@ -2367,7 +2367,7 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
-        
+
         private ObservableCollection<PenaltyEndCollision> penaltyEndCollisions;
         public ObservableCollection<PenaltyEndCollision> PenaltyEndCollisions
         {
@@ -2961,6 +2961,7 @@ namespace CSharpZapoctak.ViewModels
                 foreach (DataRow row in dataTable.Rows)
                 {
                     ShootoutShot ss = Shootout.First(x => x.Number == int.Parse(row["number"].ToString()));
+                    if (ss.Player.Number != null) { ss = Shootout.Where(x => x.Number == int.Parse(row["number"].ToString())).ElementAt(1); }
                     ss.WasGoal = Convert.ToBoolean(int.Parse(row["was_goal"].ToString()));
 
                     int playerID = int.Parse(row["player_id"].ToString());
@@ -2968,20 +2969,20 @@ namespace CSharpZapoctak.ViewModels
                     if (ss.Side == "Home")
                     {
                         ss.Player = HomeRoster.First(x => x.id == playerID);
-                        ss.Goalie = HomeRoster.First(x => x.id == goalieID);
+                        ss.Goalie = AwayRoster.First(x => x.id == goalieID);
                     }
                     else
                     {
-                        ss.Player = HomeRoster.First(x => x.id == playerID);
+                        ss.Player = AwayRoster.First(x => x.id == playerID);
                         ss.Goalie = HomeRoster.First(x => x.id == goalieID);
                     }
                 }
 
                 connection.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Unable to connect to databseSHOOTOUT.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to databse." + e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -4141,21 +4142,21 @@ namespace CSharpZapoctak.ViewModels
                 MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
+            
             //load excel file
             string tempPath = System.IO.Path.GetTempFileName();
             System.IO.File.WriteAllBytes(tempPath, Properties.Resources.gamesheet);
             Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
             Microsoft.Office.Interop.Excel._Workbook excelWorkbook;
             excelWorkbook = excelApplication.Workbooks.Open(tempPath);
-
+            
             //fill data, datetime, teams, rosters
             Microsoft.Office.Interop.Excel.Worksheet gamesheet = (Microsoft.Office.Interop.Excel.Worksheet)excelWorkbook.Worksheets[1];
-
+            
             //match info
             gamesheet.Range["G" + 8].Value = SportsData.competition.Name;
             gamesheet.Range["J" + 9].Value = SportsData.season.Name;
-
+            
             if (serieMatchNumber < 1)
             {
                 gamesheet.Range["J" + 10].Value = "Group";
@@ -4168,15 +4169,15 @@ namespace CSharpZapoctak.ViewModels
             {
                 gamesheet.Range["J" + 10].Value = "Play-off";
             }
-
+            
             //teams
             gamesheet.Range["A" + 3].Value = HomeTeam.Name;
             gamesheet.Range["G" + 3].Value = AwayTeam.Name;
-
+            
             //datetime
             gamesheet.Range["C" + 1].Value = MatchDateTime.ToString("d");
             gamesheet.Range["I" + 1].Value = MatchDateTime.ToString("HH:mm");
-
+            
             //rosters
             int row;
             for (int i = 0; i < HomePlayers.Count; i++)
@@ -4198,7 +4199,7 @@ namespace CSharpZapoctak.ViewModels
 
             //select path
             string gamesheetPath = "";
-
+            
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             switch (format)
             {
@@ -4213,13 +4214,13 @@ namespace CSharpZapoctak.ViewModels
                 default:
                     break;
             }
-            saveFileDialog.FileName = MatchDateTime.ToString("yyyy_MM_dd_HH_mm") + "_" + HomeTeam.Name + "_vs_" + AwayTeam.Name;
-
+            saveFileDialog.FileName = "gamesheet_" + MatchDateTime.ToString("yyyy_MM_dd_HH_mm") + "_" + HomeTeam.Name + "_vs_" + AwayTeam.Name;
+            
             bool? result = saveFileDialog.ShowDialog();
             if (result.ToString() != string.Empty)
             {
                 gamesheetPath = saveFileDialog.FileName;
-
+            
                 switch (format)
                 {
                     case "PDF":
@@ -4237,7 +4238,7 @@ namespace CSharpZapoctak.ViewModels
                         break;
                 }
             }
-
+            
             excelWorkbook.Close(false);
         }
 
@@ -5144,10 +5145,10 @@ namespace CSharpZapoctak.ViewModels
                 {
                     ShootoutShot firstShot = new ShootoutShot(number, firstSide,
                         firstSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
-                        firstSide == "Home" ? HomeRoster.Where(x => x.id == homeGoalieID).First() : AwayRoster.Where(x => x.id == awayGoalieID).First());
+                        firstSide == "Home" ? AwayRoster.Where(x => x.id == homeGoalieID).First() : HomeRoster.Where(x => x.id == awayGoalieID).First());
                     ShootoutShot secondShot = new ShootoutShot(number, secondSide,
                         secondSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
-                        secondSide == "Home" ? HomeRoster.Where(x => x.id == homeGoalieID).First() : AwayRoster.Where(x => x.id == awayGoalieID).First());
+                        secondSide == "Home" ? AwayRoster.Where(x => x.id == homeGoalieID).First() : HomeRoster.Where(x => x.id == awayGoalieID).First());
 
                     if (Shootout.Count < 2)
                     {

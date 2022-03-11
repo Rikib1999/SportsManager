@@ -9,7 +9,8 @@
     <ScrollViewer x:Name="scrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="10">
         <Grid>
             <!--.................LOADING.................-->
-            <StackPanel Orientation="Vertical" Visibility="{Binding LoadingVisibility}">
+            <StackPanel Orientation="Vertical" Visibility="{Binding LoadingVisibility}" VerticalAlignment="Center">
+                <TextBlock Text="Loading gamesheet..." Margin="0,0,0,20" TextAlignment="Center"/>
                 <Image Source="/Resources/loading.gif" MaxWidth="150" MaxHeight="150" RenderTransformOrigin="0.5, 0.5">
                     <Image.RenderTransform>
                         <RotateTransform x:Name="noFreeze" />

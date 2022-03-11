@@ -79,5 +79,15 @@ namespace CSharpZapoctak.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] match_summary {
+            get {
+                object obj = ResourceManager.GetObject("match_summary", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
