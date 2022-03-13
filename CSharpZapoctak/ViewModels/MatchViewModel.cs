@@ -1075,7 +1075,98 @@ namespace CSharpZapoctak.ViewModels
             summary.Range["K" + 55].Value = "1/" + numberOfPages;
 
             //periods
+            int currentPage = 0;
+            rowsLeft = 40;
+            for (int i = 0; i < PeriodEvents.Count; i++)
+            {
+                int eventsLeft = PeriodEvents[i].Events.Count;
+                int currentEvent = 0;
+                //fill pages
+                while (eventsLeft >= rowsLeft - 1)
+                {
+                    //period name
+                    if (rowsLeft == 40) {
+                        summary.Range["E" + (14 + (55 * currentPage))].Value = PeriodEvents[i].PeriodName;
+                        summary.Range["E" + (14 + (55 * currentPage))].Font.Bold = true;
+                    }
+                    else {
+                        summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Value = PeriodEvents[i].PeriodName;
+                        summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Font.Bold = true;
+                        rowsLeft--;
+                    }
+                    //events
+                    for (int j = (15 + 40) - rowsLeft; j <= 53; j++)
+                    {
+                        summary.Range["A" + (j + (55 * currentPage))].Value = PeriodEvents[i].Events[currentEvent].HomeEvent;
+                        summary.Range["F" + (j + (55 * currentPage))].Value = PeriodEvents[i].Events[currentEvent].Time;
+                        summary.Range["G" + (j + (55 * currentPage))].Value = PeriodEvents[i].Events[currentEvent].AwayEvent;
+                        currentEvent++;
+                    }
+                    eventsLeft -= rowsLeft;
+                    rowsLeft = 40;
+                    currentPage++;
+                }
+
+                //fill all what is left
+                //period name
+                if (eventsLeft > 0)
+                {
+                    //period name
+                    if (rowsLeft == 40)
+                    {
+                        summary.Range["E" + (14 + (55 * currentPage))].Value = PeriodEvents[i].PeriodName;
+                        summary.Range["E" + (14 + (55 * currentPage))].Font.Bold = true;
+                    }
+                    else
+                    {
+                        summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Value = PeriodEvents[i].PeriodName;
+                        summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Font.Bold = true;
+                        rowsLeft--;
+                    }
+                    //events
+                    for (int j = (15 + 40) - rowsLeft; j <= 53; j++)
+                    {
+                        if (currentEvent == periodEvents[i].Events.Count) { break; }
+                        summary.Range["A" + (j + (55 * currentPage))].Value = PeriodEvents[i].Events[currentEvent].HomeEvent;
+                        summary.Range["F" + (j + (55 * currentPage))].Value = PeriodEvents[i].Events[currentEvent].Time;
+                        summary.Range["G" + (j + (55 * currentPage))].Value = PeriodEvents[i].Events[currentEvent].AwayEvent;
+                        currentEvent++;
+                    }
+                    rowsLeft -= eventsLeft;
+                }
+
+                //fill empty row
+                if (rowsLeft == 1) { numberOfEvents += rowsLeft; rowsLeft = 40; }
+            }
             //shootout
+            //if (ShootoutEvents.Count > 0)
+            //{
+            //    int eventsLeft = ShootoutEvents.Count;
+            //    //fill pages
+            //    while (eventsLeft >= rowsLeft - 1)
+            //    {
+            //        //period name
+            //        numberOfEvents++;
+            //        //events
+            //        numberOfEvents += rowsLeft;
+            //        eventsLeft -= rowsLeft;
+            //        rowsLeft = 40;
+            //    }
+            //
+            //    //fill all what is left
+            //    //period name
+            //    if (eventsLeft > 0)
+            //    {
+            //        numberOfEvents++;
+            //        rowsLeft--;
+            //        //events
+            //        numberOfEvents += eventsLeft;
+            //        rowsLeft -= eventsLeft;
+            //    }
+            //
+            //    //fill empty rows
+            //    if (rowsLeft <= 2) { numberOfEvents += rowsLeft; rowsLeft = 40; }
+            //}
 
             //select path
             string summaryPath = "";
