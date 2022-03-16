@@ -1093,6 +1093,7 @@ namespace CSharpZapoctak.ViewModels
                         summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Value = PeriodEvents[i].PeriodName;
                         summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Font.Bold = true;
                         rowsLeft--;
+
                     }
                     //events
                     for (int j = (15 + 40) - rowsLeft; j <= 53; j++)
@@ -1138,35 +1139,70 @@ namespace CSharpZapoctak.ViewModels
                 //fill empty row
                 if (rowsLeft == 1) { numberOfEvents += rowsLeft; rowsLeft = 40; }
             }
+            
             //shootout
-            //if (ShootoutEvents.Count > 0)
-            //{
-            //    int eventsLeft = ShootoutEvents.Count;
-            //    //fill pages
-            //    while (eventsLeft >= rowsLeft - 1)
-            //    {
-            //        //period name
-            //        numberOfEvents++;
-            //        //events
-            //        numberOfEvents += rowsLeft;
-            //        eventsLeft -= rowsLeft;
-            //        rowsLeft = 40;
-            //    }
-            //
-            //    //fill all what is left
-            //    //period name
-            //    if (eventsLeft > 0)
-            //    {
-            //        numberOfEvents++;
-            //        rowsLeft--;
-            //        //events
-            //        numberOfEvents += eventsLeft;
-            //        rowsLeft -= eventsLeft;
-            //    }
-            //
-            //    //fill empty rows
-            //    if (rowsLeft <= 2) { numberOfEvents += rowsLeft; rowsLeft = 40; }
-            //}
+            if (ShootoutEvents.Count > 0)
+            {
+                int eventsLeft = ShootoutEvents.Count;
+                int currentEvent = 0;
+                //fill pages
+                while (eventsLeft >= rowsLeft - 1)
+                {
+                    //name
+                    if (rowsLeft == 40)
+                    {
+                        summary.Range["E" + (14 + (55 * currentPage))].Value = "Shootout";
+                        summary.Range["E" + (14 + (55 * currentPage))].Font.Bold = true;
+                    }
+                    else
+                    {
+                        summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Value = "Shootout";
+                        summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Font.Bold = true;
+                        rowsLeft--;
+                    }
+                    //events
+                    for (int j = (15 + 40) - rowsLeft; j <= 53; j++)
+                    {
+                        summary.Range["A" + (j + (55 * currentPage))].Value = ShootoutEvents[currentEvent].HomeEvent;
+                        summary.Range["F" + (j + (55 * currentPage))].Value = ShootoutEvents[currentEvent].Result;
+                        summary.Range["G" + (j + (55 * currentPage))].Value = ShootoutEvents[currentEvent].AwayEvent;
+                        currentEvent++;
+                    }
+                    eventsLeft -= rowsLeft;
+                    rowsLeft = 40;
+                    currentPage++;
+                }
+
+                //fill all what is left
+                if (eventsLeft > 0)
+                {
+                    //name
+                    if (rowsLeft == 40)
+                    {
+                        summary.Range["E" + (14 + (55 * currentPage))].Value = "Shootout";
+                        summary.Range["E" + (14 + (55 * currentPage))].Font.Bold = true;
+                    }
+                    else
+                    {
+                        summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Value = "Shootout";
+                        summary.Range["F" + (((15 + 40) - rowsLeft) + (55 * currentPage))].Font.Bold = true;
+                        rowsLeft--;
+                    }
+                    //events
+                    for (int j = (15 + 40) - rowsLeft; j <= 53; j++)
+                    {
+                        if (currentEvent == ShootoutEvents.Count) { break; }
+                        summary.Range["A" + (j + (55 * currentPage))].Value = ShootoutEvents[currentEvent].HomeEvent;
+                        summary.Range["F" + (j + (55 * currentPage))].Value = ShootoutEvents[currentEvent].Result;
+                        summary.Range["G" + (j + (55 * currentPage))].Value = ShootoutEvents[currentEvent].AwayEvent;
+                        currentEvent++;
+                    }
+                    rowsLeft -= eventsLeft;
+                }
+
+                //fill empty row
+                if (rowsLeft == 1) { numberOfEvents += rowsLeft; rowsLeft = 40; }
+            }
 
             //select path
             string summaryPath = "";
