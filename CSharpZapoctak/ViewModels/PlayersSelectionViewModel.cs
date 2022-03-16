@@ -42,22 +42,23 @@ namespace CSharpZapoctak.ViewModels
             MySqlCommand cmd = new MySqlCommand("", connection);
 
             ////////////////////////
-            string query = "SELECT p.* " +
-                           "FROM player_enlistment " +
-                           "INNER JOIN player AS p ON p.id = player_id " +
-                           "INNER JOIN seasons AS s ON s.id = season_id";
-            query += " WHERE player_id <> -1";
-            if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
-            {
-                query += " AND competition_id = " + SportsData.competition.id;
-                if (SportsData.season.id != (int)EntityState.NotSelected && SportsData.season.id != (int)EntityState.AddNew)
-                {
-                    query += " AND season_id = " + SportsData.season.id;
-                }
-            }
-            query += " GROUP BY player_id";
-
+            //string query = "SELECT p.* " +
+            //               "FROM player_enlistment " +
+            //               "INNER JOIN player AS p ON p.id = player_id " +
+            //               "INNER JOIN seasons AS s ON s.id = season_id";
+            //query += " WHERE player_id <> -1";
+            //if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
+            //{
+            //    query += " AND competition_id = " + SportsData.competition.id;
+            //    if (SportsData.season.id != (int)EntityState.NotSelected && SportsData.season.id != (int)EntityState.AddNew)
+            //    {
+            //        query += " AND season_id = " + SportsData.season.id;
+            //    }
+            //}
+            //query += " GROUP BY player_id";
+            //
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
             string matchCountQuery = "SELECT player_id, COUNT(*) AS match_count " +
                                     "FROM player_matches " +
                                     "INNER JOIN matches ON matches.id = match_id " +
