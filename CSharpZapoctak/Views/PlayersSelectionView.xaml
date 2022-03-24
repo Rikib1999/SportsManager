@@ -7,157 +7,192 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              FontSize="16">
-    <DataGrid Margin="0,3,0,0" SelectedItem="{Binding SelectedPlayer}" ItemsSource="{Binding Players}" AutoGenerateColumns="False"
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <Button Content="Export PDF" Height="25" Width="100" HorizontalAlignment="Left" Margin="0, 10, 0, 0" Command="{Binding ExportPDFCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
+            <Button Content="XLSX" Height="25" Width="50" HorizontalAlignment="Left" Margin="0, 10, 10, 0" Command="{Binding ExportXLSXCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,10,10,0">
+                <TextBlock Text="Photo"/>
+                <CheckBox IsChecked="{Binding ShowPhoto}" VerticalContentAlignment="Top" Margin="5,2,0,0">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,10,10,0">
+                <TextBlock Text="Info"/>
+                <CheckBox IsChecked="{Binding ShowInfo}" VerticalContentAlignment="Top" Margin="5,2,0,0">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,10,10,0">
+                <TextBlock Text="Stats"/>
+                <CheckBox IsChecked="{Binding ShowStats}" VerticalContentAlignment="Top" Margin="5,2,0,0">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+            </StackPanel>
+        </StackPanel>
+
+        <FrameworkElement Name="photoVisibilityManager" Visibility="{Binding PhotoVisibility}" />
+        <FrameworkElement Name="infoVisibilityManager" Visibility="{Binding InfoVisibility}" />
+        <FrameworkElement Name="statsVisibilityManager" Visibility="{Binding StatsVisibility}" />
+
+        <DataGrid DockPanel.Dock="Top" Name="dataGrid" Margin="0,3,0,0" SelectedItem="{Binding SelectedPlayer}" ItemsSource="{Binding Players}" AutoGenerateColumns="False"
                   IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
-        <DataGrid.InputBindings>
-            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CheckNavigatePlayerCommand}"/>
-        </DataGrid.InputBindings>
-        <DataGrid.ColumnHeaderStyle>
-            <Style TargetType="{x:Type DataGridColumnHeader}">
-                <Setter Property="FontWeight" Value="Bold"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="Padding" Value="8"/>
-            </Style>
-        </DataGrid.ColumnHeaderStyle>
-        <DataGrid.Columns>
-            <DataGridTemplateColumn Header="Photo" Width="80">
-                <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                        <Image Source="{Binding PhotoPath}"/>
-                    </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTextColumn Header="First name" Binding="{Binding FirstName}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Last name" Binding="{Binding LastName}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Birthdate" Binding="{Binding BirthdateText}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Gender" Binding="{Binding Gender}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Height (cm)" Binding="{Binding Height}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Weight (kg)" Binding="{Binding Weight}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Plays with" Binding="{Binding PlaysWith}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Citizenship" Binding="{Binding Citizenship.CodeTwo}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Birthplace city" Binding="{Binding BirthplaceCity}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Birthplace country" Binding="{Binding BirthplaceCountry.CodeTwo}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Status" Binding="{Binding StatusText}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                        <Setter Property="TextWrapping" Value="Wrap"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Games&#10;played" Binding="{Binding Stats.GamesPlayed}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Goals" Binding="{Binding Stats.Goals}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Assists" Binding="{Binding Stats.Assists}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Header="Penalty&#10;minutes" Binding="{Binding Stats.PenaltyMinutes}">
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                    </Style>
-                </DataGridTextColumn.ElementStyle>
-            </DataGridTextColumn>
-        </DataGrid.Columns>
-    </DataGrid>
+            <DataGrid.InputBindings>
+                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CheckNavigatePlayerCommand}"/>
+            </DataGrid.InputBindings>
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="8"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Visibility="{Binding DataContext.PhotoVisibility, Source={x:Reference photoVisibilityManager}}" Header="Photo" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding PhotoPath}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="First name" Binding="{Binding FirstName}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Last name" Binding="{Binding LastName}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Birthdate" Binding="{Binding BirthdateText}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Gender" Binding="{Binding Gender}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Height (cm)" Binding="{Binding Height}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Weight (kg)" Binding="{Binding Weight}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Plays with" Binding="{Binding PlaysWith}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Citizenship" Binding="{Binding Citizenship.CodeTwo}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Birthplace city" Binding="{Binding BirthplaceCity}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Birthplace country" Binding="{Binding BirthplaceCountry.CodeTwo}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Status" Binding="{Binding StatusText}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Games&#10;played" Binding="{Binding Stats.GamesPlayed}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Goals" Binding="{Binding Stats.Goals}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Assists" Binding="{Binding Stats.Assists}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Penalty&#10;minutes" Binding="{Binding Stats.PenaltyMinutes}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
 </UserControl>
