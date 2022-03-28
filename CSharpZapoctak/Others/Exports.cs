@@ -11,7 +11,7 @@ namespace CSharpZapoctak.Others
 {
     static class Exports
     {
-        public static void Export(System.Windows.Controls.DataGrid dataGrid, string format)
+        public static void Export(System.Windows.Controls.DataGrid dataGrid, string format, int? exportTop)
         {
             //create excel file
             Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
@@ -43,7 +43,9 @@ namespace CSharpZapoctak.Others
             }
 
             //table data
-            for (int i = 0; i < dataGrid.Items.Count; i++)
+            int rowCount = dataGrid.Items.Count;
+            if (exportTop != null && exportTop < rowCount) { rowCount = (int)exportTop; }
+            for (int i = 0; i < rowCount; i++)
             {
                 for (int j = 0; j < columns.Count; j++)
                 {
@@ -54,7 +56,7 @@ namespace CSharpZapoctak.Others
             }
 
             //create table
-            var range = table.get_Range("A2:" + (char)('A' + columns.Count - 1) + "" + (dataGrid.Items.Count + 2));
+            var range = table.get_Range("A2:" + (char)('A' + columns.Count - 1) + "" + (rowCount + 2));
             table.ListObjects.AddEx(XlListObjectSourceType.xlSrcRange, range, Type.Missing, Microsoft.Office.Interop.Excel.XlYesNoGuess.xlYes, Type.Missing).Name = "MyTableStyle";
             table.ListObjects.get_Item("MyTableStyle").TableStyle = "TableStyleMedium1";
 

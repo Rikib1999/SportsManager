@@ -134,7 +134,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportPDFCommand == null)
                 {
-                    exportPDFCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "PDF"));
+                    exportPDFCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "PDF", ExportTop));
                 }
                 return exportPDFCommand;
             }
@@ -147,12 +147,23 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportXLSXCommand == null)
                 {
-                    exportXLSXCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "XLSX"));
+                    exportXLSXCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "XLSX", ExportTop));
                 }
                 return exportXLSXCommand;
             }
         }
         #endregion
+
+        private int? exportTop;
+        public int? ExportTop
+        {
+            get { return exportTop; }
+            set
+            {
+                exportTop = value;
+                OnPropertyChanged();
+            }
+        }
 
         #region Visibilities
         private bool showPhoto = true;
