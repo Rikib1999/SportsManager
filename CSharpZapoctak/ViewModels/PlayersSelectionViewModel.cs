@@ -1,5 +1,6 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
@@ -36,7 +37,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportPDFCommand == null)
                 {
-                    exportPDFCommand = new RelayCommand(param => Export((System.Windows.Controls.DataGrid)param, "PDF"));
+                    exportPDFCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "PDF"));
                 }
                 return exportPDFCommand;
             }
@@ -49,7 +50,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportXLSXCommand == null)
                 {
-                    exportXLSXCommand = new RelayCommand(param => Export((System.Windows.Controls.DataGrid)param, "XLSX"));
+                    exportXLSXCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "XLSX"));
                 }
                 return exportXLSXCommand;
             }
@@ -226,7 +227,7 @@ namespace CSharpZapoctak.ViewModels
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                System.Data.DataTable dataTable = new System.Data.DataTable();
                 dataTable.Load(cmd.ExecuteReader());
 
                 Players = new ObservableCollection<Player>();
@@ -282,105 +283,6 @@ namespace CSharpZapoctak.ViewModels
             {
                 NavigatePlayerCommand.Execute(null);
             }
-        }
-
-        private void Export(System.Windows.Controls.DataGrid dataGrid, string format)
-        {
-            //p.Items;
-            //create excel file
-            Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
-            Microsoft.Office.Interop.Excel._Workbook excelWorkbook;
-            excelWorkbook = excelApplication.Workbooks.Add();
-            Microsoft.Office.Interop.Excel.Worksheet gamesheet = (Microsoft.Office.Interop.Excel.Worksheet)excelApplication.ActiveSheet;
-            //Microsoft.Office.Interop.Excel.Worksheet gamesheet = (Microsoft.Office.Interop.Excel.Worksheet)excelWorkbook.Worksheets[1];
-
-            //match info
-            //gamesheet.Range["G" + 8].Value = SportsData.competition.Name;
-            //gamesheet.Range["J" + 9].Value = SportsData.season.Name;
-            //
-            //if (serieMatchNumber < 1)
-            //{
-            //    gamesheet.Range["J" + 10].Value = "Group";
-            //}
-            //else if (qualificationID > 0)
-            //{
-            //    gamesheet.Range["J" + 10].Value = "Qualification";
-            //}
-            //else
-            //{
-            //    gamesheet.Range["J" + 10].Value = "Play-off";
-            //}
-            //
-            ////teams
-            //gamesheet.Range["A" + 3].Value = HomeTeam.Name;
-            //gamesheet.Range["G" + 3].Value = AwayTeam.Name;
-            //
-            ////datetime
-            //gamesheet.Range["C" + 1].Value = MatchDateTime.ToString("d");
-            //gamesheet.Range["I" + 1].Value = MatchDateTime.ToString("HH:mm");
-            //
-            ////rosters
-            //int row;
-            //for (int i = 0; i < HomePlayers.Count; i++)
-            //{
-            //    row = i + 18;
-            //    //number
-            //    gamesheet.Range["A" + row].Value = HomePlayers[i].Number;
-            //    //name
-            //    gamesheet.Range["C" + row].Value = HomePlayers[i].Name;
-            //}
-            //for (int i = 0; i < AwayPlayers.Count; i++)
-            //{
-            //    row = i + 18;
-            //    //number
-            //    gamesheet.Range["L" + row].Value = AwayPlayers[i].Number;
-            //    //name
-            //    gamesheet.Range["N" + row].Value = AwayPlayers[i].Name;
-            //}
-            //
-            ////select path
-            //string gamesheetPath = "";
-            //
-            //SaveFileDialog saveFileDialog = new SaveFileDialog();
-            //switch (format)
-            //{
-            //    case "PDF":
-            //        saveFileDialog.Filter = "PDF Files | *.pdf";
-            //        saveFileDialog.DefaultExt = "pdf";
-            //        break;
-            //    case "XLSX":
-            //        saveFileDialog.Filter = "XLSX | *.xlsx";
-            //        saveFileDialog.DefaultExt = "xlsx";
-            //        break;
-            //    default:
-            //        break;
-            //}
-            //saveFileDialog.FileName = "gamesheet_" + MatchDateTime.ToString("yyyy_MM_dd_HH_mm") + "_" + HomeTeam.Name + "_vs_" + AwayTeam.Name;
-            //
-            //bool? result = saveFileDialog.ShowDialog();
-            //if (result.ToString() != string.Empty)
-            //{
-            //    gamesheetPath = saveFileDialog.FileName;
-            //
-            //    switch (format)
-            //    {
-            //        case "PDF":
-            //            //export to pdf
-            //            try
-            //            {
-            //                excelWorkbook.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, gamesheetPath);
-            //            }
-            //            catch (Exception) { }
-            //            break;
-            //        case "XLSX":
-            //            excelWorkbook.SaveCopyAs(gamesheetPath);
-            //            break;
-            //        default:
-            //            break;
-            //    }
-            //}
-            //
-            //excelWorkbook.Close(false);
         }
     }
 }
