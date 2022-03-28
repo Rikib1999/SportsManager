@@ -1,5 +1,6 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
@@ -13,6 +14,7 @@ namespace CSharpZapoctak.ViewModels
 {
     class GoaliesSelectionViewModel : ViewModelBase
     {
+        #region Commands
         public ICommand NavigatePlayerCommand { get; set; }
 
         private ICommand checkNavigatePlayerCommand;
@@ -27,6 +29,104 @@ namespace CSharpZapoctak.ViewModels
                 return checkNavigatePlayerCommand;
             }
         }
+
+        private ICommand exportPDFCommand;
+        public ICommand ExportPDFCommand
+        {
+            get
+            {
+                if (exportPDFCommand == null)
+                {
+                    exportPDFCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "PDF"));
+                }
+                return exportPDFCommand;
+            }
+        }
+
+        private ICommand exportXLSXCommand;
+        public ICommand ExportXLSXCommand
+        {
+            get
+            {
+                if (exportXLSXCommand == null)
+                {
+                    exportXLSXCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "XLSX"));
+                }
+                return exportXLSXCommand;
+            }
+        }
+        #endregion
+
+        #region Visibilities
+        private bool showPhoto = true;
+        public bool ShowPhoto
+        {
+            get { return showPhoto; }
+            set
+            {
+                showPhoto = value;
+                PhotoVisibility = showPhoto ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool showInfo = true;
+        public bool ShowInfo
+        {
+            get { return showInfo; }
+            set
+            {
+                showInfo = value;
+                InfoVisibility = showInfo ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool showStats = true;
+        public bool ShowStats
+        {
+            get { return showStats; }
+            set
+            {
+                showStats = value;
+                StatsVisibility = showStats ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility photoVisibility = Visibility.Visible;
+        public Visibility PhotoVisibility
+        {
+            get { return photoVisibility; }
+            set
+            {
+                photoVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility infoVisibility = Visibility.Visible;
+        public Visibility InfoVisibility
+        {
+            get { return infoVisibility; }
+            set
+            {
+                infoVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility statsVisibility = Visibility.Visible;
+        public Visibility StatsVisibility
+        {
+            get { return statsVisibility; }
+            set
+            {
+                statsVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
 
         public Player SelectedPlayer { get; set; }
 
