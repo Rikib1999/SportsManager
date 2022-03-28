@@ -173,6 +173,7 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        #region Commands
         public ICommand NavigateMatchCommand { get; set; }
 
         private ICommand checkNavigateMatchCommand;
@@ -187,6 +188,81 @@ namespace CSharpZapoctak.ViewModels
                 return checkNavigateMatchCommand;
             }
         }
+
+        private ICommand exportPDFCommand;
+        public ICommand ExportPDFCommand
+        {
+            get
+            {
+                if (exportPDFCommand == null)
+                {
+                    exportPDFCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "PDF"));
+                }
+                return exportPDFCommand;
+            }
+        }
+
+        private ICommand exportXLSXCommand;
+        public ICommand ExportXLSXCommand
+        {
+            get
+            {
+                if (exportXLSXCommand == null)
+                {
+                    exportXLSXCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "XLSX"));
+                }
+                return exportXLSXCommand;
+            }
+        }
+        #endregion
+
+        #region Visibilities
+        private bool showInfo = true;
+        public bool ShowInfo
+        {
+            get { return showInfo; }
+            set
+            {
+                showInfo = value;
+                InfoVisibility = showInfo ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool showStats = true;
+        public bool ShowStats
+        {
+            get { return showStats; }
+            set
+            {
+                showStats = value;
+                StatsVisibility = showStats ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility infoVisibility = Visibility.Visible;
+        public Visibility InfoVisibility
+        {
+            get { return infoVisibility; }
+            set
+            {
+                infoVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility statsVisibility = Visibility.Visible;
+        public Visibility StatsVisibility
+        {
+            get { return statsVisibility; }
+            set
+            {
+                statsVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
 
         public Match SelectedMatch { get; set; }
 
