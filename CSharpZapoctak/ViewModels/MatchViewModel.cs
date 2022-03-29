@@ -1,5 +1,6 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using Microsoft.Win32;
 using MySql.Data.MySqlClient;
@@ -960,10 +961,9 @@ namespace CSharpZapoctak.ViewModels
             Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
             Microsoft.Office.Interop.Excel._Workbook excelWorkbook;
             excelWorkbook = excelApplication.Workbooks.Open(tempPath);
+            Microsoft.Office.Interop.Excel.Worksheet summary = (Microsoft.Office.Interop.Excel.Worksheet)excelApplication.ActiveSheet; ;
 
             //fill data, datetime, teams, rosters
-            Microsoft.Office.Interop.Excel.Worksheet summary = (Microsoft.Office.Interop.Excel.Worksheet)excelWorkbook.Worksheets[1];
-
             //match info
             summary.Range["A" + 2].Value = match.Competition.Name + " - " + match.Season.Name;
 
@@ -997,9 +997,9 @@ namespace CSharpZapoctak.ViewModels
             summary.Range["E" + 13].Value = periodScores;
 
             //logos
-            InsertLogo(match.HomeTeam.LogoPath, 123.0, 100.0, "B3", summary);
-            InsertLogo(match.AwayTeam.LogoPath, 123.0, 100.0, "I3", summary);
-            InsertLogo(match.Competition.LogoPath, 207, 100.0, "E3", summary);
+            Exports.InsertLogo(match.HomeTeam.LogoPath, 123.0, 100.0, "B3", summary);
+            Exports.InsertLogo(match.AwayTeam.LogoPath, 123.0, 100.0, "I3", summary);
+            Exports.InsertLogo(match.Competition.LogoPath, 207, 100.0, "E3", summary);
 
             //compute how many pages and copy them
             //1+39 rows
@@ -1068,7 +1068,7 @@ namespace CSharpZapoctak.ViewModels
             int numberOfPages = (int)Math.Ceiling((double)numberOfEvents / 40.0);
             for (int i = 1; i < numberOfPages; i++)
             {
-                Microsoft.Office.Interop.Excel.Range dest = summary.Range["A" + ((i * 55) + 1) + ":" + "K" + ((i * 55) + 55)];
+                Microsoft.Office.Interop.Excel.Range dest = summary.Range["A" + ((i * 55) + 1)];// + ":" + "K" + ((i * 55) + 55)];
                 copyRange.Copy(dest);
                 summary.Range["K" + ((i * 55) + 55)].Value = (i + 1) + "/" + numberOfPages;
             }
@@ -1225,56 +1225,6 @@ namespace CSharpZapoctak.ViewModels
             }
 
             excelWorkbook.Close(false);
-        }
-
-        private void InsertLogo(string logoPath, double width, double height, string range, Microsoft.Office.Interop.Excel.Worksheet sheet)
-        {
-            if (logoPath == "") { return; }
-            object missing = System.Reflection.Missing.Value;
-            Microsoft.Office.Interop.Excel.Range picPosition = sheet.get_Range(range);
-            Microsoft.Office.Interop.Excel.Pictures p = sheet.Pictures(missing) as Microsoft.Office.Interop.Excel.Pictures;
-            Microsoft.Office.Interop.Excel.Picture pic = null;
-            pic = p.Insert(logoPath, missing);
-            //1 unit = 1.33 pixels
-            double ratio = 1.0 + (1.0 / 3.0);
-            double maxWidth = width / ratio;
-            double maxHeight = height / ratio;
-            if (pic.Height >= pic.Width)
-            {
-                pic.Height = maxHeight;
-                if(pic.Width > maxWidth)
-                {
-                    pic.Width = maxWidth;
-                    double offset = (maxHeight - pic.Height) / 2.0;
-                    pic.Left = Convert.ToDouble(picPosition.Left);
-                    pic.Top = Convert.ToDouble(picPosition.Top) + offset;
-                }
-                else
-                {
-                    double offset = (maxWidth - pic.Width) / 2.0;
-                    pic.Left = Convert.ToDouble(picPosition.Left) + offset;
-                    pic.Top = Convert.ToDouble(picPosition.Top);
-                }
-            }
-            else
-            {
-                pic.Width = maxWidth;
-                if (pic.Height > maxHeight)
-                {
-                    pic.Height = maxHeight;
-                    double offset = (maxWidth - pic.Width) / 2.0;
-                    pic.Left = Convert.ToDouble(picPosition.Left) + offset;
-                    pic.Top = Convert.ToDouble(picPosition.Top);
-                }
-                else
-                {
-                    double offset = (maxHeight - pic.Height) / 2.0;
-                    pic.Left = Convert.ToDouble(picPosition.Left);
-                    pic.Top = Convert.ToDouble(picPosition.Top) + offset;
-                }
-
-            }
-            pic.Placement = Microsoft.Office.Interop.Excel.XlPlacement.xlMove;
         }
 
         private void Edit()

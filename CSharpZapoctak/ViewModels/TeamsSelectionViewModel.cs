@@ -134,7 +134,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportPDFCommand == null)
                 {
-                    exportPDFCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "PDF", ExportTop));
+                    exportPDFCommand = new RelayCommand(param => Exports.ExportTable((System.Windows.Controls.DataGrid)param, "PDF", ExportTop));
                 }
                 return exportPDFCommand;
             }
@@ -147,7 +147,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportXLSXCommand == null)
                 {
-                    exportXLSXCommand = new RelayCommand(param => Exports.Export((System.Windows.Controls.DataGrid)param, "XLSX", ExportTop));
+                    exportXLSXCommand = new RelayCommand(param => Exports.ExportTable((System.Windows.Controls.DataGrid)param, "XLSX", ExportTop));
                 }
                 return exportXLSXCommand;
             }

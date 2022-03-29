@@ -1,5 +1,6 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
@@ -383,6 +384,7 @@ namespace CSharpZapoctak.ViewModels
 
     class StandingsViewModel : ViewModelBase
     {
+        #region Visibilities
         private Visibility winnerIsSetVisibility = Visibility.Collapsed;
         public Visibility WinnerIsSetVisibility
         {
@@ -415,7 +417,9 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
+        #endregion
 
+        #region Commands
         private ICommand declareWinnerCommand;
         public ICommand DeclareWinnerCommand
         {
@@ -441,6 +445,20 @@ namespace CSharpZapoctak.ViewModels
                 return deleteWinnerCommand;
             }
         }
+
+        private ICommand exportCommand;
+        public ICommand ExportCommand
+        {
+            get
+            {
+                if (exportCommand == null)
+                {
+                    exportCommand = new RelayCommand(param => Exports.ExportStandings(Groups, param.ToString(), LastRound.Name));
+                }
+                return exportCommand;
+            }
+        }
+        #endregion
 
         private ObservableCollection<Group> groups = new ObservableCollection<Group>();
         public ObservableCollection<Group> Groups
