@@ -140,11 +140,12 @@ namespace CSharpZapoctak.Others
             int rowsForGroupAtPage = 44;
             int pageStartRow = 11;
             int marginRows = 2;
+            int tableHeaderRows = 2;
             int currentRow = pageStartRow;
             int rowsLeftAtPage = rowsForGroupAtPage;
 
             //set round
-            standings.Range["F5"].Value = "Standings after " + lastRound.ToLower();
+            standings.Range["F5"].Value = "Standings after " + lastRound;
 
             //insert season logo
             InsertLogo(SportsData.competition.LogoPath, 240, 200, "A1", standings);
@@ -152,88 +153,111 @@ namespace CSharpZapoctak.Others
             foreach (Group g in groups)
             {
                 int teamCount = g.Teams.Count;
-            
-                if (rowsLeftAtPage == rowsForGroupAtPage && currentPage != 1)
-                {
-                    //copy page header
-                    Microsoft.Office.Interop.Excel.Range nextHeader = standings.Range["A" + (((currentPage - 1) * rowsAtPage) + 1) + ":" + "O" + (((currentPage - 1) * rowsAtPage) + pageStartRow - 1)];
-                    headerRange.Copy(nextHeader);
-                }
-            
+                Microsoft.Office.Interop.Excel.Range headerDestination;
+
+                bool tableFitsWholePage = teamCount + tableHeaderRows <= rowsForGroupAtPage;
+                bool tableFitsRestOfPage = teamCount + tableHeaderRows <= rowsLeftAtPage;
+                bool noSpaceForTable = rowsLeftAtPage < tableHeaderRows + 1;
+
                 //if table fits the page
-                if (teamCount + 2 <= rowsForGroupAtPage)
+                if ((tableFitsWholePage && !tableFitsRestOfPage) || noSpaceForTable)
                 {
-                    //if table does not fit current page
-                    if (teamCount + 2 > rowsLeftAtPage)
+                    //if table does not fit current page, turn to next page
+                    if (teamCount + tableHeaderRows > rowsLeftAtPage)
                     {
                         currentPage++;
                         currentRow = ((currentPage - 1) * rowsAtPage) + pageStartRow;
                         rowsLeftAtPage = rowsForGroupAtPage;
 
                         //copy page header
-                        Microsoft.Office.Interop.Excel.Range header = standings.Range["A" + (((currentPage - 1) * rowsAtPage) + 1)];// + ":" + "O" + (((currentPage - 1) * rowsAtPage) + pageStartRow - 1)];
-                        headerRange.Copy(header);
+                        headerDestination = standings.Range["A" + (((currentPage - 1) * rowsAtPage) + 1)];
+                        headerRange.Copy(headerDestination);
                     }
+                }
 
-                    //create table
-                    //copy table header
-                    Microsoft.Office.Interop.Excel.Range nextHeader = standings.Range["A" + currentRow];// + ":" + "O" + currentRow + 1];
-                    tableHeaderRange.Copy(nextHeader);
-                    standings.Range["B" + currentRow].Value = g.Name;
-                    standings.Range["B" + currentRow + ":" + "D" + currentRow].Merge();
-                    standings.Range["B" + (currentRow + 1) + ":" + "D" + (currentRow + 1)].Merge();
+                //create table
+                //copy table header
+                headerDestination = standings.Range["A" + currentRow];
+                tableHeaderRange.Copy(headerDestination);
+                standings.Range["B" + currentRow].Value = g.Name;
+                standings.Range["B" + currentRow + ":" + "D" + currentRow].Merge();
+                standings.Range["B" + (currentRow + 1) + ":" + "D" + (currentRow + 1)].Merge();
 
-                    //color header
-                    standings.Range["A" + currentRow + ":" + "D" + currentRow].Interior.Color = colors[currentColor];
-                    currentRow++;
-                    standings.Range["K" + currentRow].Interior.Color = colors[currentColor];
-                    currentRow++;
+                //color header
+                standings.Range["A" + currentRow + ":" + "D" + currentRow].Interior.Color = colors[currentColor];
+                currentRow++;
+                rowsLeftAtPage--;
+                standings.Range["K" + currentRow].Interior.Color = colors[currentColor];
+                currentRow++;
+                rowsLeftAtPage--;
 
-                    //color points column
-                    standings.Range["K" + currentRow + ":" + "K" + (currentRow + teamCount)].Font.Color = colors[currentColor];
-                    //standings.Range["K" + currentRow + ":" + "K" + (currentRow + teamCount)].Font.Bold = true;
-                    currentColor = (currentColor + 1) % colors.Length;
+                //border table
+                standings.Range["A" + currentRow + ":" + "O" + (currentRow + Math.Min(teamCount - 1, rowsLeftAtPage - 1))].BorderAround(XlLineStyle.xlContinuous, XlBorderWeight.xlThin);
 
-                    //border table
-                    standings.Range["A" + currentRow + ":" + "O" + (currentRow + teamCount - 1)].BorderAround(Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous, Microsoft.Office.Interop.Excel.XlBorderWeight.xlThin);
-
-                    //fill table
-                    int place = 1;
-                    foreach (Team t in g.Teams)
-                    {
-                        standings.Range["A" + currentRow].NumberFormat = "@";
-                        standings.Range["A" + currentRow].Value = place + ".";
-                        place++;
-                        standings.Range["B" + currentRow + ":" + "D" + currentRow].Merge();
-                        standings.Range["B" + currentRow].Value = t.Name;
-                        standings.Range["E" + currentRow].Value = ((TeamTableStats)t.Stats).GamesPlayed;
-                        standings.Range["F" + currentRow].Value = ((TeamTableStats)t.Stats).Wins;
-                        standings.Range["G" + currentRow].Value = ((TeamTableStats)t.Stats).WinsOT;
-                        standings.Range["H" + currentRow].Value = ((TeamTableStats)t.Stats).Ties;
-                        standings.Range["I" + currentRow].Value = ((TeamTableStats)t.Stats).LossesOT;
-                        standings.Range["J" + currentRow].Value = ((TeamTableStats)t.Stats).Losses;
-                        standings.Range["K" + currentRow].Value = ((TeamTableStats)t.Stats).Points;
-                        standings.Range["K" + currentRow].Font.Bold = true;
-                        standings.Range["L" + currentRow].Value = ((TeamTableStats)t.Stats).Goals;
-                        standings.Range["M" + currentRow].Value = ((TeamTableStats)t.Stats).GoalsAgainst;
-                        standings.Range["N" + currentRow].Value = ((TeamTableStats)t.Stats).GoalDifference;
-                        standings.Range["O" + currentRow].Value = ((TeamTableStats)t.Stats).PenaltyMinutes;
-                        currentRow++;
-                    }
-
-                    //add margin
-                    currentRow += marginRows;
-                    rowsLeftAtPage -= 2 + teamCount + marginRows;
-
-                    //turn to next page
-                    if (rowsLeftAtPage < 4)
+                //fill table
+                int place = 1;
+                foreach (Team t in g.Teams)
+                {
+                    if (rowsLeftAtPage <= 0)
                     {
                         currentPage++;
                         currentRow = ((currentPage - 1) * rowsAtPage) + pageStartRow;
                         rowsLeftAtPage = rowsForGroupAtPage;
+
+                        //copy page header
+                        headerDestination = standings.Range["A" + (((currentPage - 1) * rowsAtPage) + 1)];
+                        headerRange.Copy(headerDestination);
+
+                        //create table
+                        //copy table header
+                        headerDestination = standings.Range["A" + currentRow];
+                        tableHeaderRange.Copy(headerDestination);
+                        standings.Range["B" + currentRow].Value = g.Name;
+                        standings.Range["B" + currentRow + ":" + "D" + currentRow].Merge();
+                        standings.Range["B" + (currentRow + 1) + ":" + "D" + (currentRow + 1)].Merge();
+
+                        //color header
+                        standings.Range["A" + currentRow + ":" + "D" + currentRow].Interior.Color = colors[currentColor];
+                        currentRow++;
+                        rowsLeftAtPage--;
+                        standings.Range["K" + currentRow].Interior.Color = colors[currentColor];
+                        currentRow++;
+                        rowsLeftAtPage--;
+
+                        //border table
+                        standings.Range["A" + currentRow + ":" + "O" + (currentRow + Math.Min(teamCount - place, rowsLeftAtPage - 1))].BorderAround(XlLineStyle.xlContinuous, XlBorderWeight.xlThin);
                     }
+
+                    standings.Range["A" + currentRow].NumberFormat = "@";
+                    standings.Range["A" + currentRow].Value = place + ".";
+                    place++;
+                    standings.Range["B" + currentRow + ":" + "D" + currentRow].Merge();
+                    standings.Range["B" + currentRow].Value = t.Name;
+                    standings.Range["E" + currentRow].Value = ((TeamTableStats)t.Stats).GamesPlayed;
+                    standings.Range["F" + currentRow].Value = ((TeamTableStats)t.Stats).Wins;
+                    standings.Range["G" + currentRow].Value = ((TeamTableStats)t.Stats).WinsOT;
+                    standings.Range["H" + currentRow].Value = ((TeamTableStats)t.Stats).Ties;
+                    standings.Range["I" + currentRow].Value = ((TeamTableStats)t.Stats).LossesOT;
+                    standings.Range["J" + currentRow].Value = ((TeamTableStats)t.Stats).Losses;
+                    standings.Range["K" + currentRow].Value = ((TeamTableStats)t.Stats).Points;
+                    standings.Range["K" + currentRow].Font.Bold = true;
+                    standings.Range["L" + currentRow].Value = ((TeamTableStats)t.Stats).Goals;
+                    standings.Range["M" + currentRow].Value = ((TeamTableStats)t.Stats).GoalsAgainst;
+                    standings.Range["N" + currentRow].Value = ((TeamTableStats)t.Stats).GoalDifference;
+                    standings.Range["O" + currentRow].Value = ((TeamTableStats)t.Stats).PenaltyMinutes;
+
+                    currentRow++;
+                    rowsLeftAtPage--;
                 }
+
+                //add margin
+                currentRow += marginRows;
+                rowsLeftAtPage -= marginRows;
+
+                currentColor = (currentColor + 1) % colors.Length;
             }
+
+            standings.Rows.RowHeight = 15;
 
             //select path
             string tablePath = "";

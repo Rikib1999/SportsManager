@@ -751,7 +751,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         for (int i = 0; i < dif; i++)
                         {
-                            Groups.Add(new Group { Name = "Group " + GetGroupName(groupLetterCounter++), Teams = new ObservableCollection<Team>() });
+                            Groups.Add(new Group { Name = GetGroupName(groupLetterCounter++), Teams = new ObservableCollection<Team>() });
                         }
                     }
                     groupsCount = value;
