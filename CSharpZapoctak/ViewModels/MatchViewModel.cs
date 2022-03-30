@@ -1296,15 +1296,15 @@ namespace CSharpZapoctak.ViewModels
                                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchesSelectionViewModel(ns))).Execute(null);
                                 break;
                             case GroupsScheduleViewModel:
-                                scheduleViewModel.CurrentViewModel = new GroupsScheduleViewModel(ns);
+                                scheduleViewModel.GroupsSet = true;
                                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                                 break;
                             case QualificationScheduleViewModel:
-                                scheduleViewModel.CurrentViewModel = new QualificationScheduleViewModel(ns);
+                                scheduleViewModel.QualificationSet = true;
                                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                                 break;
                             case PlayOffScheduleViewModel:
-                                scheduleViewModel.CurrentViewModel = new PlayOffScheduleViewModel(ns);
+                                scheduleViewModel.PlayOffSet = true;
                                 new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, scheduleViewModel)).Execute(null);
                                 break;
                             default:

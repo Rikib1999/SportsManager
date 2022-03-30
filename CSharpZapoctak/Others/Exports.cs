@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -299,7 +300,7 @@ namespace CSharpZapoctak.Others
         /// <param name="sheet"></param>
         public static void InsertLogo(string logoPath, double width, double height, string range, Microsoft.Office.Interop.Excel.Worksheet sheet)
         {
-            if (logoPath == "") { return; }
+            if (!File.Exists(logoPath)) { return; }
             object missing = System.Reflection.Missing.Value;
             Microsoft.Office.Interop.Excel.Range picPosition = sheet.get_Range(range);
             Microsoft.Office.Interop.Excel.Pictures p = sheet.Pictures(missing) as Microsoft.Office.Interop.Excel.Pictures;

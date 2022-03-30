@@ -173,6 +173,28 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        public Visibility addFirstTeamVisibility = Visibility.Visible;
+        public Visibility AddFirstTeamVisibility
+        {
+            get { return addFirstTeamVisibility; }
+            set
+            {
+                addFirstTeamVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility addSecondTeamVisibility = Visibility.Visible;
+        public Visibility AddSecondTeamVisibility
+        {
+            get { return addSecondTeamVisibility; }
+            set
+            {
+                addSecondTeamVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
         public void InsertMatch(Match m, int firstTeam, int firstToWin)
         {
             //set teams
@@ -293,6 +315,7 @@ namespace CSharpZapoctak.Models
             set
             {
                 firstIsEnabled = value;
+                AddFirstTeamVisibility = firstIsEnabled ? Visibility.Visible : Visibility.Collapsed;
                 OnPropertyChanged();
             }
         }
@@ -344,6 +367,7 @@ namespace CSharpZapoctak.Models
             set
             {
                 secondIsEnabled = value;
+                AddSecondTeamVisibility = secondIsEnabled ? Visibility.Visible : Visibility.Collapsed;
                 OnPropertyChanged();
             }
         }

@@ -50,15 +50,15 @@ namespace CSharpZapoctak.Models
             Name = name;
             SeasonID = seasonID;
 
-            CreateBRacket(rounds);
+            CreateBracket(rounds);
         }
 
         public Bracket(int rounds)
         {
-            CreateBRacket(rounds);
+            CreateBracket(rounds);
         }
 
-        private void CreateBRacket(int rounds)
+        private void CreateBracket(int rounds)
         {
             Series = new ObservableCollection<List<Serie>>();
             int pow = 1;
