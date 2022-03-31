@@ -178,6 +178,7 @@ namespace CSharpZapoctak.ViewModels
 
     class MatchViewModel : ViewModelBase
     {
+        #region Data
         private Match match;
         public Match Match
         {
@@ -266,17 +267,6 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private Visibility shootoutVisibility = Visibility.Collapsed;
-        public Visibility ShootoutVisibility
-        {
-            get { return shootoutVisibility; }
-            set
-            {
-                shootoutVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-
         public string GameType
         {
             get
@@ -320,7 +310,22 @@ namespace CSharpZapoctak.ViewModels
                 return "-";
             }
         }
+        #endregion
 
+        #region Visibilities
+        private Visibility shootoutVisibility = Visibility.Collapsed;
+        public Visibility ShootoutVisibility
+        {
+            get { return shootoutVisibility; }
+            set
+            {
+                shootoutVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region Commands
         private ICommand exportCommand;
         public ICommand ExportCommand
         {
@@ -359,6 +364,7 @@ namespace CSharpZapoctak.ViewModels
                 return deleteCommand;
             }
         }
+        #endregion
 
         public NavigationStore ns;
         public ViewModelBase scheduleToReturnVM;

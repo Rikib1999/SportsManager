@@ -2,6 +2,8 @@
 using CSharpZapoctak.Models;
 using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
+using LiveCharts;
+using LiveCharts.Wpf;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -460,6 +462,39 @@ namespace CSharpZapoctak.ViewModels
         }
         #endregion
 
+        private SeriesCollection goalsSeries = new SeriesCollection();
+        public SeriesCollection GoalsSeries
+        {
+            get { return goalsSeries; }
+            set
+            {
+                goalsSeries = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SeriesCollection goalsAgainstSeries = new SeriesCollection();
+        public SeriesCollection GoalsAgainstSeries
+        {
+            get { return goalsAgainstSeries; }
+            set
+            {
+                goalsAgainstSeries = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SeriesCollection penaltyMinutesSeries = new SeriesCollection();
+        public SeriesCollection PenaltyMinutesSeries
+        {
+            get { return penaltyMinutesSeries; }
+            set
+            {
+                penaltyMinutesSeries = value;
+                OnPropertyChanged();
+            }
+        }
+
         private ObservableCollection<Group> groups = new ObservableCollection<Group>();
         public ObservableCollection<Group> Groups
         {
@@ -534,6 +569,7 @@ namespace CSharpZapoctak.ViewModels
             LoadGroups();
             SortGroups();
             LoadEnlistedTeams();
+            LoadPieChartsSeries();
         }
 
         private void LoadEnlistedTeams()
@@ -843,6 +879,40 @@ namespace CSharpZapoctak.ViewModels
             finally
             {
                 connection.Close();
+            }
+        }
+
+        private void LoadPieChartsSeries()
+        {
+            foreach (Group g in Groups)
+            {
+                foreach (Team t in g.Teams)
+                {
+                    GoalsSeries.Add(new PieSeries
+                    {
+                        Values = new ChartValues<int> { ((TeamTableStats)t.Stats).Goals },
+                        Title = t.Name,
+                        LabelPoint = chartPoint => chartPoint.Y.ToString(),
+                        DataLabels = true,
+                        FontSize = 26
+                    });
+                    GoalsAgainstSeries.Add(new PieSeries
+                    {
+                        Values = new ChartValues<int> { ((TeamTableStats)t.Stats).GoalsAgainst },
+                        Title = t.Name,
+                        LabelPoint = chartPoint => chartPoint.Y.ToString(),
+                        DataLabels = true,
+                        FontSize = 26
+                    });
+                    PenaltyMinutesSeries.Add(new PieSeries
+                    {
+                        Values = new ChartValues<int> { ((TeamTableStats)t.Stats).PenaltyMinutes },
+                        Title = t.Name,
+                        LabelPoint = chartPoint => chartPoint.Y.ToString(),
+                        DataLabels = true,
+                        FontSize = 26
+                    });
+                }
             }
         }
     }

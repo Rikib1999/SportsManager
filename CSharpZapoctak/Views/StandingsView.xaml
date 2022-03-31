@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CSharpZapoctak.Views"
+             xmlns:local="clr-namespace:CSharpZapoctak.Views" xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer x:Name="scrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -166,6 +166,27 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+
+            <TextBlock Text="Goals:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:PieChart LegendLocation="Bottom" Series="{Binding GoalsSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+                <lvc:PieChart.DataTooltip>
+                    <lvc:DefaultTooltip SelectionMode="OnlySender"/>
+                </lvc:PieChart.DataTooltip>
+            </lvc:PieChart>
+
+            <TextBlock Text="Goals against:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:PieChart LegendLocation="Bottom" Series="{Binding GoalsAgainstSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+                <lvc:PieChart.DataTooltip>
+                    <lvc:DefaultTooltip SelectionMode="OnlySender"/>
+                </lvc:PieChart.DataTooltip>
+            </lvc:PieChart>
+
+            <TextBlock Text="Penalty minutes:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:PieChart LegendLocation="Bottom" Series="{Binding PenaltyMinutesSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+                <lvc:PieChart.DataTooltip>
+                    <lvc:DefaultTooltip SelectionMode="OnlySender"/>
+                </lvc:PieChart.DataTooltip>
+            </lvc:PieChart>
 
         </StackPanel>
     </ScrollViewer>
