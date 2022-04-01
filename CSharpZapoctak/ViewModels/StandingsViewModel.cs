@@ -3,6 +3,7 @@ using CSharpZapoctak.Models;
 using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using LiveCharts;
+using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using MySql.Data.MySqlClient;
 using System;
@@ -12,7 +13,10 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
@@ -96,6 +100,17 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private int assists = 0;
+        public int Assists
+        {
+            get { return assists; }
+            set
+            {
+                assists = value;
+                OnPropertyChanged();
+            }
+        }
+
         private int goalsAgainst = 0;
         public int GoalsAgainst
         {
@@ -153,6 +168,7 @@ namespace CSharpZapoctak.ViewModels
             List<Task> tasks = new List<Task>();
             tasks.Add(Task.Run(() => CountMatches(teamID, roundID)));
             tasks.Add(Task.Run(() => CountGoals(teamID, roundID)));
+            tasks.Add(Task.Run(() => CountAssists(teamID, roundID)));
             tasks.Add(Task.Run(() => CountGoalsAgainst(teamID, roundID)));
             tasks.Add(Task.Run(() => CountPenaltyMinutes(teamID, roundID)));
             Task.WaitAll(tasks.ToArray());
@@ -277,6 +293,29 @@ namespace CSharpZapoctak.ViewModels
             {
                 connection.Open();
                 Goals = (int)(long)await cmd.ExecuteScalarAsync();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        private async Task CountAssists(int teamID, int roundID)
+        {
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
+                                                "INNER JOIN matches AS m ON m.id = match_id " +
+                                                "WHERE assist_player_id <> -1 AND team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
+            if (SportsData.season.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.season.id; }
+            try
+            {
+                connection.Open();
+                Assists = (int)(long)await cmd.ExecuteScalarAsync();
             }
             catch (Exception)
             {
@@ -462,6 +501,47 @@ namespace CSharpZapoctak.ViewModels
         }
         #endregion
 
+        #region Charting data
+        public Func<double, string> AxisFormatterScatter { get; set; } = value => value.ToString("N2");
+
+        public double GoalsYSectionMedian { get; set; }
+
+        public double GoalsYSectionEnd { get; set; }
+
+        public double GoalsXSectionMedian { get; set; }
+
+        public double GoalsXSectionEnd { get; set; }
+
+        public double AssistsYSectionMedian { get; set; }
+
+        public double AssistsYSectionEnd { get; set; }
+
+        public double AssistsXSectionMedian { get; set; }
+
+        public double AssistsXSectionEnd { get; set; }
+
+        private VisualElementsCollection goalsVisuals = new VisualElementsCollection();
+        public VisualElementsCollection GoalsVisuals
+        {
+            get { return goalsVisuals; }
+            set
+            {
+                goalsVisuals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private VisualElementsCollection assistsVisuals = new VisualElementsCollection();
+        public VisualElementsCollection AssistsVisuals
+        {
+            get { return assistsVisuals; }
+            set
+            {
+                assistsVisuals = value;
+                OnPropertyChanged();
+            }
+        }
+
         private SeriesCollection goalsSeries = new SeriesCollection();
         public SeriesCollection GoalsSeries
         {
@@ -495,6 +575,30 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private SeriesCollection goalsScatterSeries = new SeriesCollection();
+        public SeriesCollection GoalsScatterSeries
+        {
+            get { return goalsScatterSeries; }
+            set
+            {
+                goalsScatterSeries = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SeriesCollection assistsScatterSeries = new SeriesCollection();
+        public SeriesCollection AssistsScatterSeries
+        {
+            get { return assistsScatterSeries; }
+            set
+            {
+                assistsScatterSeries = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region Data
         private ObservableCollection<Group> groups = new ObservableCollection<Group>();
         public ObservableCollection<Group> Groups
         {
@@ -539,20 +643,25 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private Round lastRound = new Round();
+        private Round lastRound;
         public Round LastRound
         {
             get { return lastRound; }
             set
             {
+                if (lastRound == value) { return; }
                 lastRound = value;
                 LoadGroups();
                 SortGroups();
+                LoadPieChartsSeries();
+                LoadGoalsScatterSeries();
+                LoadAssistsScatterSeries();
                 OnPropertyChanged();
             }
         }
 
         public NavigationStore ns;
+        #endregion
 
         public StandingsViewModel(NavigationStore ns)
         {
@@ -566,10 +675,7 @@ namespace CSharpZapoctak.ViewModels
             }
 
             LoadRounds();
-            LoadGroups();
-            SortGroups();
             LoadEnlistedTeams();
-            LoadPieChartsSeries();
         }
 
         private void LoadEnlistedTeams()
@@ -822,9 +928,16 @@ namespace CSharpZapoctak.ViewModels
                         Team team = new Team
                         {
                             id = int.Parse(t["team_id"].ToString()),
-                            Name = t["team_name"].ToString(),
+                            Name = t["team_name"].ToString()
                         };
                         team.Stats = new TeamTableStats(team, LastRound);
+
+                        string[] imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + team.id + ".*");
+                        if (imgPath.Length != 0)
+                        {
+                            team.LogoPath = imgPath.First();
+                        }
+
                         g.Teams.Add(team);
                     }
                 }
@@ -842,7 +955,6 @@ namespace CSharpZapoctak.ViewModels
         private void LoadRounds()
         {
             Rounds = new ObservableCollection<Round>();
-            LastRound = new Round();
             string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT id, name FROM rounds WHERE season_id = " + SportsData.season.id, connection);
@@ -884,6 +996,10 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadPieChartsSeries()
         {
+            GoalsSeries = new SeriesCollection();
+            GoalsAgainstSeries = new SeriesCollection();
+            PenaltyMinutesSeries = new SeriesCollection();
+
             foreach (Group g in Groups)
             {
                 foreach (Team t in g.Teams)
@@ -914,6 +1030,312 @@ namespace CSharpZapoctak.ViewModels
                     });
                 }
             }
+        }
+
+        private void LoadGoalsScatterSeries()
+        {
+            GoalsScatterSeries = new SeriesCollection();
+            foreach (var gv in GoalsVisuals) { GoalsVisuals.Remove(gv); }
+            double maxG = 0.0;
+            double maxGA = 0.0;
+            double medianG = 0.0;
+            double medianGA = 0.0;
+            List<double> goals = new List<double>();
+            List<double> goalsAgainst = new List<double>();
+
+            foreach (Group g in Groups)
+            {
+                foreach (Team t in g.Teams)
+                {
+                    double matches = ((TeamTableStats)t.Stats).GamesPlayed;
+                    if (matches < 1.0) { continue; }
+                    double goalsPerGame = (double)Math.Round(((TeamTableStats)t.Stats).Goals / matches, 2);
+                    goals.Add(goalsPerGame);
+                    double goalsAgainstPerGame = (double)Math.Round(((TeamTableStats)t.Stats).GoalsAgainst / matches, 2);
+                    goalsAgainst.Add(goalsAgainstPerGame);
+
+                    if (maxG < goalsPerGame) { maxG = goalsPerGame; }
+                    if (maxGA < goalsAgainstPerGame) { maxGA = goalsAgainstPerGame; }
+
+                    GoalsScatterSeries.Add(new ScatterSeries
+                    {
+                        Values = new ChartValues<ScatterPoint> { new ScatterPoint(goalsPerGame, goalsAgainstPerGame, 10) },
+                        Title = t.Name,
+                        LabelPoint = chartPoint => t.Name,
+                        DataLabels = true,
+                        FontSize = 16,
+                        MaxPointShapeDiameter = 40,
+                        MinPointShapeDiameter = 40,
+                        Foreground = Brushes.White
+                    });
+
+                    //add logo marker
+                    BitmapImage logo = new BitmapImage();
+                    if (t.LogoPath != "")
+                    {
+                        logo.BeginInit();
+                        logo.UriSource = new Uri(t.LogoPath);
+                        logo.EndInit();
+                    }
+
+                    GoalsVisuals.Add(new VisualElement
+                    {
+                        X = goalsPerGame,
+                        Y = goalsAgainstPerGame,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+
+                        UIElement = new Image
+                        {
+                            Source = logo,
+                            MaxWidth = 50,
+                            MaxHeight = 50
+                        }
+                    });
+                }
+            }
+
+            //add points to cornes for stretching the view
+            GoalsScatterSeries.Add(new ScatterSeries
+            {
+                Values = new ChartValues<ScatterPoint> { new ScatterPoint(0, 0, 0) },
+                Title = null,
+                Fill = Brushes.Transparent
+            });
+            GoalsScatterSeries.Add(new ScatterSeries
+            {
+                Values = new ChartValues<ScatterPoint> { new ScatterPoint(Math.Round(maxG * 1.1, 2), Math.Round(maxGA * 1.1, 2), 0) },
+                Title = null,
+                Fill = Brushes.Transparent
+            });
+
+            if (goals.Count > 1 && goalsAgainst.Count > 1)
+            {
+                goals.Sort();
+                goalsAgainst.Sort();
+                medianG = (goals[(goals.Count / 2) - 1] + goals[goals.Count / 2]) / 2.0;
+                medianGA = (goalsAgainst[(goalsAgainst.Count / 2) - 1] + goalsAgainst[goalsAgainst.Count / 2]) / 2.0;
+            }
+
+            GoalsYSectionMedian = Math.Round(medianGA, 2);
+            GoalsYSectionEnd = Math.Round(maxGA * 1.1, 2);
+            GoalsXSectionMedian = Math.Round(medianG, 2);
+            GoalsXSectionEnd = Math.Round(maxG * 1.1, 2);
+
+            //labels for sections
+            GoalsVisuals.Add(new VisualElement
+            {
+                X = GoalsXSectionMedian / 2.0,
+                Y = GoalsYSectionMedian / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Weak",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            GoalsVisuals.Add(new VisualElement
+            {
+                X = (GoalsXSectionMedian + GoalsXSectionEnd) / 2.0,
+                Y = GoalsYSectionMedian / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Offensive play",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            GoalsVisuals.Add(new VisualElement
+            {
+                X = (GoalsXSectionMedian + GoalsXSectionEnd) / 2.0,
+                Y = (GoalsYSectionMedian + GoalsYSectionEnd) / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Good",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            GoalsVisuals.Add(new VisualElement
+            {
+                X = GoalsXSectionMedian / 2.0,
+                Y = (GoalsYSectionMedian + GoalsYSectionEnd) / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Defensive play",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+        }
+
+        private void LoadAssistsScatterSeries()
+        {
+            AssistsScatterSeries = new SeriesCollection();
+            foreach (var av in AssistsVisuals) { AssistsVisuals.Remove(av); }
+            double maxIG = 0.0;
+            double maxA = 0.0;
+            double medianIG = 0.0;
+            double medianA = 0.0;
+            List<double> individualGoals = new List<double>();
+            List<double> assists = new List<double>();
+
+            foreach (Group g in Groups)
+            {
+                foreach (Team t in g.Teams)
+                {
+                    double matches = ((TeamTableStats)t.Stats).GamesPlayed;
+                    if (matches < 1.0) { continue; }
+                    double individualGoalsPerGame = (double)Math.Round((((TeamTableStats)t.Stats).Goals - ((TeamTableStats)t.Stats).Assists) / matches, 2);
+                    individualGoals.Add(individualGoalsPerGame);
+                    double assistsPerGame = (double)Math.Round(((TeamTableStats)t.Stats).Assists / matches, 2);
+                    assists.Add(assistsPerGame);
+
+                    if (maxIG < individualGoalsPerGame) { maxIG = individualGoalsPerGame; }
+                    if (maxA < assistsPerGame) { maxA = assistsPerGame; }
+
+                    AssistsScatterSeries.Add(new ScatterSeries
+                    {
+                        Values = new ChartValues<ScatterPoint> { new ScatterPoint(individualGoalsPerGame, assistsPerGame, 10) },
+                        Title = t.Name,
+                        LabelPoint = chartPoint => t.Name,
+                        DataLabels = true,
+                        FontSize = 16,
+                        MaxPointShapeDiameter = 40,
+                        MinPointShapeDiameter = 40,
+                        Foreground = Brushes.White
+                    });
+
+                    //add logo marker
+                    BitmapImage logo = new BitmapImage();
+                    if (t.LogoPath != "")
+                    {
+                        logo.BeginInit();
+                        logo.UriSource = new Uri(t.LogoPath);
+                        logo.EndInit();
+                    }
+
+                    AssistsVisuals.Add(new VisualElement
+                    {
+                        X = individualGoalsPerGame,
+                        Y = assistsPerGame,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+
+                        UIElement = new Image
+                        {
+                            Source = logo,
+                            MaxWidth = 50,
+                            MaxHeight = 50
+                        }
+                    });
+                }
+            }
+
+            //add points to cornes for stretching the view
+            AssistsScatterSeries.Add(new ScatterSeries
+            {
+                Values = new ChartValues<ScatterPoint> { new ScatterPoint(0, 0, 0) },
+                Title = null,
+                Fill = Brushes.Transparent
+            });
+            AssistsScatterSeries.Add(new ScatterSeries
+            {
+                Values = new ChartValues<ScatterPoint> { new ScatterPoint(Math.Round(maxIG * 1.1, 2), Math.Round(maxA * 1.1, 2), 0) },
+                Title = null,
+                Fill = Brushes.Transparent
+            });
+
+            if (individualGoals.Count > 1 && assists.Count > 1)
+            {
+                individualGoals.Sort();
+                assists.Sort();
+                medianIG = (individualGoals[(individualGoals.Count / 2) - 1] + individualGoals[individualGoals.Count / 2]) / 2.0;
+                medianA = (assists[(assists.Count / 2) - 1] + assists[assists.Count / 2]) / 2.0;
+            }
+
+            AssistsYSectionMedian = Math.Round(medianA, 2);
+            AssistsYSectionEnd = Math.Round(maxA * 1.1, 2);
+            AssistsXSectionMedian = Math.Round(medianIG, 2);
+            AssistsXSectionEnd = Math.Round(maxIG * 1.1, 2);
+
+            //labels for sections
+            AssistsVisuals.Add(new VisualElement
+            {
+                X = AssistsXSectionMedian / 2.0,
+                Y = AssistsYSectionMedian / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Weak scoring",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            AssistsVisuals.Add(new VisualElement
+            {
+                X = (AssistsXSectionMedian + AssistsXSectionEnd) / 2.0,
+                Y = AssistsYSectionMedian / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Individual play",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            AssistsVisuals.Add(new VisualElement
+            {
+                X = (AssistsXSectionMedian + AssistsXSectionEnd) / 2.0,
+                Y = (AssistsYSectionMedian + AssistsYSectionEnd) / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Scorers",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            AssistsVisuals.Add(new VisualElement
+            {
+                X = AssistsXSectionMedian / 2.0,
+                Y = (AssistsYSectionMedian + AssistsYSectionEnd) / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Team play",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
         }
     }
 }

@@ -167,26 +167,104 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <TextBlock Text="Goals:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:PieChart LegendLocation="Bottom" Series="{Binding GoalsSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:PieChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
                 <lvc:PieChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:PieChart.DataTooltip>
             </lvc:PieChart>
 
-            <TextBlock Text="Goals against:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:PieChart LegendLocation="Bottom" Series="{Binding GoalsAgainstSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals against:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:PieChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsAgainstSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
                 <lvc:PieChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:PieChart.DataTooltip>
             </lvc:PieChart>
 
-            <TextBlock Text="Penalty minutes:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:PieChart LegendLocation="Bottom" Series="{Binding PenaltyMinutesSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Penalty minutes:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:PieChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding PenaltyMinutesSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
                 <lvc:PieChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:PieChart.DataTooltip>
             </lvc:PieChart>
+
+            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals / Play style:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:CartesianChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsScatterSeries}"  VisualElements="{Binding GoalsVisuals}" Hoverable="False" Width="750" Height="750">
+                <lvc:CartesianChart.DataTooltip>
+                    <lvc:DefaultTooltip SelectionMode="OnlySender"/>
+                </lvc:CartesianChart.DataTooltip>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Goals against per game" FontSize="26" LabelFormatter="{Binding AxisFormatterScatter}">
+                        <lvc:Axis.Sections>
+                            <lvc:AxisSection Value="0" SectionWidth="{Binding GoalsYSectionMedian}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Red" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                            <lvc:AxisSection Value="{Binding GoalsYSectionMedian}" SectionWidth="{Binding GoalsYSectionEnd}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Green" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                        </lvc:Axis.Sections>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Goals per game" FontSize="26" LabelFormatter="{Binding AxisFormatterScatter}">
+                        <lvc:Axis.Sections>
+                            <lvc:AxisSection Value="0" SectionWidth="{Binding GoalsXSectionMedian}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Red"  Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                            <lvc:AxisSection Value="{Binding GoalsXSectionMedian}" SectionWidth="{Binding GoalsXSectionEnd}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Green" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                        </lvc:Axis.Sections>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+            </lvc:CartesianChart>
+
+            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Assists / Play style:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:CartesianChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding AssistsScatterSeries}"  VisualElements="{Binding AssistsVisuals}" Hoverable="False" Width="750" Height="750">
+                <lvc:CartesianChart.DataTooltip>
+                    <lvc:DefaultTooltip SelectionMode="OnlySender"/>
+                </lvc:CartesianChart.DataTooltip>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Assists per game" FontSize="26" LabelFormatter="{Binding AxisFormatterScatter}">
+                        <lvc:Axis.Sections>
+                            <lvc:AxisSection Value="0" SectionWidth="{Binding AssistsYSectionMedian}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Red" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                            <lvc:AxisSection Value="{Binding AssistsYSectionMedian}" SectionWidth="{Binding AssistsYSectionEnd}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Blue" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                        </lvc:Axis.Sections>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Goals without assist per game" FontSize="26" LabelFormatter="{Binding AxisFormatterScatter}">
+                        <lvc:Axis.Sections>
+                            <lvc:AxisSection Value="0" SectionWidth="{Binding AssistsXSectionMedian}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Red"  Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                            <lvc:AxisSection Value="{Binding AssistsXSectionMedian}" SectionWidth="{Binding AssistsXSectionEnd}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Blue" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                        </lvc:Axis.Sections>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+            </lvc:CartesianChart>
 
         </StackPanel>
     </ScrollViewer>

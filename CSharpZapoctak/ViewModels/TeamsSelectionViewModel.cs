@@ -4,11 +4,9 @@ using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -16,19 +14,9 @@ namespace CSharpZapoctak.ViewModels
 {
     class TeamsSelectionViewModel : ViewModelBase
     {
-        public class TeamStats : TeamTableStats
+        public class TeamStats : ViewModelBase, IStats
         {
-            private int assists = 0;
-            public int Assists
-            {
-                get { return assists; }
-                set
-                {
-                    assists = value;
-                    OnPropertyChanged();
-                }
-            }
-
+            #region Properties
             private string dateOfCreation;
             public string DateOfCreation
             {
@@ -51,6 +39,139 @@ namespace CSharpZapoctak.ViewModels
                 }
             }
 
+            private int gamesPlayed = 0;
+            public int GamesPlayed
+            {
+                get { return gamesPlayed; }
+                set
+                {
+                    gamesPlayed = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int wins = 0;
+            public int Wins
+            {
+                get { return wins; }
+                set
+                {
+                    wins = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int winsOT = 0;
+            public int WinsOT
+            {
+                get { return winsOT; }
+                set
+                {
+                    winsOT = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int ties = 0;
+            public int Ties
+            {
+                get { return ties; }
+                set
+                {
+                    ties = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int lossesOT = 0;
+            public int LossesOT
+            {
+                get { return lossesOT; }
+                set
+                {
+                    lossesOT = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int losses = 0;
+            public int Losses
+            {
+                get { return losses; }
+                set
+                {
+                    losses = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int goals = 0;
+            public int Goals
+            {
+                get { return goals; }
+                set
+                {
+                    goals = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int assists = 0;
+            public int Assists
+            {
+                get { return assists; }
+                set
+                {
+                    assists = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int goalsAgainst = 0;
+            public int GoalsAgainst
+            {
+                get { return goalsAgainst; }
+                set
+                {
+                    goalsAgainst = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int goalDifference = 0;
+            public int GoalDifference
+            {
+                get { return goalDifference; }
+                set
+                {
+                    goalDifference = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int penaltyMinutes = 0;
+            public int PenaltyMinutes
+            {
+                get { return penaltyMinutes; }
+                set
+                {
+                    penaltyMinutes = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            private int points = 0;
+            public int Points
+            {
+                get { return points; }
+                set
+                {
+                    points = value;
+                    OnPropertyChanged();
+                }
+            }
+            #endregion
+
             public TeamStats(Team t, string status, int gamesPlayed, int goals, int goalsAgainst, int assists, int penaltyMinutes, int wins, int winsOT, int ties, int lossesOT, int losses)
             {
                 Status = status;
@@ -66,48 +187,6 @@ namespace CSharpZapoctak.ViewModels
                 Ties = ties;
                 LossesOT = lossesOT;
                 Losses = losses;
-            }
-
-            public TeamStats(Team t, string status)
-            {
-                Status = status;
-                DateOfCreation = t.DateOfCreation.ToShortDateString();
-                CalculateStats(t.id).Await();
-            }
-
-            public new async Task CalculateStats(int teamID)
-            {
-                List<Task> tasks = new List<Task>();
-                tasks.Add(Task.Run(() => CountMatches(teamID, int.MaxValue)));
-                tasks.Add(Task.Run(() => CountGoals(teamID, int.MaxValue)));
-                tasks.Add(Task.Run(() => CountAssists(teamID)));
-                tasks.Add(Task.Run(() => CountGoalsAgainst(teamID, int.MaxValue)));
-                tasks.Add(Task.Run(() => CountPenaltyMinutes(teamID, int.MaxValue)));
-                await Task.WhenAll(tasks);
-                GoalDifference = Goals - GoalsAgainst;
-            }
-
-            private async Task CountAssists(int teamID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
-                                                    "INNER JOIN matches AS m ON m.id = match_id " +
-                                                    "WHERE assist_player_id <> -1 AND team_id = " + teamID, connection);
-                if (SportsData.season.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.season.id; }
-                try
-                {
-                    connection.Open();
-                    Assists = (int)(long)await cmd.ExecuteScalarAsync();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
             }
         }
 
