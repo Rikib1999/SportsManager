@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace CSharpZapoctak.Models
 {
-    class Group : ViewModelBase
+    class Group : NotifyPropertyChanged
     {
         public int id = (int)EntityState.NotSelected;
 

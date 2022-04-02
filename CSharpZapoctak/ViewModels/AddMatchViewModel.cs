@@ -17,7 +17,7 @@ using System.Windows.Input;
 namespace CSharpZapoctak.ViewModels
 {
     #region Classes
-    class PlayerInRoster : ViewModelBase
+    class PlayerInRoster : NotifyPropertyChanged
     {
         public int id;
 
@@ -163,7 +163,7 @@ namespace CSharpZapoctak.ViewModels
         public int relieved;
     }
 
-    class Period : ViewModelBase
+    class Period : NotifyPropertyChanged
     {
         private static readonly object _lock = new object();
 
@@ -746,7 +746,7 @@ namespace CSharpZapoctak.ViewModels
         #endregion
     }
 
-    class Event : ViewModelBase, IComparable
+    class Event : NotifyPropertyChanged, IComparable
     {
         public int index;
 
@@ -817,7 +817,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class SwapEvent : ViewModelBase
+    class SwapEvent : NotifyPropertyChanged
     {
         public SwapEvent(Event inPenalty)
         {
@@ -892,7 +892,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PenaltyEndCollision : ViewModelBase
+    class PenaltyEndCollision : NotifyPropertyChanged
     {
         public PenaltyEndCollision(State inPenalty, State outPenalty, Penalty penalty)
         {
@@ -945,7 +945,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class Stat : ViewModelBase { }
+    class Stat : NotifyPropertyChanged { }
 
     class BasicStat : Stat, IComparable
     {
@@ -1618,7 +1618,7 @@ namespace CSharpZapoctak.ViewModels
     }
     #endregion
 
-    class AddMatchViewModel : ViewModelBase
+    class AddMatchViewModel : NotifyPropertyChanged
     {
         #region Properties
 
@@ -2187,7 +2187,7 @@ namespace CSharpZapoctak.ViewModels
 
         #region Data
         public NavigationStore ns;
-        public ViewModelBase scheduleToReturnVM;
+        public NotifyPropertyChanged scheduleToReturnVM;
         public int seasonID;
         public Match match;
         public bool edit;
@@ -2406,7 +2406,7 @@ namespace CSharpZapoctak.ViewModels
         }
 
         //ADD for bracket
-        public AddMatchViewModel(NavigationStore navigationStore, ViewModelBase scheduleToReturnVM, int qualificationID, int bracketIndex, int round, int serieMatchNumber, Team first, Team second)
+        public AddMatchViewModel(NavigationStore navigationStore, NotifyPropertyChanged scheduleToReturnVM, int qualificationID, int bracketIndex, int round, int serieMatchNumber, Team first, Team second)
         {
             ns = navigationStore;
             seasonID = SportsData.season.id;
@@ -2433,7 +2433,7 @@ namespace CSharpZapoctak.ViewModels
         }
 
         //EDIT
-        public AddMatchViewModel(NavigationStore navigationStore, Match m, ViewModelBase scheduleToReturnVM)
+        public AddMatchViewModel(NavigationStore navigationStore, Match m, NotifyPropertyChanged scheduleToReturnVM)
         {
             edit = true;
             ns = navigationStore;

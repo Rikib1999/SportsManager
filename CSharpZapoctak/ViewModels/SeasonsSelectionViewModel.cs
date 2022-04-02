@@ -14,9 +14,9 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class SeasonsSelectionViewModel : ViewModelBase
+    class SeasonsSelectionViewModel : NotifyPropertyChanged
     {
-        public class SeasonStats : ViewModelBase, IStats
+        public class SeasonStats : NotifyPropertyChanged, IStats
         {
             #region Properties
             private string format = "";

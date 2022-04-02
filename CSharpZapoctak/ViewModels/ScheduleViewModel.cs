@@ -3,11 +3,11 @@ using System.Windows;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class ScheduleViewModel : ViewModelBase
+    class ScheduleViewModel : NotifyPropertyChanged
     {
         private NavigationStore ns;
 
-        public ViewModelBase CurrentViewModel { get; set; }
+        public NotifyPropertyChanged CurrentViewModel { get; set; }
 
         private bool qualififcationSet = false;
         public bool QualificationSet

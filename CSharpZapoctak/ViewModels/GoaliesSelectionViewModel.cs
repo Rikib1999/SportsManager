@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class GoaliesSelectionViewModel : ViewModelBase
+    class GoaliesSelectionViewModel : NotifyPropertyChanged
     {
         #region Commands
         public ICommand NavigatePlayerCommand { get; set; }

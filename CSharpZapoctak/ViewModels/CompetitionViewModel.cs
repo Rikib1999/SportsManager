@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class CompetitionViewModel : ViewModelBase
+    class CompetitionViewModel : NotifyPropertyChanged
     {
         private BitmapImage bitmap;
         public BitmapImage Bitmap

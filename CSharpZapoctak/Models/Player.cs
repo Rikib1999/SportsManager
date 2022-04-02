@@ -3,7 +3,7 @@ using System;
 
 namespace CSharpZapoctak.Models
 {
-    public class Player : ViewModelBase
+    public class Player : NotifyPropertyChanged
     {
         public int id = (int)EntityState.NotSelected;
 

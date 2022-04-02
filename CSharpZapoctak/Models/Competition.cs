@@ -2,7 +2,7 @@
 
 namespace CSharpZapoctak.Models
 {
-    public class Competition : ViewModelBase
+    public class Competition : NotifyPropertyChanged
     {
         public int id = (int)EntityState.NotSelected;
 

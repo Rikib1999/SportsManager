@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class AddSeasonViewModel : ViewModelBase
+    class AddSeasonViewModel : NotifyPropertyChanged
     {
         #region Properties
 

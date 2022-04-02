@@ -4,11 +4,11 @@ using System.Windows;
 
 namespace CSharpZapoctak.ViewModels
 {
-    public class SportViewModel : ViewModelBase
+    public class SportViewModel : NotifyPropertyChanged
     {
-        public ViewModelBase CurrentViewModel { get; set; }
+        public NotifyPropertyChanged CurrentViewModel { get; set; }
 
-        public ViewModelBase NavBarViewModel { get; set; }
+        public NotifyPropertyChanged NavBarViewModel { get; set; }
 
         public string Header { get; set; }
 
@@ -31,7 +31,7 @@ namespace CSharpZapoctak.ViewModels
             Header = char.ToUpper(SportsData.sport.name[0]) + SportsData.sport.name.Substring(1).Replace('_', '-') + cName + sName;
         }
 
-        public SportViewModel(NavigationStore navigationStore, ViewModelBase newViewModel)
+        public SportViewModel(NavigationStore navigationStore, NotifyPropertyChanged newViewModel)
         {
             UpdateHeader();
 

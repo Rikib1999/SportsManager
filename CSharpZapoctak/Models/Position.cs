@@ -2,7 +2,7 @@
 
 namespace CSharpZapoctak.Models
 {
-    public class Position : ViewModelBase
+    public class Position : NotifyPropertyChanged
     {
         private string name = "";
         public string Name

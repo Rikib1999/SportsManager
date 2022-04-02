@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace CSharpZapoctak.Models
 {
-    class Score : ViewModelBase
+    class Score : NotifyPropertyChanged
     {
         public Score(int score, Match match)
         {
@@ -37,7 +37,7 @@ namespace CSharpZapoctak.Models
         }
     }
 
-    class Serie : ViewModelBase
+    class Serie : NotifyPropertyChanged
     {
         private Team firstTeam = new Team { id = -1, Name = "-- no team --" };
         public Team FirstTeam

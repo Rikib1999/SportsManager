@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class CompetitionsSelectionViewModel : ViewModelBase
+    class CompetitionsSelectionViewModel : NotifyPropertyChanged
     {
         public ICommand NavigateCompetitionCommand { get; }
         public ObservableCollection<Competition> Competitions { get; set; }

@@ -14,7 +14,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class QualificationScheduleViewModel : ViewModelBase
+    class QualificationScheduleViewModel : NotifyPropertyChanged
     {
         private readonly NavigationStore ns;
         public bool IsEnabled { get; private set; } = true;

@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.Models
 {
-    class Round : ViewModelBase
+    class Round : NotifyPropertyChanged
     {
         public int id = (int)EntityState.NotSelected;
 

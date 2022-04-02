@@ -14,7 +14,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class MatchEvent : ViewModelBase, IComparable
+    class MatchEvent : NotifyPropertyChanged, IComparable
     {
         private int period;
         public int Period
@@ -85,7 +85,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class ShootoutEvent : ViewModelBase, IComparable
+    class ShootoutEvent : NotifyPropertyChanged, IComparable
     {
         public int number = 0;
 
@@ -140,7 +140,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PeriodEvents : ViewModelBase
+    class PeriodEvents : NotifyPropertyChanged
     {
         private int period;
         public int Period
@@ -176,7 +176,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class MatchViewModel : ViewModelBase
+    class MatchViewModel : NotifyPropertyChanged
     {
         #region Data
         private Match match;
@@ -367,7 +367,7 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         public NavigationStore ns;
-        public ViewModelBase scheduleToReturnVM;
+        public NotifyPropertyChanged scheduleToReturnVM;
         public bool IsEditable = true;
 
         public int qualificationID;
@@ -376,7 +376,7 @@ namespace CSharpZapoctak.ViewModels
         public bool hasWinner;
         public bool isPlayOffStarted;
 
-        public MatchViewModel(NavigationStore navigationStore, Match m, ViewModelBase scheduleToReturnVM)
+        public MatchViewModel(NavigationStore navigationStore, Match m, NotifyPropertyChanged scheduleToReturnVM)
         {
             this.scheduleToReturnVM = scheduleToReturnVM;
             ns = navigationStore;

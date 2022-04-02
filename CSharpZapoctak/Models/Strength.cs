@@ -2,7 +2,7 @@
 
 namespace CSharpZapoctak.Models
 {
-    class Strength : ViewModelBase
+    class Strength : NotifyPropertyChanged
     {
         public int id;
 

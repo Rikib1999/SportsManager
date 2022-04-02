@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class PlayerEnlistment : ViewModelBase
+    class PlayerEnlistment : NotifyPropertyChanged
     {
         public int id;
 
@@ -136,7 +136,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PlayerEnlistmentDictionary : ViewModelBase
+    class PlayerEnlistmentDictionary : NotifyPropertyChanged
     {
         public int SeasonID { get; set; }
 
@@ -152,7 +152,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class CompetitionDictionary : ViewModelBase
+    class CompetitionDictionary : NotifyPropertyChanged
     {
         public string CompetitionName { get; set; }
 
@@ -168,7 +168,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class SeasonDictionary : ViewModelBase
+    class SeasonDictionary : NotifyPropertyChanged
     {
         private ObservableCollection<PlayerEnlistmentDictionary> seasons = new ObservableCollection<PlayerEnlistmentDictionary>();
         public ObservableCollection<PlayerEnlistmentDictionary> Seasons
@@ -219,7 +219,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PlayerList : ViewModelBase
+    class PlayerList : NotifyPropertyChanged
     {
         private ObservableCollection<PlayerEnlistment> players = new ObservableCollection<PlayerEnlistment>();
         public ObservableCollection<PlayerEnlistment> Players
@@ -694,7 +694,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class TeamViewModel : ViewModelBase
+    class TeamViewModel : NotifyPropertyChanged
     {
         public Team CurrentTeam { get; set; }
 

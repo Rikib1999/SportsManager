@@ -2,11 +2,11 @@
 
 namespace CSharpZapoctak.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : NotifyPropertyChanged
     {
         private readonly NavigationStore _navigationStore;
 
-        public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
+        public NotifyPropertyChanged CurrentViewModel => _navigationStore.CurrentViewModel;
 
         public MainViewModel(NavigationStore navigationStore)
         {

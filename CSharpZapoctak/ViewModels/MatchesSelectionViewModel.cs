@@ -13,9 +13,9 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class MatchesSelectionViewModel : ViewModelBase
+    class MatchesSelectionViewModel : NotifyPropertyChanged
     {
-        public class MatchStats : ViewModelBase, IStats
+        public class MatchStats : NotifyPropertyChanged, IStats
         {
             #region Properties
             private string partOfSeason = "";

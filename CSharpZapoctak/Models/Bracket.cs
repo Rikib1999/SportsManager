@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace CSharpZapoctak.Models
 {
-    class Bracket : ViewModelBase
+    class Bracket : NotifyPropertyChanged
     {
         public int id = (int)EntityState.NotSelected;
 

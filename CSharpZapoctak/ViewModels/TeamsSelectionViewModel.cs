@@ -12,9 +12,9 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class TeamsSelectionViewModel : ViewModelBase
+    class TeamsSelectionViewModel : NotifyPropertyChanged
     {
-        public class TeamStats : ViewModelBase, IStats
+        public class TeamStats : NotifyPropertyChanged, IStats
         {
             #region Properties
             private string dateOfCreation;

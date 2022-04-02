@@ -2,7 +2,7 @@
 
 namespace CSharpZapoctak.ViewModels
 {
-    public class ViewModelBase : INotifyPropertyChanged
+    public class NotifyPropertyChanged : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

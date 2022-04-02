@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    public class SportsSelectionViewModel : ViewModelBase
+    public class SportsSelectionViewModel : NotifyPropertyChanged
     {
         /*
         private Sport football = new Sport { name = "football" };

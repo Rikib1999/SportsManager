@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class EditPlayerViewModel : ViewModelBase
+    class EditPlayerViewModel : NotifyPropertyChanged
     {
         private Player player;
         public Player Player

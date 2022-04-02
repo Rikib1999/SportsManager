@@ -20,7 +20,7 @@ using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class TeamTableStats : ViewModelBase, IStats
+    class TeamTableStats : NotifyPropertyChanged, IStats
     {
         #region Properties
         private int gamesPlayed = 0;
@@ -423,7 +423,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class StandingsViewModel : ViewModelBase
+    class StandingsViewModel : NotifyPropertyChanged
     {
         #region Visibilities
         private Visibility winnerIsSetVisibility = Visibility.Collapsed;

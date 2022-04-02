@@ -14,7 +14,7 @@ using static CSharpZapoctak.ViewModels.MatchesSelectionViewModel;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class PlayerStats : ViewModelBase, IStats
+    class PlayerStats : NotifyPropertyChanged, IStats
     {
         #region Properties
         private int gamesPlayed = 0;
@@ -204,7 +204,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class GoalieStats : ViewModelBase, IStats
+    class GoalieStats : NotifyPropertyChanged, IStats
     {
         #region Properties
         private int gamesPlayed = 0;
@@ -599,7 +599,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class CompetitionRecord<T> : ViewModelBase where T : IStats
+    class CompetitionRecord<T> : NotifyPropertyChanged where T : IStats
     {
         private Competition competition;
         public Competition Competition
@@ -672,7 +672,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class SeasonRecord<T> : ViewModelBase where T : IStats
+    class SeasonRecord<T> : NotifyPropertyChanged where T : IStats
     {
         private Season season;
         public Season Season
@@ -745,7 +745,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PlayerViewModel : ViewModelBase
+    class PlayerViewModel : NotifyPropertyChanged
     {
         private Player player;
         public Player Player

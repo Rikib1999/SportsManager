@@ -4,7 +4,7 @@ using System;
 
 namespace CSharpZapoctak.Commands
 {
-    public class NavigateCommand<TViewModel> : CommandBase where TViewModel : ViewModelBase
+    public class NavigateCommand<TViewModel> : CommandBase where TViewModel : NotifyPropertyChanged
     {
         private readonly NavigationStore _navigationStore;
         private readonly Func<TViewModel> _createViewModel;

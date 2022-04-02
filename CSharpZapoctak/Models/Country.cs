@@ -2,7 +2,7 @@
 
 namespace CSharpZapoctak.Models
 {
-    public class Country : ViewModelBase
+    public class Country : NotifyPropertyChanged
     {
         private string name = "";
         public string Name

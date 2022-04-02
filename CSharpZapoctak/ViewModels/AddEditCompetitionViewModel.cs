@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class AddEditCompetitionViewModel : ViewModelBase
+    class AddEditCompetitionViewModel : NotifyPropertyChanged
     {
         private Competition currentCompetition;
         public Competition CurrentCompetition

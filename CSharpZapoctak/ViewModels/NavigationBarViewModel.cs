@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class NavigationBarViewModel : ViewModelBase
+    class NavigationBarViewModel : NotifyPropertyChanged
     {
         public Dictionary<string, bool> AreButtonsChecked { get; set; } = new Dictionary<string, bool>() {
             { "Sports", false },

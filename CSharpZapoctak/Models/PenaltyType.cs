@@ -2,7 +2,7 @@
 
 namespace CSharpZapoctak.Models
 {
-    public class PenaltyType : ViewModelBase
+    public class PenaltyType : NotifyPropertyChanged
     {
         private string name = "";
         public string Name

@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class GroupsScheduleViewModel : ViewModelBase
+    class GroupsScheduleViewModel : NotifyPropertyChanged
     {
         public class MatchStats : IStats
         {

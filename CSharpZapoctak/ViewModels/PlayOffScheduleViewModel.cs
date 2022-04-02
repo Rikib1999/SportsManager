@@ -23,7 +23,7 @@ namespace CSharpZapoctak.ViewModels
         public int points;
     }
 
-    class PlayOffScheduleViewModel : ViewModelBase
+    class PlayOffScheduleViewModel : NotifyPropertyChanged
     {
         private readonly NavigationStore ns;
 
