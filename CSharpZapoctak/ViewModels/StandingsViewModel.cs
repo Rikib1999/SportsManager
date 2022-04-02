@@ -523,16 +523,29 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ICommand exportCommand;
-        public ICommand ExportCommand
+        private ICommand exportStandingsCommand;
+        public ICommand ExportStandingsCommand
         {
             get
             {
-                if (exportCommand == null)
+                if (exportStandingsCommand == null)
                 {
-                    exportCommand = new RelayCommand(param => Exports.ExportStandings(Groups, param.ToString(), LastRound.Name));
+                    exportStandingsCommand = new RelayCommand(param => Exports.ExportStandings(Groups, param.ToString(), LastRound.Name));
                 }
-                return exportCommand;
+                return exportStandingsCommand;
+            }
+        }
+
+        private ICommand exportChartCommand;
+        public ICommand ExportChartCommand
+        {
+            get
+            {
+                if (exportChartCommand == null)
+                {
+                    exportChartCommand = new RelayCommand(param => Exports.ExportChart((FrameworkElement)param));
+                }
+                return exportChartCommand;
             }
         }
         #endregion

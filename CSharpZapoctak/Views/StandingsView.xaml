@@ -37,8 +37,8 @@
             </StackPanel>
 
             <StackPanel Visibility="{Binding RoundsVisibility}" Orientation="Horizontal" Margin="0,10,0,0">
-                <Button Content="Export (PDF)" Width="190" Command="{Binding ExportCommand}" CommandParameter="PDF"/>
-                <Button Content="(XLSX)" Width="90" Command="{Binding ExportCommand}" CommandParameter="XLSX"/>
+                <Button Content="Export (PDF)" Width="190" Command="{Binding ExportStandingsCommand}" CommandParameter="PDF"/>
+                <Button Content="(XLSX)" Width="90" Command="{Binding ExportStandingsCommand}" CommandParameter="XLSX"/>
             </StackPanel>
 
             <ItemsControl ItemsSource="{Binding Groups}" Name="groupSource">
@@ -167,29 +167,41 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:PieChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+            <StackPanel Visibility="{Binding RoundsVisibility}" Orientation="Horizontal" Margin="0,50,0,10" HorizontalAlignment="Center">
+                <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+                <Button Visibility="{Binding RoundsVisibility}" Content="Export" Margin="20,0,0,0" Width="90" Command="{Binding ExportChartCommand}" CommandParameter="{Binding ElementName=goalsPieChart}"/>
+            </StackPanel>
+            <lvc:PieChart Name="goalsPieChart" Background="White" Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
                 <lvc:PieChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:PieChart.DataTooltip>
             </lvc:PieChart>
 
-            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals against:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:PieChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsAgainstSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+            <StackPanel Visibility="{Binding RoundsVisibility}" Orientation="Horizontal" Margin="0,50,0,10" HorizontalAlignment="Center">
+                <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals against" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+                <Button Visibility="{Binding RoundsVisibility}" Content="Export" Margin="20,0,0,0" Width="90" Command="{Binding ExportChartCommand}" CommandParameter="{Binding ElementName=goalsAgainstPieChart}"/>
+            </StackPanel>
+            <lvc:PieChart Name="goalsAgainstPieChart" Background="White" Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsAgainstSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
                 <lvc:PieChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:PieChart.DataTooltip>
             </lvc:PieChart>
 
-            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Penalty minutes:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:PieChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding PenaltyMinutesSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
+            <StackPanel Visibility="{Binding RoundsVisibility}" Orientation="Horizontal" Margin="0,50,0,10" HorizontalAlignment="Center">
+                <TextBlock Visibility="{Binding RoundsVisibility}" Text="Penalty minutes" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+                <Button Visibility="{Binding RoundsVisibility}" Content="Export" Margin="20,0,0,0" Width="90" Command="{Binding ExportChartCommand}" CommandParameter="{Binding ElementName=penaltiesPieChart}"/>
+            </StackPanel>
+            <lvc:PieChart Name="penaltiesPieChart" Background="White" Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding PenaltyMinutesSeries}" Hoverable="False" Width="750" Height="750" InnerRadius="70">
                 <lvc:PieChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:PieChart.DataTooltip>
             </lvc:PieChart>
 
-            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals / Play style:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:CartesianChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsScatterSeries}"  VisualElements="{Binding GoalsVisuals}" Hoverable="False" Width="750" Height="750">
+            <StackPanel Visibility="{Binding RoundsVisibility}" Orientation="Horizontal" Margin="0,50,0,10" HorizontalAlignment="Center">
+                <TextBlock Visibility="{Binding RoundsVisibility}" Text="Goals / Play style" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+                <Button Visibility="{Binding RoundsVisibility}" Content="Export" Margin="20,0,0,0" Width="90" Command="{Binding ExportChartCommand}" CommandParameter="{Binding ElementName=goalsChart}"/>
+            </StackPanel>
+            <lvc:CartesianChart Name="goalsChart" Background="White" Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding GoalsScatterSeries}"  VisualElements="{Binding GoalsVisuals}" Hoverable="False" Width="750" Height="750">
                 <lvc:CartesianChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:CartesianChart.DataTooltip>
@@ -227,8 +239,11 @@
                 </lvc:CartesianChart.AxisX>
             </lvc:CartesianChart>
 
-            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Assists / Play style:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:CartesianChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding AssistsScatterSeries}"  VisualElements="{Binding AssistsVisuals}" Hoverable="False" Width="750" Height="750">
+            <StackPanel Visibility="{Binding RoundsVisibility}" Orientation="Horizontal" Margin="0,50,0,10" HorizontalAlignment="Center">
+                <TextBlock Visibility="{Binding RoundsVisibility}" Text="Assists / Play style" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+                <Button Visibility="{Binding RoundsVisibility}" Content="Export" Margin="20,0,0,0" Width="90" Command="{Binding ExportChartCommand}" CommandParameter="{Binding ElementName=assistsChart}"/>
+            </StackPanel>
+            <lvc:CartesianChart Name="assistsChart" Background="White" Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding AssistsScatterSeries}"  VisualElements="{Binding AssistsVisuals}" Hoverable="False" Width="750" Height="750">
                 <lvc:CartesianChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:CartesianChart.DataTooltip>
@@ -266,8 +281,11 @@
                 </lvc:CartesianChart.AxisX>
             </lvc:CartesianChart>
 
-            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Penalties / Play style:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
-            <lvc:CartesianChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding PenaltiesScatterSeries}"  VisualElements="{Binding PenaltiesVisuals}" Hoverable="False" Width="750" Height="750">
+            <StackPanel Visibility="{Binding RoundsVisibility}" Orientation="Horizontal" Margin="0,50,0,10" HorizontalAlignment="Center">
+                <TextBlock Visibility="{Binding RoundsVisibility}" Text="Penalties / Play style" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+                <Button Visibility="{Binding RoundsVisibility}" Content="Export" Margin="20,0,0,0" Width="90" Command="{Binding ExportChartCommand}" CommandParameter="{Binding ElementName=penaltiesChart}"/>
+            </StackPanel>
+            <lvc:CartesianChart Name="penaltiesChart" Background="White" Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding PenaltiesScatterSeries}" VisualElements="{Binding PenaltiesVisuals}" Hoverable="False" Width="750" Height="750">
                 <lvc:CartesianChart.DataTooltip>
                     <lvc:DefaultTooltip SelectionMode="OnlySender"/>
                 </lvc:CartesianChart.DataTooltip>

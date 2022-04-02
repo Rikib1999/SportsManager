@@ -2,6 +2,7 @@
 using CSharpZapoctak.Models;
 using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
+using LiveCharts;
 using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
@@ -308,6 +309,30 @@ namespace CSharpZapoctak.ViewModels
                     return Match.AwayScore.ToString();
                 }
                 return "-";
+            }
+        }
+        #endregion
+
+        #region Charting data
+        private VisualElementsCollection visuals = new VisualElementsCollection();
+        public VisualElementsCollection Visuals
+        {
+            get { return visuals; }
+            set
+            {
+                visuals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SeriesCollection chartSeries = new SeriesCollection();
+        public SeriesCollection ChartSeries
+        {
+            get { return chartSeries; }
+            set
+            {
+                chartSeries = value;
+                OnPropertyChanged();
             }
         }
         #endregion

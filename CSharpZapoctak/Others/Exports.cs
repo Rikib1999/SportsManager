@@ -10,6 +10,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.Others
 {
@@ -370,6 +372,40 @@ namespace CSharpZapoctak.Others
 
             }
             pic.Placement = Microsoft.Office.Interop.Excel.XlPlacement.xlMove;
+        }
+
+        public static void ExportChart(FrameworkElement chart)
+        {
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)chart.ActualWidth, (int)chart.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            Rect bounds = VisualTreeHelper.GetDescendantBounds(chart);
+            DrawingVisual dv = new DrawingVisual();
+            using (DrawingContext ctx = dv.RenderOpen())
+            {
+                VisualBrush vb = new VisualBrush(chart);
+                ctx.DrawRectangle(vb, null, new Rect(new System.Windows.Point(), bounds.Size));
+            }
+            rtb.Render(dv);
+
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            png.Frames.Add(BitmapFrame.Create(rtb));
+
+            //select path
+            string imagePath = "";
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PNG Files | *.png";
+            saveFileDialog.DefaultExt = "png";
+            saveFileDialog.FileName = "chart";
+
+            bool? result = saveFileDialog.ShowDialog();
+            if (result.ToString() != string.Empty)
+            {
+                imagePath = saveFileDialog.FileName;
+                using (Stream fileStream = new FileStream(imagePath, FileMode.Create))
+                {
+                    png.Save(fileStream);
+                }
+            }
         }
     }
 }
