@@ -266,6 +266,45 @@
                 </lvc:CartesianChart.AxisX>
             </lvc:CartesianChart>
 
+            <TextBlock Visibility="{Binding RoundsVisibility}" Text="Penalties / Play style:" Margin="0,50,0,10" TextAlignment="Center" FontSize="30" FontWeight="Bold"/>
+            <lvc:CartesianChart Visibility="{Binding RoundsVisibility}" LegendLocation="Bottom" Series="{Binding PenaltiesScatterSeries}"  VisualElements="{Binding PenaltiesVisuals}" Hoverable="False" Width="750" Height="750">
+                <lvc:CartesianChart.DataTooltip>
+                    <lvc:DefaultTooltip SelectionMode="OnlySender"/>
+                </lvc:CartesianChart.DataTooltip>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Penalty minutes per game" FontSize="26" LabelFormatter="{Binding AxisFormatterScatter}">
+                        <lvc:Axis.Sections>
+                            <lvc:AxisSection Value="0" SectionWidth="{Binding PenaltiesYSectionMedian}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Red" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                            <lvc:AxisSection Value="{Binding PenaltiesYSectionMedian}" SectionWidth="{Binding PenaltiesYSectionEnd}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Green" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                        </lvc:Axis.Sections>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Penalty minutes against per game" FontSize="26" LabelFormatter="{Binding AxisFormatterScatter}">
+                        <lvc:Axis.Sections>
+                            <lvc:AxisSection Value="0" SectionWidth="{Binding PenaltiesXSectionMedian}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Green"  Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                            <lvc:AxisSection Value="{Binding PenaltiesXSectionMedian}" SectionWidth="{Binding PenaltiesXSectionEnd}">
+                                <lvc:AxisSection.Fill>
+                                    <SolidColorBrush Color="Red" Opacity=".2"></SolidColorBrush>
+                                </lvc:AxisSection.Fill>
+                            </lvc:AxisSection>
+                        </lvc:Axis.Sections>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+            </lvc:CartesianChart>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

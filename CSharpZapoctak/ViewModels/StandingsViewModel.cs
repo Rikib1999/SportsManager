@@ -144,6 +144,17 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private int penaltyMinutesAgainst = 0;
+        public int PenaltyMinutesAgainst
+        {
+            get { return penaltyMinutesAgainst; }
+            set
+            {
+                penaltyMinutesAgainst = value;
+                OnPropertyChanged();
+            }
+        }
+
         private int points = 0;
         public int Points
         {
@@ -171,6 +182,7 @@ namespace CSharpZapoctak.ViewModels
             tasks.Add(Task.Run(() => CountAssists(teamID, roundID)));
             tasks.Add(Task.Run(() => CountGoalsAgainst(teamID, roundID)));
             tasks.Add(Task.Run(() => CountPenaltyMinutes(teamID, roundID)));
+            tasks.Add(Task.Run(() => CountPenaltyMinutesAgainst(teamID, roundID)));
             Task.WaitAll(tasks.ToArray());
             GoalDifference = Goals - GoalsAgainst;
         }
@@ -374,6 +386,30 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        public async Task CountPenaltyMinutesAgainst(int teamID, int roundID)
+        {
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT COALESCE(SUM(p.minutes), 0) FROM penalties " +
+                                                "INNER JOIN matches AS m ON m.id = match_id " +
+                                                "INNER JOIN penalty_type AS p ON p.code = penalty_type_id " +
+                                                "WHERE opponent_team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
+            if (SportsData.season.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.season.id; }
+            try
+            {
+                connection.Open();
+                PenaltyMinutesAgainst = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
         public int CompareTo(TeamTableStats other, bool onlyPoints)
         {
             /*ORDERING RULES:
@@ -520,6 +556,14 @@ namespace CSharpZapoctak.ViewModels
 
         public double AssistsXSectionEnd { get; set; }
 
+        public double PenaltiesYSectionMedian { get; set; }
+
+        public double PenaltiesYSectionEnd { get; set; }
+
+        public double PenaltiesXSectionMedian { get; set; }
+
+        public double PenaltiesXSectionEnd { get; set; }
+
         private VisualElementsCollection goalsVisuals = new VisualElementsCollection();
         public VisualElementsCollection GoalsVisuals
         {
@@ -538,6 +582,17 @@ namespace CSharpZapoctak.ViewModels
             set
             {
                 assistsVisuals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private VisualElementsCollection penaltiesVisuals = new VisualElementsCollection();
+        public VisualElementsCollection PenaltiesVisuals
+        {
+            get { return penaltiesVisuals; }
+            set
+            {
+                penaltiesVisuals = value;
                 OnPropertyChanged();
             }
         }
@@ -593,6 +648,17 @@ namespace CSharpZapoctak.ViewModels
             set
             {
                 assistsScatterSeries = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SeriesCollection penaltiesScatterSeries = new SeriesCollection();
+        public SeriesCollection PenaltiesScatterSeries
+        {
+            get { return penaltiesScatterSeries; }
+            set
+            {
+                penaltiesScatterSeries = value;
                 OnPropertyChanged();
             }
         }
@@ -656,6 +722,7 @@ namespace CSharpZapoctak.ViewModels
                 LoadPieChartsSeries();
                 LoadGoalsScatterSeries();
                 LoadAssistsScatterSeries();
+                LoadPenaltiesScatterSeries();
                 OnPropertyChanged();
             }
         }
@@ -1331,6 +1398,159 @@ namespace CSharpZapoctak.ViewModels
                 UIElement = new TextBlock
                 {
                     Text = "Team play",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+        }
+
+        private void LoadPenaltiesScatterSeries()
+        {
+            PenaltiesScatterSeries = new SeriesCollection();
+            foreach (var pv in PenaltiesVisuals) { PenaltiesVisuals.Remove(pv); }
+            double maxP = 0.0;
+            double maxPA = 0.0;
+            double medianP = 0.0;
+            double medianPA = 0.0;
+            List<double> penalties = new List<double>();
+            List<double> penaltiesAgainst = new List<double>();
+
+            foreach (Group g in Groups)
+            {
+                foreach (Team t in g.Teams)
+                {
+                    double matches = ((TeamTableStats)t.Stats).GamesPlayed;
+                    if (matches < 1.0) { continue; }
+                    double penaltyMinutesPerGame = (double)Math.Round(((TeamTableStats)t.Stats).PenaltyMinutes / matches, 2);
+                    penalties.Add(penaltyMinutesPerGame);
+                    double penlatyMinutesAgainstPerGame = (double)Math.Round(((TeamTableStats)t.Stats).PenaltyMinutesAgainst / matches, 2);
+                    penaltiesAgainst.Add(penlatyMinutesAgainstPerGame);
+
+                    if (maxP < penaltyMinutesPerGame) { maxP = penaltyMinutesPerGame; }
+                    if (maxPA < penlatyMinutesAgainstPerGame) { maxPA = penlatyMinutesAgainstPerGame; }
+
+                    PenaltiesScatterSeries.Add(new ScatterSeries
+                    {
+                        Values = new ChartValues<ScatterPoint> { new ScatterPoint(penaltyMinutesPerGame, penlatyMinutesAgainstPerGame, 10) },
+                        Title = t.Name,
+                        LabelPoint = chartPoint => t.Name,
+                        DataLabels = true,
+                        FontSize = 16,
+                        MaxPointShapeDiameter = 40,
+                        MinPointShapeDiameter = 40,
+                        Foreground = Brushes.White
+                    });
+
+                    //add logo marker
+                    BitmapImage logo = new BitmapImage();
+                    if (t.LogoPath != "")
+                    {
+                        logo.BeginInit();
+                        logo.UriSource = new Uri(t.LogoPath);
+                        logo.EndInit();
+                    }
+
+                    PenaltiesVisuals.Add(new VisualElement
+                    {
+                        X = penaltyMinutesPerGame,
+                        Y = penlatyMinutesAgainstPerGame,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+
+                        UIElement = new Image
+                        {
+                            Source = logo,
+                            MaxWidth = 50,
+                            MaxHeight = 50
+                        }
+                    });
+                }
+            }
+
+            //add points to cornes for stretching the view
+            PenaltiesScatterSeries.Add(new ScatterSeries
+            {
+                Values = new ChartValues<ScatterPoint> { new ScatterPoint(0, 0, 0) },
+                Title = null,
+                Fill = Brushes.Transparent
+            });
+            PenaltiesScatterSeries.Add(new ScatterSeries
+            {
+                Values = new ChartValues<ScatterPoint> { new ScatterPoint(Math.Round(maxP * 1.1, 2), Math.Round(maxPA * 1.1, 2), 0) },
+                Title = null,
+                Fill = Brushes.Transparent
+            });
+
+            if (penalties.Count > 1 && penaltiesAgainst.Count > 1)
+            {
+                penalties.Sort();
+                penaltiesAgainst.Sort();
+                medianP = (penalties[(penalties.Count / 2) - 1] + penalties[penalties.Count / 2]) / 2.0;
+                medianPA = (penaltiesAgainst[(penaltiesAgainst.Count / 2) - 1] + penaltiesAgainst[penaltiesAgainst.Count / 2]) / 2.0;
+            }
+
+            PenaltiesYSectionMedian = Math.Round(medianPA, 2);
+            PenaltiesYSectionEnd = Math.Round(maxPA * 1.1, 2);
+            PenaltiesXSectionMedian = Math.Round(medianP, 2);
+            PenaltiesXSectionEnd = Math.Round(maxP * 1.1, 2);
+
+            //labels for sections
+            PenaltiesVisuals.Add(new VisualElement
+            {
+                X = PenaltiesXSectionMedian / 2.0,
+                Y = PenaltiesYSectionMedian / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Friendly",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            PenaltiesVisuals.Add(new VisualElement
+            {
+                X = (PenaltiesXSectionMedian + PenaltiesXSectionEnd) / 2.0,
+                Y = PenaltiesYSectionMedian / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Undisciplined",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            PenaltiesVisuals.Add(new VisualElement
+            {
+                X = (PenaltiesXSectionMedian + PenaltiesXSectionEnd) / 2.0,
+                Y = (PenaltiesYSectionMedian + PenaltiesYSectionEnd) / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Rough",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    Opacity = 0.6
+                }
+            });
+            PenaltiesVisuals.Add(new VisualElement
+            {
+                X = PenaltiesXSectionMedian / 2.0,
+                Y = (PenaltiesYSectionMedian + PenaltiesYSectionEnd) / 2.0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+
+                UIElement = new TextBlock
+                {
+                    Text = "Disciplined",
                     FontWeight = FontWeights.Bold,
                     FontSize = 20,
                     Opacity = 0.6
