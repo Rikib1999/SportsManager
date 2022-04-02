@@ -1,9 +1,8 @@
 ﻿<UserControl x:Class="CSharpZapoctak.Views.MatchView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CSharpZapoctak.Views" xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -151,8 +150,6 @@
                 </ItemsControl>
 
             </StackPanel>
-
-            <lvc:CartesianChart LegendLocation="Bottom" Series="{Binding ChartSeries}"  VisualElements="{Binding Visuals}" Hoverable="False" Width="750" Height="750"/>
 
         </StackPanel>
     </ScrollViewer>

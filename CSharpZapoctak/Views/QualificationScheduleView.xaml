@@ -196,6 +196,9 @@
                     </zoomborder:ZoomBorder>
                 </Viewbox>
             </Border>
+
+            <Button Margin="0,40,0,0" Width="200" Content="Export" Command="{Binding ExportBracketCommand}" CommandParameter="{Binding ElementName=border}"/>
+
         </VirtualizingStackPanel>
         <!--
                 </DataTemplate>

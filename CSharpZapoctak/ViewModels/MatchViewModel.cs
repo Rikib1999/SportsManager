@@ -313,30 +313,6 @@ namespace CSharpZapoctak.ViewModels
         }
         #endregion
 
-        #region Charting data
-        private VisualElementsCollection visuals = new VisualElementsCollection();
-        public VisualElementsCollection Visuals
-        {
-            get { return visuals; }
-            set
-            {
-                visuals = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private SeriesCollection chartSeries = new SeriesCollection();
-        public SeriesCollection ChartSeries
-        {
-            get { return chartSeries; }
-            set
-            {
-                chartSeries = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
         #region Visibilities
         private Visibility shootoutVisibility = Visibility.Collapsed;
         public Visibility ShootoutVisibility

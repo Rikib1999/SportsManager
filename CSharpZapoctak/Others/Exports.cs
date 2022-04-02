@@ -374,7 +374,7 @@ namespace CSharpZapoctak.Others
             pic.Placement = Microsoft.Office.Interop.Excel.XlPlacement.xlMove;
         }
 
-        public static void ExportChart(FrameworkElement chart)
+        public static void ExportControlToImage(FrameworkElement chart)
         {
             RenderTargetBitmap rtb = new RenderTargetBitmap((int)chart.ActualWidth, (int)chart.ActualHeight, 96, 96, PixelFormats.Pbgra32);
             Rect bounds = VisualTreeHelper.GetDescendantBounds(chart);

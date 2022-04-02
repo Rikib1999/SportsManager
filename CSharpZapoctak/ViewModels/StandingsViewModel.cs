@@ -543,7 +543,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportChartCommand == null)
                 {
-                    exportChartCommand = new RelayCommand(param => Exports.ExportChart((FrameworkElement)param));
+                    exportChartCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param));
                 }
                 return exportChartCommand;
             }

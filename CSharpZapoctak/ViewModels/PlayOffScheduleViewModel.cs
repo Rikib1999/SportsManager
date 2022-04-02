@@ -1,9 +1,9 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -28,6 +28,19 @@ namespace CSharpZapoctak.ViewModels
         private readonly NavigationStore ns;
 
         #region Commands
+        private ICommand exportBracketCommand;
+        public ICommand ExportBracketCommand
+        {
+            get
+            {
+                if (exportBracketCommand == null)
+                {
+                    exportBracketCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param));
+                }
+                return exportBracketCommand;
+            }
+        }
+
         private ICommand startPlayOffCommand;
         public ICommand StartPlayOffCommand
         {

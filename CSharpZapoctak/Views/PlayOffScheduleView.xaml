@@ -23,7 +23,7 @@
                 </CheckBox>
             </StackPanel>
         </StackPanel>
-        
+
         <StackPanel Visibility="{Binding StartedVisibility}" Orientation="Vertical" Margin="0,10">
             <TextBlock Text="{Binding Bracket.Name}" Margin="0,0,0,10"/>
             <Border HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="1" Margin="20">
@@ -145,7 +145,8 @@
                 </Viewbox>
             </Border>
 
-            <Button Content="Delete play-off" Width="200" Command="{Binding DeleteCommand}" Margin="0,50,0,0"/>
+            <Button Margin="0,40,0,0" Width="200" Content="Export" Command="{Binding ExportBracketCommand}" CommandParameter="{Binding ElementName=border}"/>
+            <Button Content="Delete play-off" Width="200" Command="{Binding DeleteCommand}" Margin="0,30,0,0"/>
         </StackPanel>
     </Grid>
 </UserControl>

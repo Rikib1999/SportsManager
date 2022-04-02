@@ -1,5 +1,6 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
@@ -20,6 +21,19 @@ namespace CSharpZapoctak.ViewModels
         public bool IsEnabled { get; private set; } = true;
 
         #region Commands
+        private ICommand exportBracketCommand;
+        public ICommand ExportBracketCommand
+        {
+            get
+            {
+                if (exportBracketCommand == null)
+                {
+                    exportBracketCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param));
+                }
+                return exportBracketCommand;
+            }
+        }
+
         private ICommand matchDetailCommand;
         public ICommand MatchDetailCommand
         {
