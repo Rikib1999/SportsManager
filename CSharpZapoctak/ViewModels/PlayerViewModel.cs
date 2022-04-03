@@ -2,18 +2,83 @@
 using CSharpZapoctak.Models;
 using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
+using LiveCharts;
+using LiveCharts.Configurations;
+using LiveCharts.Wpf;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using static CSharpZapoctak.ViewModels.MatchesSelectionViewModel;
 
 namespace CSharpZapoctak.ViewModels
 {
+    class PlayerInMatchStats : NotifyPropertyChanged
+    {
+        #region Properties
+        private DateTime datetime;
+        public DateTime Datetime
+        {
+            get { return datetime; }
+            set
+            {
+                datetime = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int goals = 0;
+        public int Goals
+        {
+            get { return goals; }
+            set
+            {
+                goals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int assists = 0;
+        public int Assists
+        {
+            get { return assists; }
+            set
+            {
+                assists = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int points = 0;
+        public int Points
+        {
+            get { return points; }
+            set
+            {
+                points = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int penaltyMinutes = 0;
+        public int PenaltyMinutes
+        {
+            get { return penaltyMinutes; }
+            set
+            {
+                penaltyMinutes = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+    }
+
     class PlayerStats : NotifyPropertyChanged, IStats
     {
         #region Properties
@@ -780,6 +845,67 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private ObservableCollection<PlayerInMatchStats> playerInMatchStats = new ObservableCollection<PlayerInMatchStats>();
+        public ObservableCollection<PlayerInMatchStats> PlayerInMatchStats
+        {
+            get { return playerInMatchStats; }
+            set
+            {
+                playerInMatchStats = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Func<double, string> AxisFormatterScatter { get; set; } = value => value.ToString("N2");
+
+        public string[] DatetimeXLabels { get; set; }
+
+        private SeriesCollection playerInMatchStatsSeries = new SeriesCollection();
+        public SeriesCollection PlayerInMatchStatsSeries
+        {
+            get { return playerInMatchStatsSeries; }
+            set
+            {
+                playerInMatchStatsSeries = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SeriesCollection playerInMatchStatsSumSeries = new SeriesCollection();
+        public SeriesCollection PlayerInMatchStatsSumSeries
+        {
+            get { return playerInMatchStatsSumSeries; }
+            set
+            {
+                playerInMatchStatsSumSeries = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SeriesCollection playerInMatchStatsAverageSeries = new SeriesCollection();
+        public SeriesCollection PlayerInMatchStatsAverageSeries
+        {
+            get { return playerInMatchStatsAverageSeries; }
+            set
+            {
+                playerInMatchStatsAverageSeries = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ICommand exportChartCommand;
+        public ICommand ExportChartCommand
+        {
+            get
+            {
+                if (exportChartCommand == null)
+                {
+                    exportChartCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param));
+                }
+                return exportChartCommand;
+            }
+        }
+
         public ICommand NavigateMatchCommand { get; set; }
 
         private ICommand checkNavigateMatchCommand;
@@ -807,6 +933,10 @@ namespace CSharpZapoctak.ViewModels
             if (string.IsNullOrEmpty(p.PhotoPath)) { p.PhotoPath = p.Gender == "M" ? SportsData.ResourcesPath + "\\male.png" : SportsData.ResourcesPath + "\\female.png"; }
             LoadCompetitions();
             LoadCompetitionsAsGoalie();
+            LoadPlayerInMatchStats();
+            LoadPlayerInMatchStatsSeries();
+            LoadPlayerInMatchStatsSumSeries();
+            LoadPlayerInMatchStatsAverageSeries();
         }
 
         private void LoadCompetitions()
@@ -1051,6 +1181,235 @@ namespace CSharpZapoctak.ViewModels
             {
                 NavigateMatchCommand.Execute(SelectedMatch);
             }
+        }
+
+        private void LoadPlayerInMatchStats()
+        {
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT m.match_id, matches.datetime AS datetime, IFNULL(g_count, 0) AS goal_count, IFNULL(a_count, 0) AS assist_count, IFNULL(p_count, 0) AS penalty_count " +
+                                                "FROM player_matches AS m " +
+
+                                                "INNER JOIN matches ON matches.id = m.match_id " +
+
+                                                "LEFT JOIN " +
+                                                "(SELECT g.match_id AS g_match_id, COUNT(g.player_id) AS g_count FROM goals AS g " +
+                                                "WHERE g.player_id = " + player.id + " " +
+                                                "GROUP BY g.match_id) " +
+                                                "AS g_table ON g_table.g_match_id = m.match_id " +
+
+                                                "LEFT JOIN " +
+                                                "(SELECT a.match_id AS a_match_id, COUNT(a.assist_player_id) AS a_count FROM goals AS a " +
+                                                "WHERE a.assist_player_id = " + player.id + " " +
+                                                "GROUP BY a.match_id) " +
+                                                "AS a_table ON a_table.a_match_id = m.match_id " +
+
+                                                "LEFT JOIN " +
+                                                "(SELECT p.match_id AS p_match_id, COALESCE(SUM(p_type.minutes), 0) AS p_count FROM penalties AS p " +
+                                                " INNER JOIN penalty_type AS p_type ON p_type.code = p.penalty_type_id " +
+                                                "WHERE p.player_id = " + player.id + " " +
+                                                "GROUP BY p.match_id) " +
+                                                "AS p_table ON p_table.p_match_id = m.match_id " +
+
+                                                "WHERE m.player_id = " + player.id + " " +
+                                                "GROUP BY m.match_id", connection);
+
+            try
+            {
+                connection.Open();
+                DataTable dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    PlayerInMatchStats p = new PlayerInMatchStats
+                    {
+                        Datetime = DateTime.Parse(row["datetime"].ToString()),
+                        Goals = int.Parse(row["goal_count"].ToString()),
+                        Assists = int.Parse(row["assist_count"].ToString()),
+                        PenaltyMinutes = int.Parse(row["penalty_count"].ToString()),
+                        Points = int.Parse(row["goal_count"].ToString()) + int.Parse(row["assist_count"].ToString()),
+                    };
+
+                    PlayerInMatchStats.Add(p);
+                    DatetimeXLabels = PlayerInMatchStats.Select(x => x.Datetime.ToString("d. M. yyyy")).ToArray();
+                }
+
+                PlayerInMatchStats.OrderBy(x => x.Datetime);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        private void LoadPlayerInMatchStatsSeries()
+        {
+            //goals per match
+            ChartValues<int> goals = new ChartValues<int>();
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                goals.Add(PlayerInMatchStats[i].Goals);
+            }
+
+            PlayerInMatchStatsSeries.Add(new LineSeries
+            {
+                Values = goals,
+                Fill = Brushes.Transparent,
+                Title = "Goals",
+                LabelPoint = value => "Goals: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
+
+            //assists per match
+            ChartValues<int> assists = new ChartValues<int>();
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                assists.Add(PlayerInMatchStats[i].Assists);
+            }
+
+            PlayerInMatchStatsSeries.Add(new LineSeries
+            {
+                Values = assists,
+                Fill = Brushes.Transparent,
+                Title = "Assists",
+                LabelPoint = value => "Assists: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
+
+            //penalty minutes per match
+            ChartValues<int> penalties = new ChartValues<int>();
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                penalties.Add(PlayerInMatchStats[i].PenaltyMinutes);
+            }
+
+            PlayerInMatchStatsSeries.Add(new LineSeries
+            {
+                Values = penalties,
+                Fill = Brushes.Transparent,
+                Title = "Penalty minutes",
+                LabelPoint = value => "Penalty minutes: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
+        }
+
+        private void LoadPlayerInMatchStatsSumSeries()
+        {
+            //goals until match
+            ChartValues<int> goals = new ChartValues<int>();
+            int sum = 0;
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                sum += PlayerInMatchStats[i].Goals;
+                goals.Add(sum);
+            }
+
+            PlayerInMatchStatsSumSeries.Add(new LineSeries
+            {
+                Values = goals,
+                Fill = Brushes.Transparent,
+                Title = "Goals",
+                LabelPoint = value => "Goals: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
+
+            //assists until match
+            ChartValues<int> assists = new ChartValues<int>();
+            sum = 0;
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                sum += PlayerInMatchStats[i].Assists;
+                assists.Add(sum);
+            }
+
+            PlayerInMatchStatsSumSeries.Add(new LineSeries
+            {
+                Values = assists,
+                Fill = Brushes.Transparent,
+                Title = "Assists",
+                LabelPoint = value => "Assists: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
+
+            //penalty minutes until match
+            ChartValues<int> penalties = new ChartValues<int>();
+            sum = 0;
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                sum += PlayerInMatchStats[i].PenaltyMinutes;
+                penalties.Add(sum);
+            }
+
+            PlayerInMatchStatsSumSeries.Add(new LineSeries
+            {
+                Values = penalties,
+                Fill = Brushes.Transparent,
+                Title = "Penalty minutes",
+                LabelPoint = value => "Penalty minutes: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
+        }
+
+        private void LoadPlayerInMatchStatsAverageSeries()
+        {
+            //goals average until match
+            ChartValues<double> goals = new ChartValues<double>();
+            int sum = 0;
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                sum += PlayerInMatchStats[i].Goals;
+                goals.Add(Math.Round(sum / (double)(i + 1), 2));
+            }
+
+            PlayerInMatchStatsAverageSeries.Add(new LineSeries
+            {
+                Values = goals,
+                Fill = Brushes.Transparent,
+                Title = "Goals",
+                LabelPoint = value => "Goals: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
+
+            //assists average until match
+            ChartValues<double> assists = new ChartValues<double>();
+            sum = 0;
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                sum += PlayerInMatchStats[i].Assists;
+                assists.Add(Math.Round(sum / (double)(i + 1), 2));
+            }
+
+            PlayerInMatchStatsAverageSeries.Add(new LineSeries
+            {
+                Values = assists,
+                Fill = Brushes.Transparent,
+                Title = "Assists",
+                LabelPoint = value => "Assists: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
+
+            //penalty minutes average until match
+            ChartValues<double> penalties = new ChartValues<double>();
+            sum = 0;
+
+            for (int i = 0; i < PlayerInMatchStats.Count; i++)
+            {
+                sum += PlayerInMatchStats[i].PenaltyMinutes;
+                penalties.Add(Math.Round(sum / (double)(i + 1), 2));
+            }
+
+            PlayerInMatchStatsAverageSeries.Add(new LineSeries
+            {
+                Values = penalties,
+                Fill = Brushes.Transparent,
+                Title = "Penalty minutes",
+                LabelPoint = value => "Penalty minutes: " + value.Y + ", Date: " + DatetimeXLabels[value.Key]
+            });
         }
     }
 }
