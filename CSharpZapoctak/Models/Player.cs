@@ -45,8 +45,6 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public string BirthdateText { get { return Birthdate.ToString("d"); } }
-
         private string gender;
         public string Gender
         {

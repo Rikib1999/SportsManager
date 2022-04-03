@@ -29,28 +29,6 @@ namespace CSharpZapoctak.ViewModels
                 }
             }
 
-            private string date = "";
-            public string Date
-            {
-                get { return date; }
-                set
-                {
-                    date = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private string time = "";
-            public string Time
-            {
-                get { return time; }
-                set
-                {
-                    time = value;
-                    OnPropertyChanged();
-                }
-            }
-
             private string score = "";
             public string Score
             {
@@ -357,8 +335,6 @@ namespace CSharpZapoctak.ViewModels
 
                     m.Stats = new MatchStats(m);
                     ((MatchStats)m.Stats).PartOfSeason = partOfSeason;
-                    ((MatchStats)m.Stats).Date = m.Datetime.ToLongDateString();
-                    ((MatchStats)m.Stats).Time = m.Datetime.ToShortTimeString();
                     ((MatchStats)m.Stats).Score = m.Score();
 
                     Matches.Add(m);

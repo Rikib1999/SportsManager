@@ -17,17 +17,6 @@ namespace CSharpZapoctak.ViewModels
         public class TeamStats : NotifyPropertyChanged, IStats
         {
             #region Properties
-            private string dateOfCreation;
-            public string DateOfCreation
-            {
-                get { return dateOfCreation; }
-                set
-                {
-                    dateOfCreation = value;
-                    OnPropertyChanged();
-                }
-            }
-
             private string status;
             public string Status
             {
@@ -175,7 +164,6 @@ namespace CSharpZapoctak.ViewModels
             public TeamStats(Team t, string status, int gamesPlayed, int goals, int goalsAgainst, int assists, int penaltyMinutes, int wins, int winsOT, int ties, int lossesOT, int losses)
             {
                 Status = status;
-                DateOfCreation = t.DateOfCreation.ToShortDateString();
                 GamesPlayed = gamesPlayed;
                 Goals = goals;
                 GoalsAgainst = goalsAgainst;

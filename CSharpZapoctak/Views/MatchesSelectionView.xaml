@@ -67,7 +67,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Date" Binding="{Binding Stats.Date}">
+                <DataGridTextColumn Header="Date" Binding="{Binding Datetime, StringFormat='dddd, d. M. yyyy'}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -76,7 +76,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Time" Binding="{Binding Stats.Time}">
+                <DataGridTextColumn Header="Time" Binding="{Binding Datetime, StringFormat='H:mm'}" SortMemberPath="Datetime.TimeOfDay">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>

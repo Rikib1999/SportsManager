@@ -906,8 +906,6 @@ namespace CSharpZapoctak.ViewModels
 
                             m.Stats = new MatchStats(m);
                             ((MatchStats)m.Stats).PartOfSeason = partOfSeason;
-                            ((MatchStats)m.Stats).Date = m.Datetime.ToLongDateString();
-                            ((MatchStats)m.Stats).Time = m.Datetime.ToShortTimeString();
                             ((MatchStats)m.Stats).Score = m.Score();
 
                             sr.Matches.Add(m);
@@ -1026,8 +1024,6 @@ namespace CSharpZapoctak.ViewModels
 
                             m.Stats = new MatchStats(m);
                             ((MatchStats)m.Stats).PartOfSeason = partOfSeason;
-                            ((MatchStats)m.Stats).Date = m.Datetime.ToLongDateString();
-                            ((MatchStats)m.Stats).Time = m.Datetime.ToShortTimeString();
                             ((MatchStats)m.Stats).Score = m.Score();
 
                             sr.Matches.Add(m);
