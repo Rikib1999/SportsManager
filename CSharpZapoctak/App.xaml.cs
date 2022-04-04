@@ -1,10 +1,6 @@
-﻿using CSharpZapoctak.Models;
-using CSharpZapoctak.Stores;
+﻿using CSharpZapoctak.Stores;
 using CSharpZapoctak.ViewModels;
-using MySql.Data.MySqlClient;
-using System.Data;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -50,7 +46,7 @@ namespace CSharpZapoctak
                 f.Dispose();
             }
 
-            Task.Run(() => LoadCountries());
+            Task.Run(() => SportsData.LoadCountries());
 
             NavigationStore navigationStore = new NavigationStore();
 
@@ -64,39 +60,6 @@ namespace CSharpZapoctak
             MainWindow.Show();
 
             base.OnStartup(e);
-        }
-
-        private void LoadCountries()
-        {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=sports_manager;UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT code_two , name , code_three FROM country", connection);
-
-            try
-            {
-                connection.Open();
-                DataTable dataTable = new DataTable();
-                dataTable.Load(cmd.ExecuteReader());
-
-                foreach (DataRow cntry in dataTable.Rows)
-                {
-                    Country c = new Country
-                    {
-                        Name = cntry["name"].ToString(),
-                        CodeTwo = cntry["code_two"].ToString(),
-                        CodeThree = cntry["code_three"].ToString()
-                    };
-                    SportsData.countries.Add(c);
-                }
-            }
-            catch (System.Exception)
-            {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                connection.Close();
-            }
         }
     }
 }

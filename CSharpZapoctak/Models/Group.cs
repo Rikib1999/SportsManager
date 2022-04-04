@@ -5,7 +5,7 @@ namespace CSharpZapoctak.Models
 {
     class Group : NotifyPropertyChanged
     {
-        public int id = (int)EntityState.NotSelected;
+        public int id = SportsData.NO_ID;
 
         private string name = "";
         public string Name

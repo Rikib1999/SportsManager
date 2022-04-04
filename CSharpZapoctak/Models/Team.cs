@@ -50,7 +50,7 @@ namespace CSharpZapoctak.Models
 
         public Team()
         {
-            id = (int)EntityState.NotSelected;
+            id = SportsData.NO_ID;
             Name = "";
             Info = "";
             LogoPath = "";
@@ -58,6 +58,7 @@ namespace CSharpZapoctak.Models
             Country = null;
             DateOfCreation = DateTime.Today;
         }
+
         public Team(Team t)
         {
             id = t.id;

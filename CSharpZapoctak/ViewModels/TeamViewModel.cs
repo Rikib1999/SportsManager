@@ -71,7 +71,7 @@ namespace CSharpZapoctak.ViewModels
             Team t = (Team)teamAndSerie[0];
             int seasonID = (int)teamAndSerie[1];
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlTransaction transaction = null;
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM player_matches " +
@@ -99,7 +99,7 @@ namespace CSharpZapoctak.ViewModels
                         cmd.Transaction = transaction;
                         cmd.ExecuteNonQuery();
 
-                        string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + id + ".*");
+                        string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + id + ".*");
                         string previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -232,6 +232,7 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        #region Visibilities
         private Visibility seasonVisibility = Visibility.Collapsed;
         public Visibility SeasonVisibility
         {
@@ -268,7 +269,11 @@ namespace CSharpZapoctak.ViewModels
                 SeasonVisibility = Visibility.Visible;
             }
         }
+        #endregion
 
+        #region Player enlistment
+
+        #region Properties
         private PlayerEnlistment editedPlayer;
         public PlayerEnlistment EditedPlayer
         {
@@ -339,128 +344,9 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
+        #endregion
 
-        private ICommand addPlayerCommand;
-        public ICommand AddPlayerCommand
-        {
-            get
-            {
-                if (addPlayerCommand == null)
-                {
-                    addPlayerCommand = new RelayCommand(param => AddPlayer(param));
-                }
-                return addPlayerCommand;
-            }
-        }
-
-        private void AddPlayer(object param)
-        {
-            IList teamAndSeasonID = param as IList;
-            int teamID = ((Team)teamAndSeasonID[0]).id;
-            int seasonID = (int)teamAndSeasonID[1];
-
-            if (SelectedPlayer == null || SelectedPosition == null || SelectedNumber == null)
-            {
-                MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            else if (Players.Any(x => x.id == SelectedPlayer.id))
-            {
-                MessageBox.Show("Selected player is already enlisted.", "Player already enlisted", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            else if (Players.Any(x => x.Number == SelectedNumber))
-            {
-                MessageBox.Show("Number " + SelectedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            else
-            {
-                Players.Add(new PlayerEnlistment
-                {
-                    id = SelectedPlayer.id,
-                    parent = Players,
-                    Name = SelectedPlayer.FullName,
-                    Position = SelectedPosition,
-                    Number = (int)SelectedNumber
-                });
-
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO player_enlistment(player_id, team_id, season_id, number, position_code) " +
-                                                    "VALUES (" + SelectedPlayer.id + ", " + teamID + ", " + seasonID + ", " + SelectedNumber + ", '" + SelectedPosition.Code + "')", connection);
-
-                try
-                {
-                    connection.Open();
-                    cmd.ExecuteNonQuery();
-
-                    SelectedNumber = null;
-                    SelectedPlayer = null;
-                    SelectedPosition = null;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
-        private ICommand editPlayerCommand;
-        public ICommand EditPlayerCommand
-        {
-            get
-            {
-                if (editPlayerCommand == null)
-                {
-                    editPlayerCommand = new RelayCommand(param => EditPlayer(param));
-                }
-                return editPlayerCommand;
-            }
-        }
-
-        private void EditPlayer(object param)
-        {
-            IList teamAndSeasonID = param as IList;
-            int teamID = ((Team)teamAndSeasonID[0]).id;
-            int seasonID = (int)teamAndSeasonID[1];
-
-            if (EditedPlayer == null || EditedPosition == null || EditedNumber == null)
-            {
-                MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            else if (EditedNumber != EditedPlayer.Number && Players.Any(x => x.Number == EditedNumber))
-            {
-                MessageBox.Show("Number " + EditedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            else
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("UPDATE player_enlistment SET number = " + EditedNumber + ", position_code = '" + EditedPosition.Code + "' " +
-                                                    "WHERE player_id = " +EditedPlayer.id + " AND team_id = " + teamID + " AND season_id = " + seasonID, connection);
-                try
-                {
-                    connection.Open();
-                    cmd.ExecuteNonQuery();
-
-                    EditedPlayer.Number = (int)EditedNumber;
-                    EditedPlayer.Position = EditedPosition;
-
-                    EditedPlayer = new PlayerEnlistment();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
+        #region New player properties
         private string newFirstName;
         public string NewFirstName
         {
@@ -592,6 +478,34 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
+        #endregion
+
+        #region Commands
+        private ICommand addPlayerCommand;
+        public ICommand AddPlayerCommand
+        {
+            get
+            {
+                if (addPlayerCommand == null)
+                {
+                    addPlayerCommand = new RelayCommand(param => AddPlayer(param));
+                }
+                return addPlayerCommand;
+            }
+        }
+
+        private ICommand editPlayerCommand;
+        public ICommand EditPlayerCommand
+        {
+            get
+            {
+                if (editPlayerCommand == null)
+                {
+                    editPlayerCommand = new RelayCommand(param => EditPlayer(param));
+                }
+                return editPlayerCommand;
+            }
+        }
 
         private ICommand addNewPlayerCommand;
         public ICommand AddNewPlayerCommand
@@ -603,6 +517,103 @@ namespace CSharpZapoctak.ViewModels
                     addNewPlayerCommand = new RelayCommand(param => AddNewPlayer(param));
                 }
                 return addNewPlayerCommand;
+            }
+        }
+        #endregion
+
+        #region Methods
+        private void AddPlayer(object param)
+        {
+            IList teamAndSeasonID = param as IList;
+            int teamID = ((Team)teamAndSeasonID[0]).id;
+            int seasonID = (int)teamAndSeasonID[1];
+
+            if (SelectedPlayer == null || SelectedPosition == null || SelectedNumber == null)
+            {
+                MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else if (Players.Any(x => x.id == SelectedPlayer.id))
+            {
+                MessageBox.Show("Selected player is already enlisted.", "Player already enlisted", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else if (Players.Any(x => x.Number == SelectedNumber))
+            {
+                MessageBox.Show("Number " + SelectedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                Players.Add(new PlayerEnlistment
+                {
+                    id = SelectedPlayer.id,
+                    parent = Players,
+                    Name = SelectedPlayer.FullName,
+                    Position = SelectedPosition,
+                    Number = (int)SelectedNumber
+                });
+
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlCommand cmd = new MySqlCommand("INSERT INTO player_enlistment(player_id, team_id, season_id, number, position_code) " +
+                                                    "VALUES (" + SelectedPlayer.id + ", " + teamID + ", " + seasonID + ", " + SelectedNumber + ", '" + SelectedPosition.Code + "')", connection);
+
+                try
+                {
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+
+                    SelectedNumber = null;
+                    SelectedPlayer = null;
+                    SelectedPosition = null;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        private void EditPlayer(object param)
+        {
+            IList teamAndSeasonID = param as IList;
+            int teamID = ((Team)teamAndSeasonID[0]).id;
+            int seasonID = (int)teamAndSeasonID[1];
+
+            if (EditedPlayer == null || EditedPosition == null || EditedNumber == null)
+            {
+                MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else if (EditedNumber != EditedPlayer.Number && Players.Any(x => x.Number == EditedNumber))
+            {
+                MessageBox.Show("Number " + EditedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlCommand cmd = new MySqlCommand("UPDATE player_enlistment SET number = " + EditedNumber + ", position_code = '" + EditedPosition.Code + "' " +
+                                                    "WHERE player_id = " +EditedPlayer.id + " AND team_id = " + teamID + " AND season_id = " + seasonID, connection);
+                try
+                {
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+
+                    EditedPlayer.Number = (int)EditedNumber;
+                    EditedPlayer.Position = EditedPosition;
+
+                    EditedPlayer = new PlayerEnlistment();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
+                }
             }
         }
 
@@ -634,7 +645,7 @@ namespace CSharpZapoctak.ViewModels
                 int newID = -2;
 
                 //insert new player
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
                 //MySqlCommand cmd = new MySqlCommand(s, connection);
                 MySqlCommand cmd = new MySqlCommand("INSERT INTO player(first_name, last_name, birthdate, gender, height, weight, plays_with, citizenship, birthplace_city, birthplace_country, status, info) " +
@@ -692,13 +703,17 @@ namespace CSharpZapoctak.ViewModels
                 }
             }
         }
+        #endregion
+
+        #endregion
     }
 
     class TeamViewModel : NotifyPropertyChanged
     {
-        public Team CurrentTeam { get; set; }
-
         public ICommand NavigateEditTeamCommand { get; }
+
+        #region Data
+        public Team CurrentTeam { get; set; }
 
         private ObservableCollection<CompetitionDictionary> competitionEnlistments;
         public ObservableCollection<CompetitionDictionary> CompetitionEnlistments
@@ -722,6 +737,7 @@ namespace CSharpZapoctak.ViewModels
         public ObservableCollection<Country> Countries { get; } = new ObservableCollection<Country>();
 
         public ObservableCollection<Player> Players { get; } = new ObservableCollection<Player>();
+        #endregion
 
         public TeamViewModel(NavigationStore navigationStore, Team t)
         {
@@ -762,7 +778,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadTeamInfo()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT info FROM team WHERE id = " + CurrentTeam.id, connection);
 
@@ -788,7 +804,7 @@ namespace CSharpZapoctak.ViewModels
         {
             CompetitionEnlistments = new ObservableCollection<CompetitionDictionary>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT player_id, season_id, number, p.first_name AS player_first_name, p.last_name AS player_last_name, pos.name AS position, s.name AS season_name, c.name AS competition_name " +
                                                 "FROM player_enlistment " +
@@ -864,7 +880,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadPositions()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT code, name FROM position", connection);
 
@@ -891,7 +907,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadPlayers()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT id, first_name, last_name FROM player", connection);
 
@@ -903,7 +919,7 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    if (int.Parse(row["id"].ToString()) != -1)
+                    if (int.Parse(row["id"].ToString()) != SportsData.NO_ID)
                     {
                         Players.Add(new Player { id = int.Parse(row["id"].ToString()), FirstName = row["first_name"].ToString(), LastName = row["last_name"].ToString() });
                     }

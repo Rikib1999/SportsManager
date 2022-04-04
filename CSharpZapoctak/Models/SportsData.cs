@@ -1,7 +1,6 @@
 ﻿using CSharpZapoctak.Models;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
@@ -9,25 +8,9 @@ using System.Windows;
 
 namespace CSharpZapoctak
 {
-    static class Extensions
-    {
-        public static void Sort<T>(this ObservableCollection<T> collection) where T : IComparable
-        {
-            List<T> sorted = collection.OrderBy(x => x).ToList();
-            for (int i = 0; i < sorted.Count(); i++)
-                collection.Move(collection.IndexOf(sorted[i]), i);
-        }
-    }
-
     public struct Sport
     {
         public string name;
-    }
-
-    public enum EntityState
-    {
-        AddNew = -1,
-        NotSelected = -2
     }
 
     public interface IStats { };
@@ -37,24 +20,36 @@ namespace CSharpZapoctak
     /// </summary>
     public static class SportsData
     {
-        public static string server = "localhost";
-        public static string UID = "root";
-        public static string password = "";
+        public static readonly string server = "localhost";
+        public static readonly string UID = "root";
+        public static readonly string password = "";
 
-        public static string AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/SportsManager";
-        public static string ImagesPath = AppDataPath + "/Images";
-        public static string ResourcesPath = "/Resources";
-        public static string CompetitionLogosPath = AppDataPath + "/Images/Competition_Logos";
-        public static string SeasonLogosPath = AppDataPath + "/Images/Season_Logos";
-        public static string TeamLogosPath = AppDataPath + "/Images/Team_Logos";
-        public static string PlayerPhotosPath = AppDataPath + "/Images/Player_Photos";
-        public static string PythonOCRPath = AppDataPath + "/GamesheetOCR.py";
+        public static readonly string AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/SportsManager";
+        public static readonly string ImagesPath = AppDataPath + "/Images";
+        public static readonly string ResourcesPath = "/Resources";
+        public static readonly string CompetitionLogosPath = AppDataPath + "/Images/Competition_Logos";
+        public static readonly string SeasonLogosPath = AppDataPath + "/Images/Season_Logos";
+        public static readonly string TeamLogosPath = AppDataPath + "/Images/Team_Logos";
+        public static readonly string PlayerPhotosPath = AppDataPath + "/Images/Player_Photos";
+        public static readonly string PythonOCRPath = AppDataPath + "/GamesheetOCR.py";
 
-        public static Sport sport = new Sport { name = "" };
-        public static Competition competition = new Competition();
-        public static Season season = new Season();
+        public static readonly int NO_ID = -1;
+
+        public static Sport SPORT { get; private set; } = new Sport { name = "" };
+        public static Competition COMPETITION { get; private set; } = new Competition();
+        public static Season SEASON { get; private set; } = new Season();
 
         public static ObservableCollection<Country> countries = new ObservableCollection<Country>();
+
+        public static bool IsCompetitionSet()
+        {
+            return COMPETITION.id != NO_ID;
+        }
+
+        public static bool IsSeasonSet()
+        {
+            return SEASON.id != NO_ID;
+        }
 
         public static void Set(object parameter)
         {
@@ -76,26 +71,26 @@ namespace CSharpZapoctak
 
         public static void Set(Sport s)
         {
-            sport = s;
-            competition = new Competition { id = (int)EntityState.NotSelected };
-            season = new Season { id = (int)EntityState.NotSelected };
+            SPORT = s;
+            COMPETITION = new Competition();
+            SEASON = new Season();
         }
 
         public static void Set(Competition c)
         {
-            if (competition.id != c.id)
+            if (COMPETITION.id != c.id)
             {
-                season = new Season { id = (int)EntityState.NotSelected };
+                SEASON = new Season();
             }
-            competition = c;
+            COMPETITION = c;
         }
 
         public static void Set(Season s)
         {
-            season = s;
-            if (competition.id == (int)EntityState.NotSelected)
+            SEASON = s;
+            if (!IsCompetitionSet())
             {
-                string connectionString = "SERVER=" + server + ";DATABASE=" + sport.name + ";UID=" + UID + ";PASSWORD=" + password + ";";
+                string connectionString = "SERVER=" + server + ";DATABASE=" + SPORT.name + ";UID=" + UID + ";PASSWORD=" + password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
                 MySqlCommand cmd = new MySqlCommand("SELECT id , name , info FROM competitions WHERE id = '" + s.Competition.id + "'", connection);
 
@@ -111,12 +106,12 @@ namespace CSharpZapoctak
                         Name = dataTable.Rows[0]["name"].ToString(),
                         Info = dataTable.Rows[0]["info"].ToString()
                     };
-                    string[] imgPath = System.IO.Directory.GetFiles(CompetitionLogosPath, sport.name + dataTable.Rows[0]["id"].ToString() + ".*");
+                    string[] imgPath = System.IO.Directory.GetFiles(CompetitionLogosPath, SPORT.name + dataTable.Rows[0]["id"].ToString() + ".*");
                     if (imgPath.Length != 0)
                     {
                         c.LogoPath = imgPath.First();
                     }
-                    competition = c;
+                    COMPETITION = c;
                 }
                 catch (Exception)
                 {
@@ -133,7 +128,7 @@ namespace CSharpZapoctak
         {
             ObservableCollection<PenaltyReason> PenaltyReasons = new ObservableCollection<PenaltyReason>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT code, name FROM penalty_reason", connection);
 
@@ -173,7 +168,7 @@ namespace CSharpZapoctak
         {
             ObservableCollection<PenaltyType> PenaltyTypes = new ObservableCollection<PenaltyType>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT code, name, minutes FROM penalty_type", connection);
 
@@ -208,6 +203,39 @@ namespace CSharpZapoctak
                 }
             }
             return PenaltyTypes;
+        }
+
+        public static void LoadCountries()
+        {
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=sports_manager;UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlCommand cmd = new MySqlCommand("SELECT code_two , name , code_three FROM country", connection);
+
+            try
+            {
+                connection.Open();
+                DataTable dataTable = new DataTable();
+                dataTable.Load(cmd.ExecuteReader());
+
+                foreach (DataRow cntry in dataTable.Rows)
+                {
+                    Country c = new Country
+                    {
+                        Name = cntry["name"].ToString(),
+                        CodeTwo = cntry["code_two"].ToString(),
+                        CodeThree = cntry["code_three"].ToString()
+                    };
+                    SportsData.countries.Add(c);
+                }
+            }
+            catch (System.Exception)
+            {
+                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
     }
 }

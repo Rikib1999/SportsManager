@@ -1,6 +1,5 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.ViewModels;
-using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -9,7 +8,7 @@ namespace CSharpZapoctak.Models
 {
     class Round : NotifyPropertyChanged
     {
-        public int id = (int)EntityState.NotSelected;
+        public int id = SportsData.NO_ID;
 
         private string name = "";
         public string Name

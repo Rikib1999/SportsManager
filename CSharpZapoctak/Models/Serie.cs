@@ -1,5 +1,4 @@
 ﻿using CSharpZapoctak.ViewModels;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -39,14 +38,14 @@ namespace CSharpZapoctak.Models
 
     class Serie : NotifyPropertyChanged
     {
-        private Team firstTeam = new Team { id = -1, Name = "-- no team --" };
+        private Team firstTeam = new Team { id = SportsData.NO_ID, Name = "-- no team --" };
         public Team FirstTeam
         {
             get { return firstTeam; }
             set
             {
                 firstTeam = value;
-                if (value.id != -1)
+                if (value.id != SportsData.NO_ID)
                 {
                     FirstSelectedVisibility = Visibility.Visible;
                     FirstNotSelectedVisibility = Visibility.Collapsed;
@@ -60,14 +59,14 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private Team secondTeam = new Team { id = -1, Name = "-- no team --" };
+        private Team secondTeam = new Team { id = SportsData.NO_ID, Name = "-- no team --" };
         public Team SecondTeam
         {
             get { return secondTeam; }
             set
             {
                 secondTeam = value;
-                if (value.id != -1)
+                if (value.id != SportsData.NO_ID)
                 {
                     SecondSelectedVisibility = Visibility.Visible;
                     SecondNotSelectedVisibility = Visibility.Collapsed;
@@ -80,7 +79,6 @@ namespace CSharpZapoctak.Models
                 OnPropertyChanged();
             }
         }
-
 
         private ObservableCollection<Match> matches = new ObservableCollection<Match>();
         public ObservableCollection<Match> Matches
@@ -116,7 +114,7 @@ namespace CSharpZapoctak.Models
         }
 
         #region Setting matches
-        public Team winner = new Team { id = -1, Name = "-- no team --" };
+        public Team winner = new Team { id = SportsData.NO_ID, Name = "-- no team --" };
 
         public ObservableCollection<Score> firstScore = new ObservableCollection<Score>();
         public ObservableCollection<Score> FirstScore
@@ -195,12 +193,12 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public void InsertMatch(Match m, int firstTeam, int firstToWin)
+        public void InsertMatch(Match m, int firstTeamID, int firstToWin)
         {
             //set teams
-            if (FirstTeam.id == -1 || SecondTeam.id == -1)
+            if (FirstTeam.id == SportsData.NO_ID || SecondTeam.id == SportsData.NO_ID)
             {
-                if (m.HomeTeam.id == firstTeam)
+                if (m.HomeTeam.id == firstTeamID)
                 {
                     FirstTeam = m.HomeTeam;
                     SecondTeam = m.AwayTeam;

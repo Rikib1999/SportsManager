@@ -4,13 +4,14 @@ namespace CSharpZapoctak.Models
 {
     public class Season : Competition
     {
-        private Competition competition = null;
+        private Competition competition;
         public Competition Competition
         {
             get { return competition; }
             set
             {
-                competition = value; OnPropertyChanged();
+                competition = value;
+                OnPropertyChanged();
             }
         }
 

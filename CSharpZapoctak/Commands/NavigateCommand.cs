@@ -15,6 +15,10 @@ namespace CSharpZapoctak.Commands
             _createViewModel = createViewModel;
         }
 
+        /// <summary>
+        /// Navigate to viewmodel.
+        /// </summary>
+        /// <param name="parameter">Sets new sport/competition/season.</param>
         public override void Execute(object parameter)
         {
             //sets current competition/season

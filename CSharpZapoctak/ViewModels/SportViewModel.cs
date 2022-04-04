@@ -14,36 +14,23 @@ namespace CSharpZapoctak.ViewModels
 
         public void UpdateHeader()
         {
-            string cName = SportsData.competition.Name;
-            string sName = SportsData.season.Name;
-            if (cName != "" && SportsData.competition.id != (int)EntityState.AddNew && SportsData.competition.id != (int)EntityState.NotSelected)
+            Header = char.ToUpper(SportsData.SPORT.name[0]) + SportsData.SPORT.name.Substring(1).Replace('_', '-');
+
+            if (SportsData.IsCompetitionSet())
             {
-                cName = " - " + cName;
+                Header += " - " + SportsData.COMPETITION.Name;
             }
-            else
+            if (SportsData.IsSeasonSet())
             {
-                cName = "";
+                Header += " - " + SportsData.SEASON.Name;
             }
-            if (sName != "")
-            {
-                sName = " - " + sName;
-            }
-            Header = char.ToUpper(SportsData.sport.name[0]) + SportsData.sport.name.Substring(1).Replace('_', '-') + cName + sName;
         }
 
         public SportViewModel(NavigationStore navigationStore, NotifyPropertyChanged newViewModel)
         {
             UpdateHeader();
 
-            if (SportsData.competition.id == (int)EntityState.AddNew)
-            {
-                CurrentViewModel = new AddEditCompetitionViewModel(navigationStore);
-                SportsData.competition.id = (int)EntityState.NotSelected;
-            }
-            else
-            {
-                CurrentViewModel = newViewModel;
-            }
+            CurrentViewModel = newViewModel;
 
             string checkedButton = "";
             switch (CurrentViewModel)
@@ -91,17 +78,17 @@ namespace CSharpZapoctak.ViewModels
                 { "Goalies", Visibility.Visible }
             };
 
-            if (SportsData.competition.Name == "" || SportsData.competition.id == (int)EntityState.NotSelected || SportsData.competition.id == (int)EntityState.AddNew)
+            if (!SportsData.IsCompetitionSet())
             {
                 buttonsVisibilities["Competition"] = Visibility.Collapsed;
             }
-            if (SportsData.season.Name == "" || SportsData.season.id == (int)EntityState.NotSelected || SportsData.season.id == (int)EntityState.AddNew)
+            if (!SportsData.IsSeasonSet())
             {
                 buttonsVisibilities["Season"] = Visibility.Collapsed;
                 buttonsVisibilities["Standings"] = Visibility.Collapsed;
                 buttonsVisibilities["Schedule"] = Visibility.Collapsed;
             }
-            if (SportsData.sport.name == "tennis")
+            if (SportsData.SPORT.name == "tennis")
             {
                 buttonsVisibilities["Teams"] = Visibility.Collapsed;
                 buttonsVisibilities["Goalies"] = Visibility.Collapsed;

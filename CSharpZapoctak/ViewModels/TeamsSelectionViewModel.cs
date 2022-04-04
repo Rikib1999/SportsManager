@@ -312,7 +312,7 @@ namespace CSharpZapoctak.ViewModels
             NavigateTeamCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new TeamViewModel(navigationStore, SelectedTeam)));
             SelectedTeam = null;
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("", connection);
 
@@ -337,128 +337,128 @@ namespace CSharpZapoctak.ViewModels
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1";
-            if (SportsData.season.id > 0) { homeMatchCountQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { homeMatchCountQuery += " AND"; }
-            if (SportsData.competition.id > 0) { homeMatchCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { homeMatchCountQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { homeMatchCountQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { homeMatchCountQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             homeMatchCountQuery += " GROUP BY home_competitor";
 
             string awayMatchCountQuery = "SELECT away_competitor, COUNT(*) AS away_match_count " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1";
-            if (SportsData.season.id > 0) { awayMatchCountQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { awayMatchCountQuery += " AND"; }
-            if (SportsData.competition.id > 0) { awayMatchCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { awayMatchCountQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { awayMatchCountQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { awayMatchCountQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             awayMatchCountQuery += " GROUP BY away_competitor";
 
             string homeWinsQuery = "SELECT home_competitor, COUNT(*) AS home_wins " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND overtime = 0 AND shootout = 0 AND home_score > away_score";
-            if (SportsData.season.id > 0) { homeWinsQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { homeWinsQuery += " AND"; }
-            if (SportsData.competition.id > 0) { homeWinsQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { homeWinsQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { homeWinsQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { homeWinsQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             homeWinsQuery += " GROUP BY home_competitor";
 
             string awayWinsQuery = "SELECT away_competitor, COUNT(*) AS away_wins " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND overtime = 0 AND shootout = 0 AND home_score < away_score";
-            if (SportsData.season.id > 0) { awayWinsQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { awayWinsQuery += " AND"; }
-            if (SportsData.competition.id > 0) { awayWinsQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { awayWinsQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { awayWinsQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { awayWinsQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             awayWinsQuery += " GROUP BY away_competitor";
 
             string homeOTWinsQuery = "SELECT home_competitor, COUNT(*) AS home_ot_wins " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND (overtime = 1 OR shootout = 1) AND home_score > away_score";
-            if (SportsData.season.id > 0) { homeOTWinsQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { homeOTWinsQuery += " AND"; }
-            if (SportsData.competition.id > 0) { homeOTWinsQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { homeOTWinsQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { homeOTWinsQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { homeOTWinsQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             homeOTWinsQuery += " GROUP BY home_competitor";
 
             string awayOTWinsQuery = "SELECT away_competitor, COUNT(*) AS away_ot_wins " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND (overtime = 1 OR shootout = 1) AND home_score < away_score";
-            if (SportsData.season.id > 0) { awayOTWinsQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { awayOTWinsQuery += " AND"; }
-            if (SportsData.competition.id > 0) { awayOTWinsQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { awayOTWinsQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { awayOTWinsQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { awayOTWinsQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             awayOTWinsQuery += " GROUP BY away_competitor";
 
             string homeTiesQuery = "SELECT home_competitor, COUNT(*) AS home_ties " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND home_score = away_score";
-            if (SportsData.season.id > 0) { homeTiesQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { homeTiesQuery += " AND"; }
-            if (SportsData.competition.id > 0) { homeTiesQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { homeTiesQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { homeTiesQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { homeTiesQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             homeTiesQuery += " GROUP BY home_competitor";
 
             string awayTiesQuery = "SELECT away_competitor, COUNT(*) AS away_ties " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND home_score = away_score";
-            if (SportsData.season.id > 0) { awayTiesQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { awayTiesQuery += " AND"; }
-            if (SportsData.competition.id > 0) { awayTiesQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { awayTiesQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { awayTiesQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { awayTiesQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             awayTiesQuery += " GROUP BY away_competitor";
 
             string homeOTLossesQuery = "SELECT home_competitor, COUNT(*) AS home_ot_losses " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND (overtime = 1 OR shootout = 1) AND home_score < away_score";
-            if (SportsData.season.id > 0) { homeOTLossesQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { homeOTLossesQuery += " AND"; }
-            if (SportsData.competition.id > 0) { homeOTLossesQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { homeOTLossesQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { homeOTLossesQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { homeOTLossesQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             homeOTLossesQuery += " GROUP BY home_competitor";
 
             string awayOTLossesQuery = "SELECT away_competitor, COUNT(*) AS away_ot_losses " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND (overtime = 1 OR shootout = 1) AND home_score > away_score";
-            if (SportsData.season.id > 0) { awayOTLossesQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { awayOTLossesQuery += " AND"; }
-            if (SportsData.competition.id > 0) { awayOTLossesQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { awayOTLossesQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { awayOTLossesQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { awayOTLossesQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             awayOTLossesQuery += " GROUP BY away_competitor";
 
             string homeLossesQuery = "SELECT home_competitor, COUNT(*) AS home_losses " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND overtime = 0 AND shootout = 0 AND home_score < away_score";
-            if (SportsData.season.id > 0) { homeLossesQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { homeLossesQuery += " AND"; }
-            if (SportsData.competition.id > 0) { homeLossesQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { homeLossesQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { homeLossesQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { homeLossesQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             homeLossesQuery += " GROUP BY home_competitor";
 
             string awayLossesQuery = "SELECT away_competitor, COUNT(*) AS away_losses " +
                                     "FROM matches " +
                                     "INNER JOIN seasons ON seasons.id = season_id " +
                                     "WHERE played = 1 AND overtime = 0 AND shootout = 0 AND home_score > away_score";
-            if (SportsData.season.id > 0) { awayLossesQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { awayLossesQuery += " AND"; }
-            if (SportsData.competition.id > 0) { awayLossesQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { awayLossesQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { awayLossesQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { awayLossesQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             awayLossesQuery += " GROUP BY away_competitor";
 
             string goalCountQuery = "SELECT team_id, COUNT(*) AS goal_count " +
                                 "FROM goals " +
                                 "INNER JOIN matches ON matches.id = match_id " +
                                 "INNER JOIN seasons ON seasons.id = matches.season_id";
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { goalCountQuery += " WHERE"; }
-            if (SportsData.season.id > 0) { goalCountQuery += " matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 && SportsData.competition.id > 0) { goalCountQuery += " AND"; }
-            if (SportsData.competition.id > 0) { goalCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { goalCountQuery += " WHERE"; }
+            if (SportsData.SEASON.id > 0) { goalCountQuery += " matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 && SportsData.COMPETITION.id > 0) { goalCountQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { goalCountQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             goalCountQuery += " GROUP BY team_id";
 
             string goalsAgainstCountQuery = "SELECT opponent_team_id, COUNT(*) AS goals_against_count " +
                                 "FROM goals " +
                                 "INNER JOIN matches ON matches.id = match_id " +
                                 "INNER JOIN seasons ON seasons.id = matches.season_id";
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { goalsAgainstCountQuery += " WHERE"; }
-            if (SportsData.season.id > 0) { goalsAgainstCountQuery += " matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 && SportsData.competition.id > 0) { goalsAgainstCountQuery += " AND"; }
-            if (SportsData.competition.id > 0) { goalsAgainstCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { goalsAgainstCountQuery += " WHERE"; }
+            if (SportsData.SEASON.id > 0) { goalsAgainstCountQuery += " matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 && SportsData.COMPETITION.id > 0) { goalsAgainstCountQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { goalsAgainstCountQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             goalsAgainstCountQuery += " GROUP BY opponent_team_id";
 
             string assistCountQuery = "SELECT team_id, COUNT(*) AS assist_count " +
@@ -466,9 +466,9 @@ namespace CSharpZapoctak.ViewModels
                                 "INNER JOIN matches ON matches.id = match_id " +
                                 "INNER JOIN seasons ON seasons.id = matches.season_id " +
                                 "WHERE assist_player_id <> -1";
-            if (SportsData.season.id > 0) { assistCountQuery += " AND matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { assistCountQuery += " AND"; }
-            if (SportsData.competition.id > 0) { assistCountQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0) { assistCountQuery += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { assistCountQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { assistCountQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             assistCountQuery += " GROUP BY team_id";
 
             string penaltyMinutesQuery = "SELECT team_id, COALESCE(SUM(penalty_type.minutes), 0) AS penalty_minutes " +
@@ -476,10 +476,10 @@ namespace CSharpZapoctak.ViewModels
                                                 "INNER JOIN matches ON matches.id = match_id " +
                                                 "INNER JOIN seasons ON seasons.id = matches.season_id " +
                                                 "INNER JOIN penalty_type ON penalty_type.code = penalty_type_id";
-            if (SportsData.season.id > 0 || SportsData.competition.id > 0) { penaltyMinutesQuery += " WHERE"; }
-            if (SportsData.season.id > 0) { penaltyMinutesQuery += " matches.season_id = " + SportsData.season.id; }
-            if (SportsData.season.id > 0 && SportsData.competition.id > 0) { penaltyMinutesQuery += " AND"; }
-            if (SportsData.competition.id > 0) { penaltyMinutesQuery += " seasons.competition_id = " + SportsData.competition.id; }
+            if (SportsData.SEASON.id > 0 || SportsData.COMPETITION.id > 0) { penaltyMinutesQuery += " WHERE"; }
+            if (SportsData.SEASON.id > 0) { penaltyMinutesQuery += " matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.id > 0 && SportsData.COMPETITION.id > 0) { penaltyMinutesQuery += " AND"; }
+            if (SportsData.COMPETITION.id > 0) { penaltyMinutesQuery += " seasons.competition_id = " + SportsData.COMPETITION.id; }
             penaltyMinutesQuery += " GROUP BY team_id";
 
             string teamStatsQuery = "SELECT team_enlistment.team_id AS t_id, t.name AS team_name, t.status AS status, t.country AS country, t.date_of_creation AS date_of_creation, " +
@@ -515,12 +515,12 @@ namespace CSharpZapoctak.ViewModels
                                 "LEFT JOIN (" + awayLossesQuery + ") AS al ON al.away_competitor = t.id";
 
             teamStatsQuery += " WHERE t.id <> -1";
-            if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
+            if (SportsData.IsCompetitionSet())
             {
-                teamStatsQuery += " AND competition_id = " + SportsData.competition.id;
-                if (SportsData.season.id != (int)EntityState.NotSelected && SportsData.season.id != (int)EntityState.AddNew)
+                teamStatsQuery += " AND competition_id = " + SportsData.COMPETITION.id;
+                if (SportsData.IsSeasonSet())
                 {
-                    teamStatsQuery += " AND season_id = " + SportsData.season.id;
+                    teamStatsQuery += " AND season_id = " + SportsData.SEASON.id;
                 }
             }
             teamStatsQuery += " GROUP BY t.id";
@@ -547,7 +547,7 @@ namespace CSharpZapoctak.ViewModels
                         DateOfCreation = DateTime.Parse(row["date_of_creation"].ToString())
                     };
 
-                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + t.id + ".*");
+                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.name + t.id + ".*");
                     if (imgPath.Length != 0)
                     {
                         t.LogoPath = imgPath.First();

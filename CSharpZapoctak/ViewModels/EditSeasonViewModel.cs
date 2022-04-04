@@ -78,7 +78,7 @@ namespace CSharpZapoctak.ViewModels
         public NavigationStore ns;
         public EditSeasonViewModel(NavigationStore navigationStore)
         {
-            CurrentSeason = SportsData.season;
+            CurrentSeason = SportsData.SEASON;
             ns = navigationStore;
 
             if (!string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
@@ -138,7 +138,7 @@ namespace CSharpZapoctak.ViewModels
                 return;
             }
             //UPDATE
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("UPDATE seasons SET name = '" + CurrentSeason.Name + "', info = '" + CurrentSeason.Info + "' WHERE id = " + CurrentSeason.id, connection);
 
@@ -153,7 +153,7 @@ namespace CSharpZapoctak.ViewModels
                 {
                     //if there is logo in the database then delete it
                     //get previous logo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + CurrentSeason.id + ".*");
+                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.name + CurrentSeason.id + ".*");
                     string previousFilePath = "";
                     //if it exists
                     if (previousImgPath.Length != 0)
@@ -170,7 +170,7 @@ namespace CSharpZapoctak.ViewModels
                 else
                 {
                     //get current logo
-                    string[] imgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + currentSeason.id + ".*");
+                    string[] imgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.name + currentSeason.id + ".*");
                     string filePath = "";
                     //if logo existed
                     if (imgPath.Length != 0)
@@ -180,7 +180,7 @@ namespace CSharpZapoctak.ViewModels
                     //if logo did not exist declare its path
                     if (string.IsNullOrWhiteSpace(filePath))
                     {
-                        filePath = SportsData.SeasonLogosPath + @"\" + SportsData.sport.name + currentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
+                        filePath = SportsData.SeasonLogosPath + @"\" + SportsData.SPORT.name + currentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
                     }
                     //if logo had changeg
                     if (CurrentSeason.LogoPath != filePath)

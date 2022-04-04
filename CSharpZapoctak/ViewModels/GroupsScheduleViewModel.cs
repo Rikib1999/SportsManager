@@ -94,7 +94,7 @@ namespace CSharpZapoctak.ViewModels
         public GroupsScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
-            if (SportsData.season.PlayOffStarted || SportsData.season.WinnerID != -1) { IsEnabled = false; }
+            if (SportsData.SEASON.PlayOffStarted || SportsData.SEASON.WinnerID != SportsData.NO_ID) { IsEnabled = false; }
             LoadRounds();
         }
 
@@ -104,9 +104,9 @@ namespace CSharpZapoctak.ViewModels
 
             lock (roundsLock)
             {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT id, season_id, name FROM rounds WHERE season_id = " + SportsData.season.id, connection);
+                MySqlCommand cmd = new MySqlCommand("SELECT id, season_id, name FROM rounds WHERE season_id = " + SportsData.SEASON.id, connection);
 
                 try
                 {
@@ -127,7 +127,7 @@ namespace CSharpZapoctak.ViewModels
                         cmd = new MySqlCommand("SELECT h.name AS home_name, a.name AS away_name, " +
                                                 "matches.id, played, datetime, home_score, away_score, overtime, shootout, forfeit " +
                                                 "FROM matches", connection);
-                        if (SportsData.sport.name == "tennis")
+                        if (SportsData.SPORT.name == "tennis")
                         {
                             cmd.CommandText += " INNER JOIN player AS h ON h.id = matches.home_competitor";
                             cmd.CommandText += " INNER JOIN player AS a ON a.id = matches.away_competitor";
@@ -204,7 +204,7 @@ namespace CSharpZapoctak.ViewModels
             if (msgResult == MessageBoxResult.Yes)
             {
                 //delete round from DB
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
                 MySqlTransaction transaction = null;
                 MySqlCommand cmd = null;
@@ -298,11 +298,11 @@ namespace CSharpZapoctak.ViewModels
         private void AddRound()
         {
             Round r = new Round();
-            r.SeasonID = SportsData.season.id;
+            r.SeasonID = SportsData.SEASON.id;
             r.Name = "Round " + (Rounds.Count + 1);
             r.Matches = new ObservableCollection<Match>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("INSERT INTO rounds(season_id, name) VALUES ('" + r.SeasonID + "', '" + r.Name + "')", connection);
 

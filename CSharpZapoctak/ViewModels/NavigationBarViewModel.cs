@@ -63,22 +63,22 @@ namespace CSharpZapoctak.ViewModels
             AreButtonsChecked[buttonName] = true;
             ButtonsVisibilities = buttonsVisibilities;
 
-            if (SportsData.competition.Name.Length > 15)
+            if (SportsData.COMPETITION.Name.Length > 15)
             {
-                CurrentCompetition = "- " + SportsData.competition.Name.Substring(0, 12) + "...";
+                CurrentCompetition = "- " + SportsData.COMPETITION.Name.Substring(0, 12) + "...";
             }
             else
             {
-                CurrentCompetition = "- " + SportsData.competition.Name;
+                CurrentCompetition = "- " + SportsData.COMPETITION.Name;
             }
 
-            if (SportsData.season.Name.Length > 13)
+            if (SportsData.SEASON.Name.Length > 13)
             {
-                CurrentSeason = "- " + SportsData.season.Name.Substring(0, 12) + "...";
+                CurrentSeason = "- " + SportsData.SEASON.Name.Substring(0, 12) + "...";
             }
             else
             {
-                CurrentSeason = "- " + SportsData.season.Name;
+                CurrentSeason = "- " + SportsData.SEASON.Name;
             }
         }
     }

@@ -5,7 +5,7 @@ namespace CSharpZapoctak.Models
 {
     class Match : NotifyPropertyChanged
     {
-        public int id = (int)EntityState.NotSelected;
+        public int id = SportsData.NO_ID;
 
         public int serieNumber;
 

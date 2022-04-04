@@ -50,7 +50,7 @@ namespace CSharpZapoctak.ViewModels
             ns = navigationStore;
             NavigateEditSeasonCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new EditSeasonViewModel(navigationStore)));
 
-            CurrentSeason = SportsData.season;
+            CurrentSeason = SportsData.SEASON;
 
             if (!string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
             {
@@ -79,7 +79,7 @@ namespace CSharpZapoctak.ViewModels
             if (msgResult == MessageBoxResult.Yes)
             {
                 //delete season from DB
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
                 MySqlTransaction transaction = null;
                 MySqlCommand cmd = new MySqlCommand("DELETE FROM seasons WHERE id = " + CurrentSeason.id, connection);
@@ -197,7 +197,7 @@ namespace CSharpZapoctak.ViewModels
                     //DELETE SEASON LOGO
                     //if there is logo in the database then delete it
                     //get previous logo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + CurrentSeason.id + ".*");
+                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.name + CurrentSeason.id + ".*");
                     string previousFilePath = "";
                     //if it exists
                     if (previousImgPath.Length != 0)
@@ -216,7 +216,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         //if there is logo in the database then delete it
                         //get previous logo
-                        previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + teamID + ".*");
+                        previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.name + teamID + ".*");
                         previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -235,7 +235,7 @@ namespace CSharpZapoctak.ViewModels
                     //get previous photo
                     foreach (int playerID in players)
                     {
-                        previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + playerID + ".*");
+                        previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + playerID + ".*");
                         previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -253,8 +253,7 @@ namespace CSharpZapoctak.ViewModels
                     connection.Close();
 
                     //switch view
-                    SportsData.season.id = (int)EntityState.NotSelected;
-                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new SeasonsSelectionViewModel(ns))).Execute(null);
+                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new SeasonsSelectionViewModel(ns))).Execute(new Season());
                 }
                 catch (Exception)
                 {

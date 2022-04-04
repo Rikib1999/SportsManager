@@ -26,9 +26,9 @@ namespace CSharpZapoctak.Others
             Microsoft.Office.Interop.Excel.Worksheet table = (Microsoft.Office.Interop.Excel.Worksheet)excelApplication.ActiveSheet;
 
             //info
-            table.Range["A" + 1].Value = char.ToUpper(SportsData.sport.name[0]) + SportsData.sport.name.Substring(1).Replace('_', '-');
-            if (SportsData.competition.id > 0) { table.Range["A" + 1].Value += " - " + SportsData.competition.Name; }
-            if (SportsData.season.id > 0) { table.Range["A" + 1].Value += " - " + SportsData.season.Name; }
+            table.Range["A" + 1].Value = char.ToUpper(SportsData.SPORT.name[0]) + SportsData.SPORT.name.Substring(1).Replace('_', '-');
+            if (SportsData.COMPETITION.id > 0) { table.Range["A" + 1].Value += " - " + SportsData.COMPETITION.Name; }
+            if (SportsData.SEASON.id > 0) { table.Range["A" + 1].Value += " - " + SportsData.SEASON.Name; }
 
             //header
             List<string> propNames = new List<string>();
@@ -63,56 +63,16 @@ namespace CSharpZapoctak.Others
 
             //create table
             var range = table.get_Range("A2:" + (char)('A' + columns.Count - 1) + "" + (rowCount + 2));
-            table.ListObjects.AddEx(XlListObjectSourceType.xlSrcRange, range, Type.Missing, Microsoft.Office.Interop.Excel.XlYesNoGuess.xlYes, Type.Missing).Name = "MyTableStyle";
+            table.ListObjects.AddEx(XlListObjectSourceType.xlSrcRange, range, Type.Missing, XlYesNoGuess.xlYes, Type.Missing).Name = "MyTableStyle";
             table.ListObjects.get_Item("MyTableStyle").TableStyle = "TableStyleLight9";
 
             //page orientation
             if (columns.Count > 7)
             {
-                table.PageSetup.Orientation = Microsoft.Office.Interop.Excel.XlPageOrientation.xlLandscape;
+                table.PageSetup.Orientation = XlPageOrientation.xlLandscape;
             }
 
-            //select path
-            string tablePath = "";
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            switch (format)
-            {
-                case "PDF":
-                    saveFileDialog.Filter = "PDF Files | *.pdf";
-                    saveFileDialog.DefaultExt = "pdf";
-                    break;
-                case "XLSX":
-                    saveFileDialog.Filter = "XLSX | *.xlsx";
-                    saveFileDialog.DefaultExt = "xlsx";
-                    break;
-                default:
-                    break;
-            }
-            saveFileDialog.FileName = "table";
-
-            bool? result = saveFileDialog.ShowDialog();
-            if (result.ToString() != string.Empty)
-            {
-                tablePath = saveFileDialog.FileName;
-
-                switch (format)
-                {
-                    case "PDF":
-                        //export to pdf
-                        try
-                        {
-                            excelWorkbook.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, tablePath);
-                        }
-                        catch (Exception) { }
-                        break;
-                    case "XLSX":
-                        excelWorkbook.SaveCopyAs(tablePath);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            SaveExcelSheet(format, excelWorkbook, "table");
 
             excelWorkbook.Close(false);
         }
@@ -150,7 +110,7 @@ namespace CSharpZapoctak.Others
             standings.Range["F5"].Value = "Standings after " + lastRound;
 
             //insert season logo
-            InsertLogo(SportsData.competition.LogoPath, 240, 200, "A1", standings);
+            InsertLogo(SportsData.COMPETITION.LogoPath, 240, 200, "A1", standings);
 
             foreach (Group g in groups)
             {
@@ -261,54 +221,14 @@ namespace CSharpZapoctak.Others
 
             standings.Rows.RowHeight = 15;
 
-            //select path
-            string tablePath = "";
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            switch (format)
-            {
-                case "PDF":
-                    saveFileDialog.Filter = "PDF Files | *.pdf";
-                    saveFileDialog.DefaultExt = "pdf";
-                    break;
-                case "XLSX":
-                    saveFileDialog.Filter = "XLSX | *.xlsx";
-                    saveFileDialog.DefaultExt = "xlsx";
-                    break;
-                default:
-                    break;
-            }
-            saveFileDialog.FileName = "standings";
-
-            bool? result = saveFileDialog.ShowDialog();
-            if (result.ToString() != string.Empty)
-            {
-                tablePath = saveFileDialog.FileName;
-
-                switch (format)
-                {
-                    case "PDF":
-                        //export to pdf
-                        try
-                        {
-                            excelWorkbook.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, tablePath);
-                        }
-                        catch (Exception) { }
-                        break;
-                    case "XLSX":
-                        excelWorkbook.SaveCopyAs(tablePath);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            SaveExcelSheet(format, excelWorkbook, "standings");
 
             excelWorkbook.Close(false);
         }
 
         public static object GetPropertyValue(object obj, string propertyName)
         {
-            foreach (var prop in propertyName.Split('.').Select(s => obj.GetType().GetProperty(s)))
+            foreach (System.Reflection.PropertyInfo prop in propertyName.Split('.').Select(s => obj.GetType().GetProperty(s)))
             {
                 obj = prop.GetValue(obj, null);
             }
@@ -324,7 +244,7 @@ namespace CSharpZapoctak.Others
         /// <param name="height">In pixels.</param>
         /// <param name="range"></param>
         /// <param name="sheet"></param>
-        public static void InsertLogo(string logoPath, double width, double height, string range, Microsoft.Office.Interop.Excel.Worksheet sheet)
+        public static void InsertLogo(string logoPath, double width, double height, string range, Worksheet sheet)
         {
             if (!File.Exists(logoPath)) { return; }
             object missing = System.Reflection.Missing.Value;
@@ -371,7 +291,7 @@ namespace CSharpZapoctak.Others
                 }
 
             }
-            pic.Placement = Microsoft.Office.Interop.Excel.XlPlacement.xlMove;
+            pic.Placement = XlPlacement.xlMove;
         }
 
         public static void ExportControlToImage(FrameworkElement chart)
@@ -404,6 +324,50 @@ namespace CSharpZapoctak.Others
                 using (Stream fileStream = new FileStream(imagePath, FileMode.Create))
                 {
                     png.Save(fileStream);
+                }
+            }
+        }
+
+        public static void SaveExcelSheet(string format, _Workbook excelWorkbook, string filename)
+        {
+            string tablePath;
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            switch (format)
+            {
+                case "PDF":
+                    saveFileDialog.Filter = "PDF Files | *.pdf";
+                    saveFileDialog.DefaultExt = "pdf";
+                    break;
+                case "XLSX":
+                    saveFileDialog.Filter = "XLSX | *.xlsx";
+                    saveFileDialog.DefaultExt = "xlsx";
+                    break;
+                default:
+                    break;
+            }
+            saveFileDialog.FileName = filename;
+
+            bool? result = saveFileDialog.ShowDialog();
+            if (result.ToString() != string.Empty)
+            {
+                tablePath = saveFileDialog.FileName;
+
+                switch (format)
+                {
+                    case "PDF":
+                        //export to pdf
+                        try
+                        {
+                            excelWorkbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, tablePath);
+                        }
+                        catch (Exception) { }
+                        break;
+                    case "XLSX":
+                        excelWorkbook.SaveCopyAs(tablePath);
+                        break;
+                    default:
+                        break;
                 }
             }
         }

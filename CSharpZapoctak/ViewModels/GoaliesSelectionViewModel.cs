@@ -148,7 +148,7 @@ namespace CSharpZapoctak.ViewModels
             NavigatePlayerCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayerViewModel(navigationStore, SelectedPlayer)));
             SelectedPlayer = null;
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT p.* " +
                                                 "FROM goalie_matches " +
@@ -156,12 +156,12 @@ namespace CSharpZapoctak.ViewModels
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
                                                 "INNER JOIN seasons AS s ON s.id = m.season_id ", connection);
             cmd.CommandText += " WHERE player_id <> -1";
-            if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
+            if (SportsData.IsCompetitionSet())
             {
-                cmd.CommandText += " AND s.competition_id = " + SportsData.competition.id;
-                if (SportsData.season.id != (int)EntityState.NotSelected && SportsData.season.id != (int)EntityState.AddNew)
+                cmd.CommandText += " AND s.competition_id = " + SportsData.COMPETITION.id;
+                if (SportsData.IsSeasonSet())
                 {
-                    cmd.CommandText += " AND m.season_id = " + SportsData.season.id;
+                    cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.id;
                 }
             }
             cmd.CommandText += " GROUP BY player_id";
@@ -193,7 +193,7 @@ namespace CSharpZapoctak.ViewModels
                         Info = row["info"].ToString()
                     };
 
-                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + p.id + ".*");
+                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + p.id + ".*");
                     if (imgPath.Length != 0)
                     {
                         p.PhotoPath = imgPath.First();
@@ -203,7 +203,7 @@ namespace CSharpZapoctak.ViewModels
                         p.PhotoPath = p.Gender == "M" ? SportsData.ResourcesPath + "\\male.png" : SportsData.ResourcesPath + "\\female.png";
                     }
 
-                    p.Stats = new GoalieStats(p, SportsData.season.id, SportsData.competition.id);
+                    p.Stats = new GoalieStats(p, SportsData.SEASON.id, SportsData.COMPETITION.id);
 
                     Players.Add(p);
                 }

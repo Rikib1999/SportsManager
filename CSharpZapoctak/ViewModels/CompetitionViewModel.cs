@@ -50,7 +50,7 @@ namespace CSharpZapoctak.ViewModels
             NavigateAddEditCompetitionCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new AddEditCompetitionViewModel(navigationStore)));
 
             ns = navigationStore;
-            CurrentCompetition = SportsData.competition;
+            CurrentCompetition = SportsData.COMPETITION;
 
             if (!string.IsNullOrWhiteSpace(CurrentCompetition.LogoPath) && CurrentCompetition.LogoPath != SportsData.ResourcesPath + "/add_icon.png")
             {
@@ -79,7 +79,7 @@ namespace CSharpZapoctak.ViewModels
             if (msgResult == MessageBoxResult.Yes)
             {
                 //delete competition from DB
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
                 MySqlTransaction transaction = null;
                 MySqlCommand cmd = new MySqlCommand("DELETE FROM competitions WHERE id = " + CurrentCompetition.id, connection);
@@ -221,7 +221,7 @@ namespace CSharpZapoctak.ViewModels
                     //DELETE COMPETITION LOGO
                     //if there is logo in the database then delete it
                     //get previous logo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.sport.name + CurrentCompetition.id + ".*");
+                    string[] previousImgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.name + CurrentCompetition.id + ".*");
                     string previousFilePath = "";
                     //if it exists
                     if (previousImgPath.Length != 0)
@@ -240,7 +240,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         //if there is logo in the database then delete it
                         //get previous logo
-                        previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.sport.name + seasonID + ".*");
+                        previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.name + seasonID + ".*");
                         previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -259,7 +259,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         //if there is logo in the database then delete it
                         //get previous logo
-                        previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + teamID + ".*");
+                        previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.name + teamID + ".*");
                         previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -278,7 +278,7 @@ namespace CSharpZapoctak.ViewModels
                     //get previous photo
                     foreach (int playerID in players)
                     {
-                        previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + playerID + ".*");
+                        previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + playerID + ".*");
                         previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -296,9 +296,7 @@ namespace CSharpZapoctak.ViewModels
                     connection.Close();
 
                     //switch view
-                    SportsData.competition.id = (int)EntityState.NotSelected;
-                    SportsData.season.id = (int)EntityState.NotSelected;
-                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionsSelectionViewModel(ns))).Execute(null);
+                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionsSelectionViewModel(ns))).Execute(new Competition());
                 }
                 catch (Exception e)
                 {

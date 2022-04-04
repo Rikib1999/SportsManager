@@ -1,37 +1,13 @@
 ﻿<UserControl x:Class="CSharpZapoctak.Views.QualificationScheduleView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CSharpZapoctak.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:zoomborder="clr-namespace:CSharpZapoctak.Others"
-             xmlns:converters="clr-namespace:CSharpZapoctak.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <converters:ObjectsConverter x:Key="ObjectsConverter"/>
-    </UserControl.Resources>
     <VirtualizingStackPanel Orientation="Vertical">
-        <!-- RENDERING AND SHOWING ALL BRACKETS AT ONCE
-        <ItemsControl ItemsSource="{Binding Brackets}" Name="bracketSource">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>-->
         <VirtualizingStackPanel Orientation="Vertical" Margin="0,10">
-            <!--<Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="40"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="&lt;" Width="40" Command="{Binding PreviousBracketCommand}"/>
-                <TextBlock Grid.Column="1" Text="{Binding CurrentBracket.Name}" Margin="0,0,0,10"/>
-                <Button Grid.Column="2" Content="&gt;" Width="40" Command="{Binding NextBracketCommand}"/>
-            </Grid>-->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Content="&lt;" Width="40" Height="40" Command="{Binding PreviousBracketCommand}"/>
                 <TextBlock Text="{Binding CurrentBracket.Name}" Margin="40,0,40,0"/>
@@ -99,35 +75,14 @@
                                                                     </ItemsControl.ItemTemplate>
                                                                 </ItemsControl>
 
-                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=bracketSource}" Visibility="{Binding AddMatchVisibility}">
-                                                                    <Button.CommandParameter>
-                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                            <Binding Path="."/>
-                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                        </MultiBinding>
-                                                                    </Button.CommandParameter>
-                                                                </Button>
+                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="Add" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=bracketSource}" Visibility="{Binding AddMatchVisibility}" CommandParameter="{Binding}"/>
 
-                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Visibility="{Binding RemoveFirstTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=bracketSource}">
-                                                                    <Button.CommandParameter>
-                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                            <Binding Path="."/>
-                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                        </MultiBinding>
-                                                                    </Button.CommandParameter>
-                                                                </Button>
+                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Visibility="{Binding RemoveFirstTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveFirstTeamFromSerieCommand, ElementName=bracketSource}" CommandParameter="{Binding}"/>
                                                             </VirtualizingStackPanel>
 
                                                             <VirtualizingStackPanel IsEnabled="{Binding FirstIsEnabled}" Visibility="{Binding FirstNotSelectedVisibility}" Orientation="Horizontal">
                                                                 <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=bracketSource}" SelectedItem="{Binding FirstSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
-                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddFirstTeamToSerieCommand, ElementName=bracketSource}">
-                                                                    <Button.CommandParameter>
-                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                            <Binding Path="."/>
-                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                        </MultiBinding>
-                                                                    </Button.CommandParameter>
-                                                                </Button>
+                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddFirstTeamToSerieCommand, ElementName=bracketSource}" CommandParameter="{Binding}"/>
                                                             </VirtualizingStackPanel>
                                                         </VirtualizingStackPanel>
 
@@ -150,35 +105,14 @@
                                                                     </ItemsControl.ItemTemplate>
                                                                 </ItemsControl>
 
-                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=bracketSource}" Visibility="{Binding AddMatchVisibility}">
-                                                                    <Button.CommandParameter>
-                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                            <Binding Path="."/>
-                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                        </MultiBinding>
-                                                                    </Button.CommandParameter>
-                                                                </Button>
+                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Width="60" BorderBrush="Black" Background="White" FontSize="18" Content="match" Command="{Binding Path=DataContext.AddMatchCommand, ElementName=bracketSource}" Visibility="{Binding AddMatchVisibility}" CommandParameter="{Binding}"/>
 
-                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Visibility="{Binding RemoveSecondTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=bracketSource}">
-                                                                    <Button.CommandParameter>
-                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                            <Binding Path="."/>
-                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                        </MultiBinding>
-                                                                    </Button.CommandParameter>
-                                                                </Button>
+                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Visibility="{Binding RemoveSecondTeamVisibility}" Content="X" Width="40" FontWeight="Bold" Command="{Binding Path=DataContext.RemoveSecondTeamFromSerieCommand, ElementName=bracketSource}" CommandParameter="{Binding}"/>
                                                             </VirtualizingStackPanel>
 
                                                             <VirtualizingStackPanel IsEnabled="{Binding SecondIsEnabled}" Visibility="{Binding SecondNotSelectedVisibility}" Orientation="Horizontal">
                                                                 <ComboBox Width="180" ItemsSource="{Binding  Path=DataContext.NotSelectedTeams, ElementName=bracketSource}" SelectedItem="{Binding SecondSelectedTeam}" DisplayMemberPath="Name" IsEditable="True"/>
-                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddSecondTeamToSerieCommand, ElementName=bracketSource}">
-                                                                    <Button.CommandParameter>
-                                                                        <MultiBinding Converter="{StaticResource ObjectsConverter}">
-                                                                            <Binding Path="."/>
-                                                                            <Binding Path="DataContext" ElementName="roundSource"/>
-                                                                        </MultiBinding>
-                                                                    </Button.CommandParameter>
-                                                                </Button>
+                                                                <Button IsEnabled="{Binding Path=DataContext.IsEnabled, ElementName=bracketSource}" Width="40" Content="+" FontWeight="Bold" Command="{Binding Path=DataContext.AddSecondTeamToSerieCommand, ElementName=bracketSource}" CommandParameter="{Binding}"/>
                                                             </VirtualizingStackPanel>
                                                         </VirtualizingStackPanel>
                                                     </VirtualizingStackPanel>
@@ -200,10 +134,5 @@
             <Button Margin="0,40,0,0" Width="200" Content="Export" Command="{Binding ExportBracketCommand}" CommandParameter="{Binding ElementName=border}"/>
 
         </VirtualizingStackPanel>
-        <!--
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    -->
     </VirtualizingStackPanel>
 </UserControl>

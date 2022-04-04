@@ -899,17 +899,17 @@ namespace CSharpZapoctak.ViewModels
         {
             ns = navigationStore;
             CurrentSeason = new Season();
-            CurrentSeason.id = (int)EntityState.AddNew;
             NewTeam = new Team();
-            NewTeam.id = (int)EntityState.NotSelected;
             ExistingTeam = new Team();
+
             Countries = SportsData.countries;
             Task t1 = new Task(LoadExistingTeams);
             t1.Start();
             LoadCompetitions();
-            if (SportsData.competition.id != (int)EntityState.NotSelected && SportsData.competition.id != (int)EntityState.AddNew)
+
+            if (SportsData.IsCompetitionSet())
             {
-                CurrentSeason.Competition = Competitions.Where(x => x.id == SportsData.competition.id).First();
+                CurrentSeason.Competition = Competitions.Where(x => x.id == SportsData.COMPETITION.id).First();
             }
             Teams = new ObservableCollection<Team>();
             QualificationBrackets = new ObservableCollection<Bracket>();
@@ -924,7 +924,7 @@ namespace CSharpZapoctak.ViewModels
         #region Loading
         private void LoadCompetitions()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT id , name FROM competitions", connection);
 
@@ -964,7 +964,7 @@ namespace CSharpZapoctak.ViewModels
         {
             ExistingTeams = new ObservableCollection<Team>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("SELECT id, name FROM team", connection);
 
@@ -983,13 +983,13 @@ namespace CSharpZapoctak.ViewModels
                         Name = tm["name"].ToString(),
                     };
 
-                    string[] imgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.sport.name + t.id + ".*");
+                    string[] imgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.name + t.id + ".*");
                     if (imgPath.Length != 0)
                     {
                         t.LogoPath = imgPath.First();
                     }
 
-                    if (t.id != -1)
+                    if (t.id != SportsData.NO_ID)
                     {
                         ExistingTeams.Add(t);
                     }
@@ -1065,7 +1065,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void AddExistingTeam()
         {
-            if (ExistingTeam == null || ExistingTeam.id == (int)EntityState.NotSelected)
+            if (ExistingTeam == null || ExistingTeam.id == SportsData.NO_ID)
             {
                 return;
             }
@@ -1511,7 +1511,7 @@ namespace CSharpZapoctak.ViewModels
         private void Save()
         {
             //validation
-            if (CurrentSeason.Competition == null || CurrentSeason.Competition.id == (int)EntityState.AddNew || CurrentSeason.Competition.id == (int)EntityState.NotSelected)
+            if (CurrentSeason.Competition.id == SportsData.NO_ID)
             {
                 MessageBox.Show("Please select competition.", "Competition not selected", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -1616,7 +1616,7 @@ namespace CSharpZapoctak.ViewModels
                 }
             }
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
@@ -1640,13 +1640,13 @@ namespace CSharpZapoctak.ViewModels
 
                 if (!string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
                 {
-                    string filePath = SportsData.SeasonLogosPath + "/" + SportsData.sport.name + CurrentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
+                    string filePath = SportsData.SeasonLogosPath + "/" + SportsData.SPORT.name + CurrentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
                     File.Copy(CurrentSeason.LogoPath, filePath);
                     CurrentSeason.LogoPath = filePath;
                 }
 
                 //new teams insertion
-                foreach (Team t in Teams.Where(x => x.id == (int)EntityState.NotSelected))
+                foreach (Team t in Teams.Where(x => x.id == SportsData.NO_ID))
                 {
                     string teamInsertQuerry = "INSERT INTO team(name, info, status, country, date_of_creation) " +
                                               "VALUES ('" + t.Name + "', '" + t.Info + "', " + Convert.ToInt32(t.Status) + ", '" + t.Country.CodeTwo + "', '" + t.DateOfCreation.ToString("yyyy-MM-dd H:mm:ss") + "')";
@@ -1657,7 +1657,7 @@ namespace CSharpZapoctak.ViewModels
 
                     if (!string.IsNullOrWhiteSpace(t.LogoPath))
                     {
-                        string filePath = SportsData.TeamLogosPath + "/" + SportsData.sport.name + t.id + Path.GetExtension(t.LogoPath);
+                        string filePath = SportsData.TeamLogosPath + "/" + SportsData.SPORT.name + t.id + Path.GetExtension(t.LogoPath);
                         File.Copy(t.LogoPath, filePath);
                     }
                 }
@@ -1676,33 +1676,33 @@ namespace CSharpZapoctak.ViewModels
                     {
                         for (int j = 0; j < b.Series[i].Count; j++)
                         {
-                            int first = -1;
-                            int second = -1;
+                            int firstID = SportsData.NO_ID;
+                            int secondID = SportsData.NO_ID;
                             if (Teams.Contains(b.Series[i][j].FirstTeam))
                             {
-                                first = b.Series[i][j].FirstTeam.id;
+                                firstID = b.Series[i][j].FirstTeam.id;
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + first + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                              "VALUES (" + firstID + ", " + CurrentSeason.id + ", " + -1 + ")";
                                 cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
                             }
                             if (Teams.Contains(b.Series[i][j].SecondTeam))
                             {
-                                second = b.Series[i][j].SecondTeam.id;
+                                secondID = b.Series[i][j].SecondTeam.id;
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + second + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                              "VALUES (" + secondID + ", " + CurrentSeason.id + ", " + -1 + ")";
                                 cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
                             }
-                            if (first != -1 || second != -1)
+                            if (firstID != SportsData.NO_ID || secondID != SportsData.NO_ID)
                             {
                                 //match insertion
                                 string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                              "VALUES (" + CurrentSeason.id + ", 0, " + b.id + ", " + j + ", " + i + ", -1, " + first + ", " + second + ", " + first + ")";
+                                              "VALUES (" + CurrentSeason.id + ", 0, " + b.id + ", " + j + ", " + i + ", -1, " + firstID + ", " + secondID + ", " + firstID + ")";
                                 cmd = new MySqlCommand(macthInsertQuerry, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
@@ -1739,33 +1739,33 @@ namespace CSharpZapoctak.ViewModels
                     {
                         for (int j = 0; j < PlayOff.Series[i].Count; j++)
                         {
-                            int first = -1;
-                            int second = -1;
+                            int firstID = SportsData.NO_ID;
+                            int secondID = SportsData.NO_ID;
                             if (Teams.Contains(PlayOff.Series[i][j].FirstTeam))
                             {
-                                first = PlayOff.Series[i][j].FirstTeam.id;
+                                firstID = PlayOff.Series[i][j].FirstTeam.id;
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + first + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                              "VALUES (" + firstID + ", " + CurrentSeason.id + ", " + -1 + ")";
                                 cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
                             }
                             if (Teams.Contains(PlayOff.Series[i][j].SecondTeam))
                             {
-                                second = PlayOff.Series[i][j].SecondTeam.id;
+                                secondID = PlayOff.Series[i][j].SecondTeam.id;
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + second + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                              "VALUES (" + secondID + ", " + CurrentSeason.id + ", " + -1 + ")";
                                 cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
                             }
-                            if (first != -1 || second != -1)
+                            if (firstID != SportsData.NO_ID || secondID != SportsData.NO_ID)
                             {
                                 //match insertion
                                 string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                              "VALUES (" + CurrentSeason.id + ", 0, -1, " + j + ", " + i + ", -1, " + first + ", " + second + ", " + first + ")";
+                                              "VALUES (" + CurrentSeason.id + ", 0, -1, " + j + ", " + i + ", -1, " + firstID + ", " + secondID + ", " + firstID + ")";
                                 cmd = new MySqlCommand(macthInsertQuerry, connection);
                                 cmd.Transaction = transaction;
                                 cmd.ExecuteNonQuery();
@@ -1780,10 +1780,8 @@ namespace CSharpZapoctak.ViewModels
                 CurrentSeason.PlayOffStarted = false;
                 CurrentSeason.QualificationCount = QualificationCount;
                 CurrentSeason.QualificationRounds = QualificationRoundsCount;
-                CurrentSeason.WinnerID = -1;
+                CurrentSeason.WinnerID = SportsData.NO_ID;
                 CurrentSeason.WinnerName = "";
-                SportsData.competition = CurrentSeason.Competition;
-                SportsData.season = CurrentSeason;
 
                 transaction.Commit();
                 connection.Close();

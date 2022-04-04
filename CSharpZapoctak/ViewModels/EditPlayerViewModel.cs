@@ -199,7 +199,7 @@ namespace CSharpZapoctak.ViewModels
             Player.PlaysWith = NewPlaysWith == "Right" ? "R" : "L";
 
             //UPDATE
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlConnection connection = new MySqlConnection(connectionString);
             MySqlCommand cmd = new MySqlCommand("UPDATE player " +
                                                 "SET first_name = '" + Player.FirstName + "', " +
@@ -227,7 +227,7 @@ namespace CSharpZapoctak.ViewModels
                 {
                     //if there is photo in the database then delete it
                     //get previous photo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + Player.id + ".*");
+                    string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + Player.id + ".*");
                     string previousFilePath = "";
                     //if it exists
                     if (previousImgPath.Length != 0)
@@ -244,7 +244,7 @@ namespace CSharpZapoctak.ViewModels
                 else
                 {
                     //get current photo
-                    string[] imgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.sport.name + Player.id + ".*");
+                    string[] imgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + Player.id + ".*");
                     string filePath = "";
                     //if photo existed
                     if (imgPath.Length != 0)
@@ -254,7 +254,7 @@ namespace CSharpZapoctak.ViewModels
                     //if photo did not exist declare its path
                     if (string.IsNullOrWhiteSpace(filePath))
                     {
-                        filePath = SportsData.PlayerPhotosPath + @"\" + SportsData.sport.name + Player.id + Path.GetExtension(Player.PhotoPath);
+                        filePath = SportsData.PlayerPhotosPath + @"\" + SportsData.SPORT.name + Player.id + Path.GetExtension(Player.PhotoPath);
                     }
                     //if photo had changed
                     if (Player.PhotoPath != filePath)

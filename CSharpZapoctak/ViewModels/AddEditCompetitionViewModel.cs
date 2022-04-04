@@ -14,6 +14,8 @@ namespace CSharpZapoctak.ViewModels
 {
     class AddEditCompetitionViewModel : NotifyPropertyChanged
     {
+        public ICommand NavigateCompetitionCommand { get; }
+        
         private Competition currentCompetition;
         public Competition CurrentCompetition
         {
@@ -77,20 +79,18 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        public NavigationStore ns;
         public AddEditCompetitionViewModel(NavigationStore navigationStore)
         {
-            ns = navigationStore;
+            NavigateCompetitionCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionViewModel(navigationStore)));
 
-            if (SportsData.competition.id == (int)EntityState.AddNew)
+            if (!SportsData.IsCompetitionSet())
             {
-                CurrentCompetition = new Competition();
-                CurrentCompetition.id = (int)EntityState.AddNew;
+                CurrentCompetition = SportsData.COMPETITION;
                 HeaderVisibility = Visibility.Visible;
             }
             else
             {
-                CurrentCompetition = SportsData.competition;
+                CurrentCompetition = SportsData.COMPETITION;
                 HeaderVisibility = Visibility.Collapsed;
 
                 if (!string.IsNullOrWhiteSpace(CurrentCompetition.LogoPath))
@@ -148,12 +148,13 @@ namespace CSharpZapoctak.ViewModels
         {
             if (string.IsNullOrWhiteSpace(CurrentCompetition.Name))
             {
+                MessageBox.Show("You must provide a name for your competition.", "Name missing", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (CurrentCompetition.id == (int)EntityState.AddNew)
+            if (!SportsData.IsCompetitionSet())
             {
                 //INSERT
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
                 MySqlCommand cmd = new MySqlCommand("INSERT INTO competitions(name ,info) VALUES ('" + CurrentCompetition.Name + "', '" + CurrentCompetition.Info + "')", connection);
 
@@ -161,20 +162,16 @@ namespace CSharpZapoctak.ViewModels
                 {
                     connection.Open();
                     cmd.ExecuteNonQuery();
-                    currentCompetition.id = (int)cmd.LastInsertedId;
+                    CurrentCompetition.id = (int)cmd.LastInsertedId;
 
-                    if (string.IsNullOrWhiteSpace(CurrentCompetition.LogoPath))
+                    if (!string.IsNullOrWhiteSpace(CurrentCompetition.LogoPath))
                     {
-                        return;
+                        string filePath = SportsData.CompetitionLogosPath + "/" + SportsData.SPORT.name + CurrentCompetition.id + Path.GetExtension(CurrentCompetition.LogoPath);
+                        File.Copy(CurrentCompetition.LogoPath, filePath);
+                        CurrentCompetition.LogoPath = filePath;
                     }
-                    string filePath = SportsData.CompetitionLogosPath + "/" + SportsData.sport.name + currentCompetition.id + Path.GetExtension(CurrentCompetition.LogoPath);
-                    File.Copy(CurrentCompetition.LogoPath, filePath);
-                    CurrentCompetition.LogoPath = filePath;
-                    
-                    //reset
-                    CurrentCompetition = new Competition();
-                    CurrentCompetition.id = (int)EntityState.AddNew;
-                    Bitmap = null;
+
+                    NavigateCompetitionCommand.Execute(CurrentCompetition);
                 }
                 catch (Exception)
                 {
@@ -188,7 +185,7 @@ namespace CSharpZapoctak.ViewModels
             else
             {
                 //UPDATE
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.sport.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
+                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
                 MySqlConnection connection = new MySqlConnection(connectionString);
                 MySqlCommand cmd = new MySqlCommand("UPDATE competitions SET name = '" + CurrentCompetition.Name + "', info = '" + CurrentCompetition.Info + "' WHERE id = " + CurrentCompetition.id, connection);
 
@@ -203,7 +200,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         //if there is logo in the database then delete it
                         //get previous logo
-                        string[] previousImgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.sport.name + currentCompetition.id + ".*");
+                        string[] previousImgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.name + currentCompetition.id + ".*");
                         string previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -220,7 +217,7 @@ namespace CSharpZapoctak.ViewModels
                     else
                     {
                         //get current logo
-                        string[] imgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.sport.name + currentCompetition.id + ".*");
+                        string[] imgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.name + currentCompetition.id + ".*");
                         string filePath = "";
                         //if logo existed
                         if (imgPath.Length != 0)
@@ -230,9 +227,9 @@ namespace CSharpZapoctak.ViewModels
                         //if logo did not exist declare its path
                         if (string.IsNullOrWhiteSpace(filePath))
                         {
-                            filePath = SportsData.CompetitionLogosPath + @"\" + SportsData.sport.name + currentCompetition.id + Path.GetExtension(CurrentCompetition.LogoPath);
+                            filePath = SportsData.CompetitionLogosPath + @"\" + SportsData.SPORT.name + currentCompetition.id + Path.GetExtension(CurrentCompetition.LogoPath);
                         }
-                        //if logo had changeg
+                        //if logo had changed
                         if (CurrentCompetition.LogoPath != filePath)
                         {
                             GC.Collect();
@@ -243,8 +240,7 @@ namespace CSharpZapoctak.ViewModels
                         }
                     }
 
-                    SportsData.competition = CurrentCompetition;
-                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionViewModel(ns))).Execute(null);
+                    NavigateCompetitionCommand.Execute(CurrentCompetition);
                 }
                 catch (Exception)
                 {

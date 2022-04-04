@@ -97,17 +97,17 @@ namespace CSharpZapoctak.ViewModels
         {
             ns = navigationStore;
 
-            if (SportsData.season.HasQualification())
+            if (SportsData.SEASON.HasQualification())
             {
                 QualificationVisibility = Visibility.Visible;
                 QualificationSet = true;
             }
-            if (SportsData.season.HasGroups())
+            if (SportsData.SEASON.HasGroups())
             {
                 GroupsVisibility = Visibility.Visible;
                 GroupsSet = true;
             }
-            if (SportsData.season.HasPlayOff())
+            if (SportsData.SEASON.HasPlayOff())
             {
                 PlayOffVisibility = Visibility.Visible;
                 if (!QualificationSet && !GroupsSet)
