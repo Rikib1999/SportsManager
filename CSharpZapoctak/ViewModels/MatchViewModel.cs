@@ -409,11 +409,16 @@ namespace CSharpZapoctak.ViewModels
             //if it is in bracket (Q or PO)
             if (bracketIndex != -1)
             {
+                //if it is in play-off
+                string playoffQuery = Match.SerieNumber > 0
+                            ? " season_id = " + SportsData.SEASON.ID + " AND serie_match_number > 0 AND"
+                            : "";
+
                 //Select all played matches from current bracket
                 MySqlConnection connection = new(SportsData.ConnectionStringSport);
                 MySqlCommand cmd = new("SELECT round, bracket_index " +
                                                     "FROM matches " +
-                                                    "WHERE qualification_id = " + qualificationID + " AND played = 1 AND round > " + round, connection);
+                                                    "WHERE" + playoffQuery + " qualification_id = " + qualificationID + " AND played = 1 AND round > " + round, connection);
 
                 try
                 {
@@ -434,6 +439,7 @@ namespace CSharpZapoctak.ViewModels
 
                         foreach ((int, int) m in macthes)
                         {
+                            //if there is played match after current match, it can not be edited
                             if (path.Contains(m))
                             {
                                 IsEditable = false;
@@ -525,7 +531,7 @@ namespace CSharpZapoctak.ViewModels
                 }
                 else
                 {
-                    match.Competition.ImagePath = "";
+                    Match.Competition.ImagePath = "";
                 }
                 imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.Name + Match.AwayTeam.ID + ".*");
                 if (imgPath.Length != 0)
@@ -534,16 +540,16 @@ namespace CSharpZapoctak.ViewModels
                 }
                 else
                 {
-                    match.Competition.ImagePath = "";
+                    Match.Competition.ImagePath = "";
                 }
-                imgPath = System.IO.Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.Name + match.Competition.ID.ToString() + ".*");
+                imgPath = System.IO.Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.Name + Match.Competition.ID.ToString() + ".*");
                 if (imgPath.Length != 0)
                 {
-                    match.Competition.ImagePath = imgPath.First();
+                    Match.Competition.ImagePath = imgPath.First();
                 }
                 else
                 {
-                    match.Competition.ImagePath = "";
+                    Match.Competition.ImagePath = "";
                 }
 
                 connection.Close();
@@ -966,9 +972,9 @@ namespace CSharpZapoctak.ViewModels
 
             //fill data, datetime, teams, rosters
             //match info
-            summary.Range["A" + 2].Value = match.Competition.Name + " - " + match.Season.Name;
+            summary.Range["A" + 2].Value = Match.Competition.Name + " - " + Match.Season.Name;
 
-            if (match.SerieNumber < 1)
+            if (Match.SerieNumber < 1)
             {
                 summary.Range["A" + 1].Value = "Group";
             }
@@ -982,15 +988,15 @@ namespace CSharpZapoctak.ViewModels
             }
 
             //datetime
-            summary.Range["E" + 1].Value = match.Datetime.ToString("d");
-            summary.Range["H" + 1].Value = match.Datetime.ToString("HH:mm");
+            summary.Range["E" + 1].Value = Match.Datetime.ToString("d");
+            summary.Range["H" + 1].Value = Match.Datetime.ToString("HH:mm");
 
             //periods info
-            summary.Range["K" + 1].Value = match.Periods + "x" + match.PeriodDuration + " min.";
+            summary.Range["K" + 1].Value = Match.Periods + "x" + Match.PeriodDuration + " min.";
 
             //teams
-            summary.Range["B" + 9].Value = match.HomeTeam.Name;
-            summary.Range["G" + 9].Value = match.AwayTeam.Name;
+            summary.Range["B" + 9].Value = Match.HomeTeam.Name;
+            summary.Range["G" + 9].Value = Match.AwayTeam.Name;
 
             //score
             summary.Range["E" + 11].Value = HomeScore;
@@ -998,9 +1004,9 @@ namespace CSharpZapoctak.ViewModels
             summary.Range["E" + 13].Value = periodScores;
 
             //logos
-            Exports.InsertLogo(match.HomeTeam.ImagePath, 123.0, 100.0, "B3", summary);
-            Exports.InsertLogo(match.AwayTeam.ImagePath, 123.0, 100.0, "I3", summary);
-            Exports.InsertLogo(match.Competition.ImagePath, 207, 100.0, "E3", summary);
+            Exports.InsertLogo(Match.HomeTeam.ImagePath, 123.0, 100.0, "B3", summary);
+            Exports.InsertLogo(Match.AwayTeam.ImagePath, 123.0, 100.0, "I3", summary);
+            Exports.InsertLogo(Match.Competition.ImagePath, 207, 100.0, "E3", summary);
 
             //compute how many pages and copy them
             //1+39 rows
@@ -1210,7 +1216,7 @@ namespace CSharpZapoctak.ViewModels
             SaveFileDialog saveFileDialog = new();
             saveFileDialog.Filter = "PDF Files | *.pdf";
             saveFileDialog.DefaultExt = "pdf";
-            saveFileDialog.FileName = "summary_" + match.Datetime.ToString("yyyy_MM_dd_HH_mm") + "_" + match.HomeTeam.Name + "_vs_" + match.AwayTeam.Name;
+            saveFileDialog.FileName = "summary_" + Match.Datetime.ToString("yyyy_MM_dd_HH_mm") + "_" + Match.HomeTeam.Name + "_vs_" + Match.AwayTeam.Name;
 
             bool? result = saveFileDialog.ShowDialog();
             if (result.ToString() != string.Empty)
