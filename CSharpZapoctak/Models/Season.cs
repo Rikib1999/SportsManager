@@ -7,7 +7,7 @@ namespace CSharpZapoctak.Models
         private Competition competition;
         public Competition Competition
         {
-            get { return competition; }
+            get => competition;
             set
             {
                 competition = value;
@@ -18,7 +18,7 @@ namespace CSharpZapoctak.Models
         private IStats stats;
         public IStats Stats
         {
-            get { return stats; }
+            get => stats;
             set
             {
                 stats = value;
@@ -29,7 +29,7 @@ namespace CSharpZapoctak.Models
         private int qualificationCount;
         public int QualificationCount
         {
-            get { return qualificationCount; }
+            get => qualificationCount;
             set
             {
                 qualificationCount = value;
@@ -40,7 +40,7 @@ namespace CSharpZapoctak.Models
         private int qualificationRounds;
         public int QualificationRounds
         {
-            get { return qualificationRounds; }
+            get => qualificationRounds;
             set
             {
                 qualificationRounds = value;
@@ -51,7 +51,7 @@ namespace CSharpZapoctak.Models
         private int groupCount;
         public int GroupCount
         {
-            get { return groupCount; }
+            get => groupCount;
             set
             {
                 groupCount = value;
@@ -62,7 +62,7 @@ namespace CSharpZapoctak.Models
         private int playOffRounds;
         public int PlayOffRounds
         {
-            get { return playOffRounds; }
+            get => playOffRounds;
             set
             {
                 playOffRounds = value;
@@ -73,7 +73,7 @@ namespace CSharpZapoctak.Models
         private int playOffBestOf;
         public int PlayOffBestOf
         {
-            get { return playOffBestOf; }
+            get => playOffBestOf;
             set
             {
                 playOffBestOf = value;
@@ -84,7 +84,7 @@ namespace CSharpZapoctak.Models
         private bool playOffStarted;
         public bool PlayOffStarted
         {
-            get { return playOffStarted; }
+            get => playOffStarted;
             set
             {
                 playOffStarted = value;
@@ -95,7 +95,7 @@ namespace CSharpZapoctak.Models
         private string winnerName;
         public string WinnerName
         {
-            get { return winnerName; }
+            get => winnerName;
             set
             {
                 winnerName = value;
@@ -106,7 +106,7 @@ namespace CSharpZapoctak.Models
         private int winnerID;
         public int WinnerID
         {
-            get { return winnerID; }
+            get => winnerID;
             set
             {
                 winnerID = value;
@@ -117,7 +117,7 @@ namespace CSharpZapoctak.Models
         private int? pointsForWin;
         public int? PointsForWin
         {
-            get { return pointsForWin; }
+            get => pointsForWin;
             set
             {
                 pointsForWin = value;
@@ -128,7 +128,7 @@ namespace CSharpZapoctak.Models
         private int? pointsForOTWin;
         public int? PointsForOTWin
         {
-            get { return pointsForOTWin; }
+            get => pointsForOTWin;
             set
             {
                 pointsForOTWin = value;
@@ -139,7 +139,7 @@ namespace CSharpZapoctak.Models
         private int? pointsForTie;
         public int? PointsForTie
         {
-            get { return pointsForTie; }
+            get => pointsForTie;
             set
             {
                 pointsForTie = value;
@@ -150,7 +150,7 @@ namespace CSharpZapoctak.Models
         private int? pointsForLoss;
         public int? PointsForLoss
         {
-            get { return pointsForLoss; }
+            get => pointsForLoss;
             set
             {
                 pointsForLoss = value;
@@ -161,7 +161,7 @@ namespace CSharpZapoctak.Models
         private int? pointsForOTLoss;
         public int? PointsForOTLoss
         {
-            get { return pointsForOTLoss; }
+            get => pointsForOTLoss;
             set
             {
                 pointsForOTLoss = value;

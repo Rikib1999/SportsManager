@@ -10,20 +10,28 @@ namespace CSharpZapoctak
 {
     public struct Sport
     {
-        public string name;
+        public string Name { get; set; }
     }
 
-    public interface IStats { };
+    public interface IEntity
+    {
+        public int ID { get; set; }
+    }
 
     /// <summary>
     /// Static data for database and current settings.
     /// </summary>
     public static class SportsData
     {
+        #region Database connection strings
         public static readonly string server = "localhost";
         public static readonly string UID = "root";
         public static readonly string password = "";
+        public static string ConnectionStringSport => "SERVER=" + server + ";DATABASE=" + SPORT.Name + ";UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
+        public static string ConnectionStringCommon => "SERVER=" + server + ";DATABASE=sports_manager;UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
+        #endregion
 
+        #region Application folder and file paths
         public static readonly string AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/SportsManager";
         public static readonly string ImagesPath = AppDataPath + "/Images";
         public static readonly string ResourcesPath = "/Resources";
@@ -32,25 +40,53 @@ namespace CSharpZapoctak
         public static readonly string TeamLogosPath = AppDataPath + "/Images/Team_Logos";
         public static readonly string PlayerPhotosPath = AppDataPath + "/Images/Player_Photos";
         public static readonly string PythonOCRPath = AppDataPath + "/GamesheetOCR.py";
+        #endregion
 
-        public static readonly int NO_ID = -1;
+        /// <summary>
+        /// Constant for not missing ID.
+        /// </summary>
+        public static readonly int NOID = -1;
 
-        public static Sport SPORT { get; private set; } = new Sport { name = "" };
-        public static Competition COMPETITION { get; private set; } = new Competition();
-        public static Season SEASON { get; private set; } = new Season();
+        /// <summary>
+        /// Currently selected sport.
+        /// </summary>
+        public static Sport SPORT { get; private set; } = new Sport { Name = "" };
 
-        public static ObservableCollection<Country> countries = new ObservableCollection<Country>();
+        /// <summary>
+        /// Currently selected competition.
+        /// </summary>
+        public static Competition COMPETITION { get; private set; } = new();
 
+        /// <summary>
+        /// Currently selected season.
+        /// </summary>
+        public static Season SEASON { get; private set; } = new();
+
+        /// <summary>
+        /// Collection of all the countries from database.
+        /// </summary>
+        public static ObservableCollection<Country> Countries { get; private set; } = new();
+
+        /// <summary>
+        /// Returns true if a competition is selected.
+        /// </summary>
         public static bool IsCompetitionSet()
         {
-            return COMPETITION.id != NO_ID;
+            return COMPETITION.ID != NOID;
         }
 
+        /// <summary>
+        /// Returns true if a season is selected.
+        /// </summary>
         public static bool IsSeasonSet()
         {
-            return SEASON.id != NO_ID;
+            return SEASON.ID != NOID;
         }
 
+        /// <summary>
+        /// Sets the sport/competition/season as currently selected.
+        /// </summary>
+        /// <param name="parameter">Sport, Competition or Season instance.</param>
         public static void Set(object parameter)
         {
             switch (parameter)
@@ -69,6 +105,10 @@ namespace CSharpZapoctak
             }
         }
 
+        /// <summary>
+        /// Sets the sport as currently selected. Resets competition and season.
+        /// </summary>
+        /// <param name="s">Sport to select.</param>
         public static void Set(Sport s)
         {
             SPORT = s;
@@ -76,46 +116,53 @@ namespace CSharpZapoctak
             SEASON = new Season();
         }
 
+        /// <summary>
+        /// Sets the competition as currently selected. Resets season.
+        /// </summary>
+        /// <param name="c">Competition to select.</param>
         public static void Set(Competition c)
         {
-            if (COMPETITION.id != c.id)
+            if (COMPETITION.ID != c.ID)
             {
                 SEASON = new Season();
             }
             COMPETITION = c;
         }
 
+        /// <summary>
+        /// Sets the season as currently selected. Selects seasons competition too.
+        /// </summary>
+        /// <param name="s">Season to select.</param>
         public static void Set(Season s)
         {
             SEASON = s;
             if (!IsCompetitionSet())
             {
-                string connectionString = "SERVER=" + server + ";DATABASE=" + SPORT.name + ";UID=" + UID + ";PASSWORD=" + password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT id , name , info FROM competitions WHERE id = '" + s.Competition.id + "'", connection);
+                MySqlConnection connection = new(ConnectionStringSport);
+                MySqlCommand cmd = new("SELECT id , name , info FROM competitions WHERE id = '" + s.Competition.ID + "'", connection);
 
                 try
                 {
                     connection.Open();
-                    DataTable dataTable = new DataTable();
+                    DataTable dataTable = new();
                     dataTable.Load(cmd.ExecuteReader());
 
-                    Competition c = new Competition
+                    Competition c = new()
                     {
-                        id = int.Parse(dataTable.Rows[0]["id"].ToString()),
+                        ID = int.Parse(dataTable.Rows[0]["id"].ToString()),
                         Name = dataTable.Rows[0]["name"].ToString(),
                         Info = dataTable.Rows[0]["info"].ToString()
                     };
-                    string[] imgPath = System.IO.Directory.GetFiles(CompetitionLogosPath, SPORT.name + dataTable.Rows[0]["id"].ToString() + ".*");
+                    string[] imgPath = System.IO.Directory.GetFiles(CompetitionLogosPath, SPORT.Name + dataTable.Rows[0]["id"].ToString() + ".*");
                     if (imgPath.Length != 0)
                     {
-                        c.LogoPath = imgPath.First();
+                        c.ImagePath = imgPath.First();
                     }
                     COMPETITION = c;
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -124,24 +171,27 @@ namespace CSharpZapoctak
             }
         }
 
+        /// <summary>
+        /// Loads all penalty reasons from database.
+        /// </summary>
+        /// <returns>All penalty reasons.</returns>
         public static ObservableCollection<PenaltyReason> LoadPenaltyReasons()
         {
-            ObservableCollection<PenaltyReason> PenaltyReasons = new ObservableCollection<PenaltyReason>();
+            ObservableCollection<PenaltyReason> PenaltyReasons = new();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT code, name FROM penalty_reason", connection);
+            MySqlConnection connection = new(ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT code, name FROM penalty_reason", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    PenaltyReason pr = new PenaltyReason
+                    PenaltyReason pr = new()
                     {
                         Code = row["code"].ToString(),
                         Name = row["name"].ToString()
@@ -152,7 +202,7 @@ namespace CSharpZapoctak
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -164,24 +214,27 @@ namespace CSharpZapoctak
             return PenaltyReasons;
         }
 
+        /// <summary>
+        /// Loads all penalty types from database.
+        /// </summary>
+        /// <returns>All penalty types.</returns>
         public static ObservableCollection<PenaltyType> LoadPenaltyTypes()
         {
-            ObservableCollection<PenaltyType> PenaltyTypes = new ObservableCollection<PenaltyType>();
+            ObservableCollection<PenaltyType> PenaltyTypes = new();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT code, name, minutes FROM penalty_type", connection);
+            MySqlConnection connection = new(ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT code, name, minutes FROM penalty_type", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    PenaltyType pt = new PenaltyType
+                    PenaltyType pt = new()
                     {
                         Code = row["code"].ToString(),
                         Name = row["name"].ToString(),
@@ -193,7 +246,7 @@ namespace CSharpZapoctak
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -205,32 +258,34 @@ namespace CSharpZapoctak
             return PenaltyTypes;
         }
 
+        /// <summary>
+        /// Loads all countries from database.
+        /// </summary>
         public static void LoadCountries()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=sports_manager;UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT code_two , name , code_three FROM country", connection);
+            MySqlConnection connection = new(ConnectionStringCommon);
+            MySqlCommand cmd = new("SELECT code_two , name , code_three FROM country", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow cntry in dataTable.Rows)
                 {
-                    Country c = new Country
+                    Country c = new()
                     {
                         Name = cntry["name"].ToString(),
                         CodeTwo = cntry["code_two"].ToString(),
                         CodeThree = cntry["code_three"].ToString()
                     };
-                    SportsData.countries.Add(c);
+                    Countries.Add(c);
                 }
             }
-            catch (System.Exception)
+            catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

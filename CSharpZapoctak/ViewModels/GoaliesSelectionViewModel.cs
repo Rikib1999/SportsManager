@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class GoaliesSelectionViewModel : NotifyPropertyChanged
+    public class GoaliesSelectionViewModel : NotifyPropertyChanged
     {
         #region Commands
         public ICommand NavigatePlayerCommand { get; set; }
@@ -60,7 +60,7 @@ namespace CSharpZapoctak.ViewModels
         private int? exportTop;
         public int? ExportTop
         {
-            get { return exportTop; }
+            get => exportTop;
             set
             {
                 exportTop = value;
@@ -72,7 +72,7 @@ namespace CSharpZapoctak.ViewModels
         private bool showPhoto = true;
         public bool ShowPhoto
         {
-            get { return showPhoto; }
+            get => showPhoto;
             set
             {
                 showPhoto = value;
@@ -84,7 +84,7 @@ namespace CSharpZapoctak.ViewModels
         private bool showInfo = true;
         public bool ShowInfo
         {
-            get { return showInfo; }
+            get => showInfo;
             set
             {
                 showInfo = value;
@@ -96,7 +96,7 @@ namespace CSharpZapoctak.ViewModels
         private bool showStats = true;
         public bool ShowStats
         {
-            get { return showStats; }
+            get => showStats;
             set
             {
                 showStats = value;
@@ -108,7 +108,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility photoVisibility = Visibility.Visible;
         public Visibility PhotoVisibility
         {
-            get { return photoVisibility; }
+            get => photoVisibility;
             set
             {
                 photoVisibility = value;
@@ -119,7 +119,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility infoVisibility = Visibility.Visible;
         public Visibility InfoVisibility
         {
-            get { return infoVisibility; }
+            get => infoVisibility;
             set
             {
                 infoVisibility = value;
@@ -130,7 +130,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility statsVisibility = Visibility.Visible;
         public Visibility StatsVisibility
         {
-            get { return statsVisibility; }
+            get => statsVisibility;
             set
             {
                 statsVisibility = value;
@@ -148,20 +148,19 @@ namespace CSharpZapoctak.ViewModels
             NavigatePlayerCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayerViewModel(navigationStore, SelectedPlayer)));
             SelectedPlayer = null;
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT p.* " +
-                                                "FROM goalie_matches " +
-                                                "INNER JOIN player AS p ON p.id = player_id " +
-                                                "INNER JOIN matches AS m ON m.id = match_id " +
-                                                "INNER JOIN seasons AS s ON s.id = m.season_id ", connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT p.* " +
+                                   "FROM goalie_matches " +
+                                   "INNER JOIN player AS p ON p.id = player_id " +
+                                   "INNER JOIN matches AS m ON m.id = match_id " +
+                                   "INNER JOIN seasons AS s ON s.id = m.season_id ", connection);
             cmd.CommandText += " WHERE player_id <> -1";
             if (SportsData.IsCompetitionSet())
             {
-                cmd.CommandText += " AND s.competition_id = " + SportsData.COMPETITION.id;
+                cmd.CommandText += " AND s.competition_id = " + SportsData.COMPETITION.ID;
                 if (SportsData.IsSeasonSet())
                 {
-                    cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.id;
+                    cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.ID;
                 }
             }
             cmd.CommandText += " GROUP BY player_id";
@@ -169,16 +168,16 @@ namespace CSharpZapoctak.ViewModels
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 Players = new ObservableCollection<Player>();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Player p = new Player
+                    Player p = new()
                     {
-                        id = int.Parse(row["id"].ToString()),
+                        ID = int.Parse(row["id"].ToString()),
                         FirstName = row["first_name"].ToString(),
                         LastName = row["last_name"].ToString(),
                         Birthdate = DateTime.Parse(row["birthdate"].ToString()),
@@ -193,24 +192,19 @@ namespace CSharpZapoctak.ViewModels
                         Info = row["info"].ToString()
                     };
 
-                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + p.id + ".*");
-                    if (imgPath.Length != 0)
-                    {
-                        p.PhotoPath = imgPath.First();
-                    }
-                    else
-                    {
-                        p.PhotoPath = p.Gender == "M" ? SportsData.ResourcesPath + "\\male.png" : SportsData.ResourcesPath + "\\female.png";
-                    }
+                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.Name + p.ID + ".*");
+                    p.ImagePath = imgPath.Length != 0
+                        ? imgPath.First()
+                        : p.Gender == "M" ? SportsData.ResourcesPath + "\\male.png" : SportsData.ResourcesPath + "\\female.png";
 
-                    p.Stats = new GoalieStats(p, SportsData.SEASON.id, SportsData.COMPETITION.id);
+                    p.Stats = new GoalieStats(p, SportsData.SEASON.ID, SportsData.COMPETITION.ID);
 
                     Players.Add(p);
                 }
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

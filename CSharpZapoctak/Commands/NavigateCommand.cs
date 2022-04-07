@@ -23,10 +23,10 @@ namespace CSharpZapoctak.Commands
         {
             //sets current competition/season
             SportsData.Set(parameter);
-            if (_navigationStore.CurrentViewModel is AddMatchViewModel)
+            if (_navigationStore.CurrentViewModel is AddMatchViewModel model)
             {
-                ((AddMatchViewModel)_navigationStore.CurrentViewModel).gamesheetLoadingThread.Interrupt();
-                ((AddMatchViewModel)_navigationStore.CurrentViewModel).gamesheetLoadingThread.Join();
+                model.gamesheetLoadingThread.Interrupt();
+                model.gamesheetLoadingThread.Join();
             }
             _navigationStore.CurrentViewModel = _createViewModel();
         }

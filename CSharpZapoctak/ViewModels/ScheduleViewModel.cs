@@ -9,10 +9,10 @@ namespace CSharpZapoctak.ViewModels
 
         public NotifyPropertyChanged CurrentViewModel { get; set; }
 
-        private bool qualififcationSet = false;
+        private bool qualififcationSet;
         public bool QualificationSet
         {
-            get { return qualififcationSet; }
+            get => qualififcationSet;
             set
             {
                 qualififcationSet = value;
@@ -26,10 +26,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private bool groupsSet = false;
+        private bool groupsSet;
         public bool GroupsSet
         {
-            get { return groupsSet; }
+            get => groupsSet;
             set
             {
                 groupsSet = value;
@@ -43,10 +43,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private bool playOffSet = false;
+        private bool playOffSet;
         public bool PlayOffSet
         {
-            get { return playOffSet; }
+            get => playOffSet;
             set
             {
                 playOffSet = value;
@@ -63,7 +63,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility qualificationVisibility = Visibility.Collapsed;
         public Visibility QualificationVisibility
         {
-            get { return qualificationVisibility; }
+            get => qualificationVisibility;
             set
             {
                 qualificationVisibility = value;
@@ -74,7 +74,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility groupsVisibility = Visibility.Collapsed;
         public Visibility GroupsVisibility
         {
-            get { return groupsVisibility; }
+            get => groupsVisibility;
             set
             {
                 groupsVisibility = value;
@@ -85,7 +85,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility playOffVisibility = Visibility.Collapsed;
         public Visibility PlayOffVisibility
         {
-            get { return playOffVisibility; }
+            get => playOffVisibility;
             set
             {
                 playOffVisibility = value;

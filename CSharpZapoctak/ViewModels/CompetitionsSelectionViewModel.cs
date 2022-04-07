@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class CompetitionsSelectionViewModel : NotifyPropertyChanged
+    public class CompetitionsSelectionViewModel : NotifyPropertyChanged
     {
         public ICommand NavigateCompetitionCommand { get; }
         public ICommand NavigateAddCompetitionCommand { get; }
@@ -39,24 +39,23 @@ namespace CSharpZapoctak.ViewModels
             SportsData.Set(SportsData.SPORT);
 
             //load competitions list
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id , name , info FROM competitions", connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT id , name , info FROM competitions", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 Competitions = new ObservableCollection<Competition>();
 
                 //competition placeholder for add new competition button
-                Competition c = new Competition
+                Competition c = new()
                 {
-                    id = SportsData.NO_ID,
+                    ID = SportsData.NOID,
                     Name = "ADD NEW",
-                    LogoPath = SportsData.ResourcesPath + "/add_icon.png"
+                    ImagePath = SportsData.ResourcesPath + "/add_icon.png"
                 };
                 Competitions.Add(c);
 
@@ -64,21 +63,21 @@ namespace CSharpZapoctak.ViewModels
                 {
                     c = new Competition
                     {
-                        id = int.Parse(compet["id"].ToString()),
+                        ID = int.Parse(compet["id"].ToString()),
                         Name = compet["name"].ToString(),
                         Info = compet["info"].ToString()
                     };
-                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.name + compet["id"].ToString() + ".*");
+                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.Name + compet["id"].ToString() + ".*");
                     if (imgPath.Length != 0)
                     {
-                        c.LogoPath = imgPath.First();
+                        c.ImagePath = imgPath.First();
                     }
                     Competitions.Add(c);
                 }
             }
             catch (System.Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -86,9 +85,13 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        /// <summary>
+        /// Navigates to view for editing competition or adding new competition.
+        /// </summary>
+        /// <param name="c">Selected competition.</param>
         private void CheckNavigateCompetition(Competition c)
         {
-            if (c.id == SportsData.NO_ID)
+            if (c.ID == SportsData.NOID)
             {
                 NavigateAddCompetitionCommand.Execute(new Competition());
             }

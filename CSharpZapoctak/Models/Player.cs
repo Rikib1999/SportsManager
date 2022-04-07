@@ -1,4 +1,5 @@
-﻿using CSharpZapoctak.ViewModels;
+﻿using CSharpZapoctak.Others;
+using CSharpZapoctak.ViewModels;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.ObjectModel;
@@ -8,14 +9,14 @@ using System.Windows;
 
 namespace CSharpZapoctak.Models
 {
-    public class Player : NotifyPropertyChanged
+    public class Player : NotifyPropertyChanged, IHasImage, IEntity
     {
-        public int id = SportsData.NO_ID;
+        public int ID { get; set; } = SportsData.NOID;
 
         private string firstName = "";
         public string FirstName
         {
-            get { return firstName; }
+            get => firstName;
             set
             {
                 firstName = value;
@@ -26,7 +27,7 @@ namespace CSharpZapoctak.Models
         private string lastName = "";
         public string LastName
         {
-            get { return lastName; }
+            get => lastName;
             set
             {
                 lastName = value;
@@ -34,15 +35,12 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public string FullName
-        {
-            get { return FirstName + " " + LastName; }
-        }
+        public string FullName => FirstName + " " + LastName;
 
         private DateTime birthdate = DateTime.Now;
         public DateTime Birthdate
         {
-            get { return birthdate; }
+            get => birthdate;
             set
             {
                 birthdate = value;
@@ -53,7 +51,7 @@ namespace CSharpZapoctak.Models
         private string gender;
         public string Gender
         {
-            get { return gender; }
+            get => gender;
             set
             {
                 gender = value;
@@ -65,7 +63,7 @@ namespace CSharpZapoctak.Models
         private int height;
         public int Height
         {
-            get { return height; }
+            get => height;
             set
             {
                 height = value;
@@ -77,7 +75,7 @@ namespace CSharpZapoctak.Models
         private int weight;
         public int Weight
         {
-            get { return weight; }
+            get => weight;
             set
             {
                 weight = value;
@@ -88,7 +86,7 @@ namespace CSharpZapoctak.Models
         private string playsWith;
         public string PlaysWith
         {
-            get { return playsWith; }
+            get => playsWith;
             set
             {
                 playsWith = value;
@@ -99,7 +97,7 @@ namespace CSharpZapoctak.Models
         private Country citizenship;
         public Country Citizenship
         {
-            get { return citizenship; }
+            get => citizenship;
             set
             {
                 citizenship = value;
@@ -110,7 +108,7 @@ namespace CSharpZapoctak.Models
         private string birthplaceCity;
         public string BirthplaceCity
         {
-            get { return birthplaceCity; }
+            get => birthplaceCity;
             set
             {
                 birthplaceCity = value;
@@ -121,7 +119,7 @@ namespace CSharpZapoctak.Models
         private Country birthplaceCountry;
         public Country BirthplaceCountry
         {
-            get { return birthplaceCountry; }
+            get => birthplaceCountry;
             set
             {
                 birthplaceCountry = value;
@@ -132,7 +130,7 @@ namespace CSharpZapoctak.Models
         private bool status;
         public bool Status
         {
-            get { return status; }
+            get => status;
             set
             {
                 status = value;
@@ -140,13 +138,13 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public string StatusText { get { return Status ? "active" : "inactive"; } }
+        public string StatusText => Status ? "active" : "inactive";
 
 
         private string info;
         public string Info
         {
-            get { return info; }
+            get => info;
             set
             {
                 info = value;
@@ -154,13 +152,13 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private string photoPath;
-        public string PhotoPath
+        private string imagePath;
+        public string ImagePath
         {
-            get { return photoPath; }
+            get => imagePath;
             set
             {
-                photoPath = value;
+                imagePath = value;
                 OnPropertyChanged();
             }
         }
@@ -168,138 +166,11 @@ namespace CSharpZapoctak.Models
         private IStats stats;
         public IStats Stats
         {
-            get { return stats; }
+            get => stats;
             set
             {
                 stats = value;
                 OnPropertyChanged();
-            }
-        }
-    }
-
-    public class PlayerInMatchStats : NotifyPropertyChanged
-    {
-        #region Properties
-        private DateTime datetime;
-        public DateTime Datetime
-        {
-            get { return datetime; }
-            set
-            {
-                datetime = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private int goals = 0;
-        public int Goals
-        {
-            get { return goals; }
-            set
-            {
-                goals = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private int assists = 0;
-        public int Assists
-        {
-            get { return assists; }
-            set
-            {
-                assists = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private int points = 0;
-        public int Points
-        {
-            get { return points; }
-            set
-            {
-                points = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private int penaltyMinutes = 0;
-        public int PenaltyMinutes
-        {
-            get { return penaltyMinutes; }
-            set
-            {
-                penaltyMinutes = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-    }
-
-    public static class PlayerInMatchStatsLoader
-    {
-        public static void LoadPlayerInMatchStats(ObservableCollection<PlayerInMatchStats> stats, string[] datetimeXLabels, Player player)
-        {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT m.match_id, matches.datetime AS datetime, IFNULL(g_count, 0) AS goal_count, IFNULL(a_count, 0) AS assist_count, IFNULL(p_count, 0) AS penalty_count " +
-                                                "FROM player_matches AS m " +
-
-                                                "INNER JOIN matches ON matches.id = m.match_id " +
-
-                                                "LEFT JOIN " +
-                                                "(SELECT g.match_id AS g_match_id, COUNT(g.player_id) AS g_count FROM goals AS g " +
-                                                "WHERE g.player_id = " + player.id + " " +
-                                                "GROUP BY g.match_id) " +
-                                                "AS g_table ON g_table.g_match_id = m.match_id " +
-
-                                                "LEFT JOIN " +
-                                                "(SELECT a.match_id AS a_match_id, COUNT(a.assist_player_id) AS a_count FROM goals AS a " +
-                                                "WHERE a.assist_player_id = " + player.id + " " +
-                                                "GROUP BY a.match_id) " +
-                                                "AS a_table ON a_table.a_match_id = m.match_id " +
-
-                                                "LEFT JOIN " +
-                                                "(SELECT p.match_id AS p_match_id, COALESCE(SUM(p_type.minutes), 0) AS p_count FROM penalties AS p " +
-                                                " INNER JOIN penalty_type AS p_type ON p_type.code = p.penalty_type_id " +
-                                                "WHERE p.player_id = " + player.id + " " +
-                                                "GROUP BY p.match_id) " +
-                                                "AS p_table ON p_table.p_match_id = m.match_id " +
-
-                                                "WHERE m.player_id = " + player.id + " " +
-                                                "GROUP BY m.match_id", connection);
-
-            try
-            {
-                connection.Open();
-                DataTable dataTable = new DataTable();
-                dataTable.Load(cmd.ExecuteReader());
-
-                foreach (DataRow row in dataTable.Rows)
-                {
-                    PlayerInMatchStats p = new PlayerInMatchStats
-                    {
-                        Datetime = DateTime.Parse(row["datetime"].ToString()),
-                        Goals = int.Parse(row["goal_count"].ToString()),
-                        Assists = int.Parse(row["assist_count"].ToString()),
-                        PenaltyMinutes = int.Parse(row["penalty_count"].ToString()),
-                        Points = int.Parse(row["goal_count"].ToString()) + int.Parse(row["assist_count"].ToString()),
-                    };
-
-                    stats.Add(p);
-                }
-
-                stats.OrderBy(x => x.Datetime);
-                datetimeXLabels = stats.Select(x => x.Datetime.ToString("d. M. yyyy")).ToArray();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                connection.Close();
             }
         }
     }

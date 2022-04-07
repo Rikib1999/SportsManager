@@ -3,6 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:CSharpZapoctak.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:MatchViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -18,8 +20,8 @@
             </UniformGrid>
 
             <UniformGrid Columns="2">
-                <Image Source="{Binding Match.HomeTeam.LogoPath}" MaxHeight="500" MaxWidth="500" MinHeight="300" MinWidth="150" Margin="10" HorizontalAlignment="Center"/>
-                <Image Source="{Binding Match.AwayTeam.LogoPath}" MaxHeight="500" MaxWidth="500" MinHeight="300" MinWidth="150" Margin="10" HorizontalAlignment="Center"/>
+                <Image Source="{Binding Match.HomeTeam.ImagePath}" MaxHeight="500" MaxWidth="500" MinHeight="300" MinWidth="150" Margin="10" HorizontalAlignment="Center"/>
+                <Image Source="{Binding Match.AwayTeam.ImagePath}" MaxHeight="500" MaxWidth="500" MinHeight="300" MinWidth="150" Margin="10" HorizontalAlignment="Center"/>
             </UniformGrid>
             
             <UniformGrid Columns="2">

@@ -24,12 +24,12 @@ namespace CSharpZapoctak.ViewModels
 
         private readonly NavigationStore ns;
 
-        private readonly object roundsLock = new object();
+        private readonly object roundsLock = new();
 
         private ObservableCollection<Round> rounds;
         public ObservableCollection<Round> Rounds
         {
-            get { return rounds; }
+            get => rounds;
             set
             {
                 rounds = value;
@@ -70,7 +70,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (addMatchCommand == null)
                 {
-                    addMatchCommand = new RelayCommand(param => AddMatch(((Round)param).id));
+                    addMatchCommand = new RelayCommand(param => AddMatch(((Round)param).ID));
                 }
                 return addMatchCommand;
             }
@@ -94,7 +94,7 @@ namespace CSharpZapoctak.ViewModels
         public GroupsScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
-            if (SportsData.SEASON.PlayOffStarted || SportsData.SEASON.WinnerID != SportsData.NO_ID) { IsEnabled = false; }
+            if (SportsData.SEASON.PlayOffStarted || SportsData.SEASON.WinnerID != SportsData.NOID) { IsEnabled = false; }
             LoadRounds();
         }
 
@@ -104,21 +104,20 @@ namespace CSharpZapoctak.ViewModels
 
             lock (roundsLock)
             {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT id, season_id, name FROM rounds WHERE season_id = " + SportsData.SEASON.id, connection);
+                MySqlConnection connection = new(SportsData.ConnectionStringSport);
+                MySqlCommand cmd = new("SELECT id, season_id, name FROM rounds WHERE season_id = " + SportsData.SEASON.ID, connection);
 
                 try
                 {
                     connection.Open();
-                    DataTable dataTable = new DataTable();
+                    DataTable dataTable = new();
                     dataTable.Load(cmd.ExecuteReader());
 
                     foreach (DataRow row in dataTable.Rows)
                     {
-                        Round r = new Round
+                        Round r = new()
                         {
-                            id = int.Parse(row["id"].ToString()),
+                            ID = int.Parse(row["id"].ToString()),
                             Name = row["name"].ToString(),
                             SeasonID = int.Parse(row["season_id"].ToString()),
                             Matches = new ObservableCollection<Match>()
@@ -127,7 +126,7 @@ namespace CSharpZapoctak.ViewModels
                         cmd = new MySqlCommand("SELECT h.name AS home_name, a.name AS away_name, " +
                                                 "matches.id, played, datetime, home_score, away_score, overtime, shootout, forfeit " +
                                                 "FROM matches", connection);
-                        if (SportsData.SPORT.name == "tennis")
+                        if (SportsData.SPORT.Name == "tennis")
                         {
                             cmd.CommandText += " INNER JOIN player AS h ON h.id = matches.home_competitor";
                             cmd.CommandText += " INNER JOIN player AS a ON a.id = matches.away_competitor";
@@ -137,22 +136,22 @@ namespace CSharpZapoctak.ViewModels
                             cmd.CommandText += " INNER JOIN team AS h ON h.id = matches.home_competitor";
                             cmd.CommandText += " INNER JOIN team AS a ON a.id = matches.away_competitor";
                         }
-                        cmd.CommandText += " WHERE round = " + r.id + " AND serie_match_number < 1";
+                        cmd.CommandText += " WHERE round = " + r.ID + " AND serie_match_number < 1";
 
-                        DataTable dt = new DataTable();
+                        DataTable dt = new();
                         dt.Load(cmd.ExecuteReader());
 
                         //load matches
                         foreach (DataRow dtRow in dt.Rows)
                         {
-                            Team home = new Team();
+                            Team home = new();
                             home.Name = dtRow["home_name"].ToString();
-                            Team away = new Team();
+                            Team away = new();
                             away.Name = dtRow["away_name"].ToString();
 
-                            Match m = new Match
+                            Match m = new()
                             {
-                                id = int.Parse(dtRow["id"].ToString()),
+                                ID = int.Parse(dtRow["id"].ToString()),
                                 Datetime = DateTime.Parse(dtRow["datetime"].ToString()),
                                 Played = Convert.ToBoolean(int.Parse(dtRow["played"].ToString())),
                                 HomeTeam = home,
@@ -164,7 +163,7 @@ namespace CSharpZapoctak.ViewModels
                                 Forfeit = Convert.ToBoolean(int.Parse(dtRow["forfeit"].ToString()))
                             };
 
-                            MatchStats mStats = new MatchStats
+                            MatchStats mStats = new()
                             {
                                 Overview = m.Overview(),
                                 Datetime = m.Datetime.ToString("g"),
@@ -185,7 +184,7 @@ namespace CSharpZapoctak.ViewModels
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -204,51 +203,49 @@ namespace CSharpZapoctak.ViewModels
             if (msgResult == MessageBoxResult.Yes)
             {
                 //delete round from DB
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlConnection connection = new(SportsData.ConnectionStringSport);
                 MySqlTransaction transaction = null;
-                MySqlCommand cmd = null;
-                string roundDeletionQuerry = "DELETE FROM rounds WHERE id = " + r.id;
+                string roundDeletionQuerry = "DELETE FROM rounds WHERE id = " + r.ID;
 
                 try
                 {
                     connection.Open();
                     transaction = connection.BeginTransaction();
 
-                    cmd = new MySqlCommand(roundDeletionQuerry, connection);
+                    MySqlCommand cmd = new MySqlCommand(roundDeletionQuerry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
                     //get all match ids of round r
-                    string querry = "SELECT id FROM matches WHERE serie_match_number < 1 AND round = " + r.id;
+                    string querry = "SELECT id FROM matches WHERE serie_match_number < 1 AND round = " + r.ID;
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    DataTable dataTable = new DataTable();
+                    DataTable dataTable = new();
                     dataTable.Load(cmd.ExecuteReader());
 
-                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sb = new();
                     foreach (DataRow row in dataTable.Rows)
                     {
-                        sb.Append("'" + row["id"].ToString() + "',");
+                        _ = sb.Append("'" + row["id"].ToString() + "',");
                     }
-                    if (sb.Length > 0) { sb.Remove(sb.Length - 1, 1); }
+                    if (sb.Length > 0) { _ = sb.Remove(sb.Length - 1, 1); }
 
                     if (sb.Length > 0)
                     {
                         //delete matches from DB
-                        querry = "DELETE FROM matches WHERE bracket_index < 1 AND round = " + r.id;
+                        querry = "DELETE FROM matches WHERE bracket_index < 1 AND round = " + r.ID;
                         cmd = new MySqlCommand(querry, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
 
                         //delete all player/goalie match enlistments and all stats from all matches
-                        List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
+                        List<string> databases = new() { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
                         foreach (string db in databases)
                         {
                             querry = "DELETE FROM " + db + " WHERE match_id IN (" + sb + ")";
                             cmd = new MySqlCommand(querry, connection);
                             cmd.Transaction = transaction;
-                            cmd.ExecuteNonQuery();
+                            _ = cmd.ExecuteNonQuery();
                         }
                     }
 
@@ -256,16 +253,16 @@ namespace CSharpZapoctak.ViewModels
                     int roundNumber = int.Parse(r.Name.Split(' ')[1]);
                     for (int i = Rounds.IndexOf(r) + 1; i < Rounds.Count; i++)
                     {
-                        querry = "UPDATE rounds SET name = 'Round " + roundNumber  + "' WHERE id = " + Rounds[i].id;
+                        querry = "UPDATE rounds SET name = 'Round " + roundNumber  + "' WHERE id = " + Rounds[i].ID;
                         cmd = new MySqlCommand(querry, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
 
                         Rounds[i].Name = "Round " + roundNumber;
                         roundNumber++;
                     }
 
-                    Rounds.Remove(r);
+                    _ = Rounds.Remove(r);
 
                     transaction.Commit();
                     connection.Close();
@@ -273,7 +270,7 @@ namespace CSharpZapoctak.ViewModels
                 catch (Exception)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -297,26 +294,25 @@ namespace CSharpZapoctak.ViewModels
 
         private void AddRound()
         {
-            Round r = new Round();
-            r.SeasonID = SportsData.SEASON.id;
+            Round r = new();
+            r.SeasonID = SportsData.SEASON.ID;
             r.Name = "Round " + (Rounds.Count + 1);
             r.Matches = new ObservableCollection<Match>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO rounds(season_id, name) VALUES ('" + r.SeasonID + "', '" + r.Name + "')", connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("INSERT INTO rounds(season_id, name) VALUES ('" + r.SeasonID + "', '" + r.Name + "')", connection);
 
             try
             {
                 connection.Open();
-                cmd.ExecuteNonQuery();
-                r.id = (int)cmd.LastInsertedId;
+                _ = cmd.ExecuteNonQuery();
+                r.ID = (int)cmd.LastInsertedId;
 
                 Rounds.Add(r);
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

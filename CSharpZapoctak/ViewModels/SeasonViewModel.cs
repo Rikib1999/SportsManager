@@ -18,7 +18,7 @@ namespace CSharpZapoctak.ViewModels
         private BitmapImage bitmap;
         public BitmapImage Bitmap
         {
-            get { return bitmap; }
+            get => bitmap;
             set
             {
                 bitmap = value;
@@ -52,10 +52,10 @@ namespace CSharpZapoctak.ViewModels
 
             CurrentSeason = SportsData.SEASON;
 
-            if (!string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
+            if (!string.IsNullOrWhiteSpace(CurrentSeason.ImagePath))
             {
-                MemoryStream ms = new MemoryStream();
-                byte[] arrbytFileContent = File.ReadAllBytes(CurrentSeason.LogoPath);
+                MemoryStream ms = new();
+                byte[] arrbytFileContent = File.ReadAllBytes(CurrentSeason.ImagePath);
                 ms.Write(arrbytFileContent, 0, arrbytFileContent.Length);
                 ms.Position = 0;
 
@@ -68,7 +68,7 @@ namespace CSharpZapoctak.ViewModels
             }
             else
             {
-                CurrentSeason.LogoPath = "";
+                CurrentSeason.ImagePath = "";
             }
         }
 
@@ -79,50 +79,49 @@ namespace CSharpZapoctak.ViewModels
             if (msgResult == MessageBoxResult.Yes)
             {
                 //delete season from DB
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlConnection connection = new(SportsData.ConnectionStringSport);
                 MySqlTransaction transaction = null;
-                MySqlCommand cmd = new MySqlCommand("DELETE FROM seasons WHERE id = " + CurrentSeason.id, connection);
+                MySqlCommand cmd = new("DELETE FROM seasons WHERE id = " + CurrentSeason.ID, connection);
 
                 try
                 {
                     connection.Open();
                     transaction = connection.BeginTransaction();
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
                     //delete all player/goalie match enlistments and all stats
-                    List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
+                    List<string> databases = new() { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
                     foreach (string db in databases)
                     {
                         cmd = new MySqlCommand("DELETE " + db + ".* FROM " + db + " " +
                                                "INNER JOIN matches AS m ON m.id = match_id " +
-                                               "WHERE m.season_id = " + CurrentSeason.id, connection);
+                                               "WHERE m.season_id = " + CurrentSeason.ID, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
                     }
 
                     //delete rounds, groups and brackets
                     databases = new List<string> { "rounds", "groups", "brackets" };
                     foreach (string db in databases)
                     {
-                        cmd = new MySqlCommand("DELETE FROM " + db + " WHERE season_id = " + CurrentSeason.id, connection);
+                        cmd = new MySqlCommand("DELETE FROM " + db + " WHERE season_id = " + CurrentSeason.ID, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
                     }
 
                     //delete matches
-                    cmd = new MySqlCommand("DELETE FROM matches WHERE season_id = " + CurrentSeason.id, connection);
+                    cmd = new MySqlCommand("DELETE FROM matches WHERE season_id = " + CurrentSeason.ID, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
                     //get all team ids
-                    cmd = new MySqlCommand("SELECT team_id FROM team_enlistment WHERE season_id = " + CurrentSeason.id, connection);
+                    cmd = new MySqlCommand("SELECT team_id FROM team_enlistment WHERE season_id = " + CurrentSeason.ID, connection);
                     cmd.Transaction = transaction;
-                    DataTable dataTable = new DataTable();
+                    DataTable dataTable = new();
                     dataTable.Load(cmd.ExecuteReader());
 
-                    List<int> teams = new List<int>();
+                    List<int> teams = new();
                     foreach (DataRow row in dataTable.Rows)
                     {
                         teams.Add(int.Parse(row["team_id"].ToString()));
@@ -131,9 +130,9 @@ namespace CSharpZapoctak.ViewModels
                     if (teams.Count > 0)
                     {
                         //delete team enlistments
-                        cmd = new MySqlCommand("DELETE FROM team_enlistment WHERE season_id = " + CurrentSeason.id, connection);
+                        cmd = new MySqlCommand("DELETE FROM team_enlistment WHERE season_id = " + CurrentSeason.ID, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
 
                         for (int i = teams.Count - 1; i >= 0; i--)
                         {
@@ -146,7 +145,7 @@ namespace CSharpZapoctak.ViewModels
                                 //delete team
                                 cmd = new MySqlCommand("DELETE FROM team WHERE id = " + teams[i], connection);
                                 cmd.Transaction = transaction;
-                                cmd.ExecuteNonQuery();
+                                _ = cmd.ExecuteNonQuery();
                             }
                             else
                             {
@@ -156,12 +155,12 @@ namespace CSharpZapoctak.ViewModels
                     }
 
                     //get all player ids
-                    cmd = new MySqlCommand("SELECT player_id FROM player_enlistment WHERE season_id = " + CurrentSeason.id + " GROUP BY player_id", connection);
+                    cmd = new MySqlCommand("SELECT player_id FROM player_enlistment WHERE season_id = " + CurrentSeason.ID + " GROUP BY player_id", connection);
                     cmd.Transaction = transaction;
                     dataTable = new DataTable();
                     dataTable.Load(cmd.ExecuteReader());
 
-                    List<int> players = new List<int>();
+                    List<int> players = new();
                     foreach (DataRow row in dataTable.Rows)
                     {
                         players.Add(int.Parse(row["player_id"].ToString()));
@@ -170,9 +169,9 @@ namespace CSharpZapoctak.ViewModels
                     if (players.Count > 0)
                     {
                         //delete player enlistments
-                        cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE season_id = " + CurrentSeason.id, connection);
+                        cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE season_id = " + CurrentSeason.ID, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
 
                         for (int i = players.Count - 1; i >= 0; i--)
                         {
@@ -185,7 +184,7 @@ namespace CSharpZapoctak.ViewModels
                                 //delete player
                                 cmd = new MySqlCommand("DELETE FROM player WHERE id = " + players[i], connection);
                                 cmd.Transaction = transaction;
-                                cmd.ExecuteNonQuery();
+                                _ = cmd.ExecuteNonQuery();
                             }
                             else
                             {
@@ -197,7 +196,7 @@ namespace CSharpZapoctak.ViewModels
                     //DELETE SEASON LOGO
                     //if there is logo in the database then delete it
                     //get previous logo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.name + CurrentSeason.id + ".*");
+                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.Name + CurrentSeason.ID + ".*");
                     string previousFilePath = "";
                     //if it exists
                     if (previousImgPath.Length != 0)
@@ -216,7 +215,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         //if there is logo in the database then delete it
                         //get previous logo
-                        previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.name + teamID + ".*");
+                        previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.Name + teamID + ".*");
                         previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -235,7 +234,7 @@ namespace CSharpZapoctak.ViewModels
                     //get previous photo
                     foreach (int playerID in players)
                     {
-                        previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + playerID + ".*");
+                        previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.Name + playerID + ".*");
                         previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -258,7 +257,7 @@ namespace CSharpZapoctak.ViewModels
                 catch (Exception)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {

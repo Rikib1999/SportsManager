@@ -4,7 +4,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:CSharpZapoctak.Converters"
+             xmlns:viewmodels="clr-namespace:CSharpZapoctak.ViewModels"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             d:DataContext="{d:DesignInstance Type=viewmodels:PlayerViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -15,7 +17,7 @@
 
             <!--..................PLAYER...................-->
             <Button Content="Edit" Command="{Binding NavigateEditCommand}" HorizontalAlignment="Right" Width="60"/>
-            <Image Source="{Binding Player.PhotoPath}" MaxHeight="500" MaxWidth="500" MinHeight="300" MinWidth="150"/>
+            <Image Source="{Binding Player.ImagePath}" MaxHeight="500" MaxWidth="500" MinHeight="300" MinWidth="150"/>
             <TextBlock FontSize="30" TextWrapping="Wrap" Text="{Binding Player.FullName}" TextAlignment="Center" Margin="20"/>
 
             <UniformGrid>

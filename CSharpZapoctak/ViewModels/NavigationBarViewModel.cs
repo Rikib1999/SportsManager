@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class NavigationBarViewModel : NotifyPropertyChanged
+    public class NavigationBarViewModel : NotifyPropertyChanged
     {
         public Dictionary<string, bool> AreButtonsChecked { get; set; } = new Dictionary<string, bool>() {
             { "Sports", false },
@@ -63,23 +63,13 @@ namespace CSharpZapoctak.ViewModels
             AreButtonsChecked[buttonName] = true;
             ButtonsVisibilities = buttonsVisibilities;
 
-            if (SportsData.COMPETITION.Name.Length > 15)
-            {
-                CurrentCompetition = "- " + SportsData.COMPETITION.Name.Substring(0, 12) + "...";
-            }
-            else
-            {
-                CurrentCompetition = "- " + SportsData.COMPETITION.Name;
-            }
+            CurrentCompetition = SportsData.COMPETITION.Name.Length > 15
+                ? "- " + SportsData.COMPETITION.Name.Substring(0, 12) + "..."
+                : "- " + SportsData.COMPETITION.Name;
 
-            if (SportsData.SEASON.Name.Length > 13)
-            {
-                CurrentSeason = "- " + SportsData.SEASON.Name.Substring(0, 12) + "...";
-            }
-            else
-            {
-                CurrentSeason = "- " + SportsData.SEASON.Name;
-            }
+            CurrentSeason = SportsData.SEASON.Name.Length > 13
+                ? "- " + SportsData.SEASON.Name.Substring(0, 12) + "..."
+                : "- " + SportsData.SEASON.Name;
         }
     }
 }

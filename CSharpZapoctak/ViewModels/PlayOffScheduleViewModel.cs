@@ -13,34 +13,18 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class TeamPoints : IStats
+    public class TeamPoints : IStats
     {
+        public int Points { get; set; }
         public TeamPoints(int points)
         {
-            this.points = points;
+            Points = points;
         }
-
-        public int points;
     }
 
-    class PlayOffScheduleViewModel : NotifyPropertyChanged
+    public class PlayOffScheduleViewModel : TemplateBracketScheduleViewModel
     {
-        private readonly NavigationStore ns;
-
         #region Commands
-        private ICommand exportBracketCommand;
-        public ICommand ExportBracketCommand
-        {
-            get
-            {
-                if (exportBracketCommand == null)
-                {
-                    exportBracketCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param));
-                }
-                return exportBracketCommand;
-            }
-        }
-
         private ICommand startPlayOffCommand;
         public ICommand StartPlayOffCommand
         {
@@ -66,112 +50,12 @@ namespace CSharpZapoctak.ViewModels
                 return deleteCommand;
             }
         }
-
-        private ICommand matchDetailCommand;
-        public ICommand MatchDetailCommand
-        {
-            get
-            {
-                if (matchDetailCommand == null)
-                {
-                    matchDetailCommand = new RelayCommand(param => MatchDetail((Match)param));
-                }
-                return matchDetailCommand;
-            }
-        }
-
-        private ICommand addMatchCommand;
-        public ICommand AddMatchCommand
-        {
-            get
-            {
-                if (addMatchCommand == null)
-                {
-                    addMatchCommand = new RelayCommand(param => AddMatch((Serie)param));
-                }
-                return addMatchCommand;
-            }
-        }
-
-        private ICommand removeFirstTeamFromSerieCommand;
-        public ICommand RemoveFirstTeamFromSerieCommand
-        {
-            get
-            {
-                if (removeFirstTeamFromSerieCommand == null)
-                {
-                    removeFirstTeamFromSerieCommand = new RelayCommand(param => RemoveFirstTeamFromSerie((Serie)param));
-                }
-                return removeFirstTeamFromSerieCommand;
-            }
-        }
-
-        private ICommand addFirstTeamToSerieCommand;
-        public ICommand AddFirstTeamToSerieCommand
-        {
-            get
-            {
-                if (addFirstTeamToSerieCommand == null)
-                {
-                    addFirstTeamToSerieCommand = new RelayCommand(param => AddFirstTeamToSerie((Serie)param));
-                }
-                return addFirstTeamToSerieCommand;
-            }
-        }
-
-        private ICommand removeSecondTeamFromSerieCommand;
-        public ICommand RemoveSecondTeamFromSerieCommand
-        {
-            get
-            {
-                if (removeSecondTeamFromSerieCommand == null)
-                {
-                    removeSecondTeamFromSerieCommand = new RelayCommand(param => RemoveSecondTeamFromSerie((Serie)param));
-                }
-                return removeSecondTeamFromSerieCommand;
-            }
-        }
-
-        private ICommand addSecondTeamToSerieCommand;
-        public ICommand AddSecondTeamToSerieCommand
-        {
-            get
-            {
-                if (addSecondTeamToSerieCommand == null)
-                {
-                    addSecondTeamToSerieCommand = new RelayCommand(param => AddSecondTeamToSerie((Serie)param));
-                }
-                return addSecondTeamToSerieCommand;
-            }
-        }
         #endregion
 
-        private ObservableCollection<Team> notSelectedTeams;
-        public ObservableCollection<Team> NotSelectedTeams
-        {
-            get { return notSelectedTeams; }
-            set
-            {
-                notSelectedTeams = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private Bracket bracket;
-        public Bracket Bracket
-        {
-            get { return bracket; }
-            set
-            {
-                bracket = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool seedCompetitors = false;
+        private bool seedCompetitors;
         public bool SeedCompetitors
         {
-            get { return seedCompetitors; }
+            get => seedCompetitors;
             set
             {
                 seedCompetitors = value;
@@ -182,7 +66,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility notStartedVisibility = Visibility.Visible;
         public Visibility NotStartedVisibility
         {
-            get { return notStartedVisibility; }
+            get => notStartedVisibility;
             set
             {
                 notStartedVisibility = value;
@@ -193,7 +77,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility startedVisibility = Visibility.Collapsed;
         public Visibility StartedVisibility
         {
-            get { return startedVisibility; }
+            get => startedVisibility;
             set
             {
                 startedVisibility = value;
@@ -201,12 +85,12 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        public bool IsEnabled { get; private set; } = true;
-
         public PlayOffScheduleViewModel(NavigationStore navigationStore)
         {
-            ns = navigationStore;
-            if (SportsData.SEASON.WinnerID != SportsData.NO_ID) { IsEnabled = false; }
+            Ns = navigationStore;
+            Constructor = GetType().GetConstructor(new Type[] { typeof(NavigationStore) });
+
+            if (SportsData.SEASON.WinnerID != SportsData.NOID) { IsEnabled = false; }
 
             if (SportsData.SEASON.PlayOffStarted)
             {
@@ -221,28 +105,27 @@ namespace CSharpZapoctak.ViewModels
         {
             NotSelectedTeams = new ObservableCollection<Team>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT team_id, t.name AS team_name FROM team_enlistment " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT team_id, t.name AS team_name FROM team_enlistment " +
                                                 "INNER JOIN team AS t ON t.id = team_id " +
-                                                "WHERE season_id = " + SportsData.SEASON.id, connection);
+                                                "WHERE season_id = " + SportsData.SEASON.ID, connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
                 foreach (DataRow tm in dataTable.Rows)
                 {
-                    Team t = new Team
+                    Team t = new()
                     {
-                        id = int.Parse(tm["team_id"].ToString()),
+                        ID = int.Parse(tm["team_id"].ToString()),
                         Name = tm["team_name"].ToString(),
                     };
 
-                    if (t.id != SportsData.NO_ID)
+                    if (t.ID != SportsData.NOID)
                     {
                         NotSelectedTeams.Add(t);
                     }
@@ -250,7 +133,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -266,11 +149,10 @@ namespace CSharpZapoctak.ViewModels
             MessageBoxResult messageBoxResult = MessageBox.Show("Do you really want to delete whole play-off? All play-off matches will be deleted.", "Delete play-off", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (messageBoxResult == MessageBoxResult.No) { return; }
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
-            string querry = "UPDATE seasons SET play_off_started = 0 WHERE id = " + SportsData.SEASON.id;
+            string querry = "UPDATE seasons SET play_off_started = 0 WHERE id = " + SportsData.SEASON.ID;
 
             try
             {
@@ -278,13 +160,15 @@ namespace CSharpZapoctak.ViewModels
                 transaction = connection.BeginTransaction();
 
                 //update season
-                cmd = new MySqlCommand(querry, connection);
-                cmd.Transaction = transaction;
-                cmd.ExecuteNonQuery();
+                cmd = new(querry, connection)
+                {
+                    Transaction = transaction
+                };
+                _ = cmd.ExecuteNonQuery();
 
                 //clear bracket
-                cmd = new MySqlCommand("DELETE FROM matches WHERE qualification_id = -1 AND bracket_index <> -1 AND season_id = " + SportsData.SEASON.id, connection);
-                DataTable dt = new DataTable();
+                cmd = new("DELETE FROM matches WHERE qualification_id = -1 AND bracket_index <> -1 AND season_id = " + SportsData.SEASON.ID, connection);
+                DataTable dt = new();
                 dt.Load(cmd.ExecuteReader());
 
                 transaction.Commit();
@@ -292,17 +176,17 @@ namespace CSharpZapoctak.ViewModels
 
                 //refresh view
                 SportsData.SEASON.PlayOffStarted = false;
-                ScheduleViewModel vm = new ScheduleViewModel(ns);
-                vm.CurrentViewModel = new PlayOffScheduleViewModel(ns);
+                ScheduleViewModel vm = new(Ns);
+                vm.CurrentViewModel = new PlayOffScheduleViewModel(Ns);
                 vm.GroupsSet = false;
                 vm.QualificationSet = false;
                 vm.PlayOffSet = true;
-                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, vm)).Execute(null);
+                new NavigateCommand<SportViewModel>(Ns, () => new SportViewModel(Ns, vm)).Execute(null);
             }
             catch (Exception)
             {
                 transaction.Rollback();
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -318,11 +202,10 @@ namespace CSharpZapoctak.ViewModels
             MessageBoxResult messageBoxResult = MessageBox.Show("After start of play-off modification of previous matches will not be possible unless play-off will be deleted with all of its matches.", "Play-off start", MessageBoxButton.OKCancel, MessageBoxImage.Information);
             if (messageBoxResult == MessageBoxResult.Cancel) { return; }
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
-            string querry = "UPDATE seasons SET play_off_started = 1 WHERE id = " + SportsData.SEASON.id;
+            string querry = "UPDATE seasons SET play_off_started = 1 WHERE id = " + SportsData.SEASON.ID;
 
             try
             {
@@ -330,18 +213,18 @@ namespace CSharpZapoctak.ViewModels
                 transaction = connection.BeginTransaction();
 
                 //update season
-                cmd = new MySqlCommand(querry, connection);
+                cmd = new(querry, connection);
                 cmd.Transaction = transaction;
-                cmd.ExecuteNonQuery();
+                _ = cmd.ExecuteNonQuery();
 
                 //seed competitors
                 if (SeedCompetitors && (SportsData.SEASON.GroupCount > 0 || SportsData.SEASON.QualificationCount > 0))
                 {
-                    Dictionary<int, List<Team>> groups = new Dictionary<int, List<Team>>();
+                    Dictionary<int, List<Team>> groups = new();
 
                     //clear bracket
-                    cmd = new MySqlCommand("DELETE FROM matches WHERE qualification_id = -1 AND bracket_index <> -1 AND season_id = " + SportsData.SEASON.id, connection);
-                    DataTable dt = new DataTable();
+                    cmd = new("DELETE FROM matches WHERE qualification_id = -1 AND bracket_index <> -1 AND season_id = " + SportsData.SEASON.ID, connection);
+                    DataTable dt = new();
                     dt.Load(cmd.ExecuteReader());
 
                     //if season had qualification
@@ -350,26 +233,26 @@ namespace CSharpZapoctak.ViewModels
                         //select teams
                         querry = "SELECT home_score, away_score, home_competitor, away_competitor " +
                                  "FROM matches " +
-                                 "WHERE season_id = " + SportsData.SEASON.id + " AND played = 1 AND round = " + (SportsData.SEASON.QualificationRounds - 1);
+                                 "WHERE season_id = " + SportsData.SEASON.ID + " AND played = 1 AND round = " + (SportsData.SEASON.QualificationRounds - 1);
 
-                        cmd = new MySqlCommand(querry, connection);
+                        cmd = new(querry, connection);
                         cmd.Transaction = transaction;
-                        DataTable dataTable = new DataTable();
+                        DataTable dataTable = new();
                         dataTable.Load(cmd.ExecuteReader());
 
-                        List<Team> teams = new List<Team>();
+                        List<Team> teams = new();
                         foreach (DataRow row in dataTable.Rows)
                         {
                             int homeScore = int.Parse(row["home_score"].ToString());
                             int awayScore = int.Parse(row["away_score"].ToString());
-                            Team t = new Team();
+                            Team t = new();
                             if (homeScore > awayScore)
                             {
-                                t.id = int.Parse(row["home_competitor"].ToString());
+                                t.ID = int.Parse(row["home_competitor"].ToString());
                             }
                             else if (homeScore < awayScore)
                             {
-                                t.id = int.Parse(row["away_competitor"].ToString());
+                                t.ID = int.Parse(row["away_competitor"].ToString());
                             }
                             else
                             {
@@ -378,7 +261,7 @@ namespace CSharpZapoctak.ViewModels
 
                             teams.Add(t);
                         }
-                        groups.Add(SportsData.NO_ID, teams);
+                        groups.Add(SportsData.NOID, teams);
                     }
                     //if season had groups
                     else if (SportsData.SEASON.GroupCount > 0)
@@ -386,32 +269,32 @@ namespace CSharpZapoctak.ViewModels
                         //select teams
                         querry = "SELECT team_id, group_id " +
                                  "FROM team_enlistment " +
-                                 "WHERE season_id = " + SportsData.SEASON.id;
+                                 "WHERE season_id = " + SportsData.SEASON.ID;
 
-                        cmd = new MySqlCommand(querry, connection);
+                        cmd = new(querry, connection);
                         cmd.Transaction = transaction;
-                        DataTable dataTable = new DataTable();
+                        DataTable dataTable = new();
                         dataTable.Load(cmd.ExecuteReader());
 
-                        Dictionary<int, int> points = new Dictionary<int, int>();
+                        Dictionary<int, int> points = new();
                         foreach (DataRow row in dataTable.Rows)
                         {
-                            Team t = new Team();
-                            t.id = int.Parse(row["team_id"].ToString());
+                            Team t = new();
+                            t.ID = int.Parse(row["team_id"].ToString());
 
                             int groupID = int.Parse(row["group_id"].ToString());
 
                             if (!groups.ContainsKey(groupID)) { groups.Add(groupID, new List<Team>()); }
                             groups[groupID].Add(t);
-                            points.Add(t.id, 0);
+                            points.Add(t.ID, 0);
                         }
 
                         //select matches
                         querry = "SELECT home_score, away_score, home_competitor, away_competitor, overtime, shootout " +
                                  "FROM matches " +
-                                 "WHERE season_id = " + SportsData.SEASON.id + " AND played = 1 AND serie_match_number = -1";
+                                 "WHERE season_id = " + SportsData.SEASON.ID + " AND played = 1 AND serie_match_number = -1";
 
-                        cmd = new MySqlCommand(querry, connection);
+                        cmd = new(querry, connection);
                         cmd.Transaction = transaction;
                         dataTable = new DataTable();
                         dataTable.Load(cmd.ExecuteReader());
@@ -459,21 +342,21 @@ namespace CSharpZapoctak.ViewModels
                             }
                         }
 
-                        Dictionary<int, List<Team>> tmp = new Dictionary<int, List<Team>>();
+                        Dictionary<int, List<Team>> tmp = new();
                         foreach (KeyValuePair<int, List<Team>> g in groups)
                         {
                             foreach (Team t in g.Value)
                             {
-                                t.Stats = new TeamPoints(points[t.id]);
+                                t.Stats = new TeamPoints(points[t.ID]);
                             }
-                            tmp.Add(g.Key, g.Value.OrderByDescending(x => ((TeamPoints)x.Stats).points).ToList());
+                            tmp.Add(g.Key, g.Value.OrderByDescending(x => ((TeamPoints)x.Stats).Points).ToList());
                         }
                         groups = tmp;
                     }
 
                     //sort teams into one list
-                    List<Team> allTeams = new List<Team>();
-                    List<List<Team>> groupLists = new List<List<Team>>();
+                    List<Team> allTeams = new();
+                    List<List<Team>> groupLists = new();
                     foreach (KeyValuePair<int, List<Team>> g in groups)
                     {
                         groupLists.Add(g.Value);
@@ -499,7 +382,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         for (int N = 1; N <= firstRoundPlaces; ++N)
                         {
-                            int myRank = (N - 1) / (int)Math.Pow(2, r) + 1;
+                            int myRank = ((N - 1) / (int)Math.Pow(2, r)) + 1;
                             places[N - 1] += myRank % 4 / 2 * (int)Math.Pow(2, (int)Math.Log(firstRoundPlaces, 2) - r - 1);
                         }
                     }
@@ -508,15 +391,15 @@ namespace CSharpZapoctak.ViewModels
                     for (int i = 0; i < places.Length; i += 2)
                     {
                         //if there is team in current place
-                        int firstID = places[i] > allTeams.Count - 1 ? SportsData.NO_ID : allTeams[places[i]].id;
-                        int secondID = places[i + 1] > allTeams.Count - 1 ? SportsData.NO_ID : allTeams[places[i + 1]].id;
-                        if(firstID == SportsData.NO_ID && secondID == SportsData.NO_ID) { continue; }
+                        int firstID = places[i] > allTeams.Count - 1 ? SportsData.NOID : allTeams[places[i]].ID;
+                        int secondID = places[i + 1] > allTeams.Count - 1 ? SportsData.NOID : allTeams[places[i + 1]].ID;
+                        if (firstID == SportsData.NOID && secondID == SportsData.NOID) { continue; }
 
                         querry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                              "VALUES (" + SportsData.SEASON.id + ", 0, -1, " + (places[i] / 2) + ", 0, -1, " + firstID + ", " + secondID + ", " + firstID + ")";
-                        cmd = new MySqlCommand(querry, connection);
+                                              "VALUES (" + SportsData.SEASON.ID + ", 0, -1, " + (places[i] / 2) + ", 0, -1, " + firstID + ", " + secondID + ", " + firstID + ")";
+                        cmd = new(querry, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
                     }
                 }
 
@@ -525,17 +408,17 @@ namespace CSharpZapoctak.ViewModels
 
                 //refresh view
                 SportsData.SEASON.PlayOffStarted = true;
-                ScheduleViewModel vm = new ScheduleViewModel(ns);
-                vm.CurrentViewModel = new PlayOffScheduleViewModel(ns);
+                ScheduleViewModel vm = new(Ns);
+                vm.CurrentViewModel = new PlayOffScheduleViewModel(Ns);
                 vm.GroupsSet = false;
                 vm.QualificationSet = false;
                 vm.PlayOffSet = true;
-                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, vm)).Execute(null);
+                new NavigateCommand<SportViewModel>(Ns, () => new SportViewModel(Ns, vm)).Execute(null);
             }
             catch (Exception)
             {
                 transaction.Rollback();
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -548,87 +431,78 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadBracket()
         {
-            Bracket = new Bracket(SportsData.NO_ID, "Play-off", SportsData.SEASON.id, SportsData.SEASON.PlayOffRounds);
+            CurrentBracket = new Bracket(SportsData.NOID, "Play-off", SportsData.SEASON.ID, SportsData.SEASON.PlayOffRounds);
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + "; convert zero datetime=True";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT h.name AS home_name, a.name AS away_name, home_competitor, away_competitor, " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT h.name AS home_name, a.name AS away_name, home_competitor, away_competitor, " +
                                             "matches.id, played, datetime, home_score, away_score, bracket_index, round, serie_match_number, bracket_first_team " +
-                                            "FROM matches", connection);
-            if (SportsData.SPORT.name == "tennis")
-            {
-                cmd.CommandText += " INNER JOIN player AS h ON h.id = matches.home_competitor";
-                cmd.CommandText += " INNER JOIN player AS a ON a.id = matches.away_competitor";
-            }
-            else
-            {
-                cmd.CommandText += " INNER JOIN team AS h ON h.id = matches.home_competitor";
-                cmd.CommandText += " INNER JOIN team AS a ON a.id = matches.away_competitor";
-            }
-            cmd.CommandText += " WHERE qualification_id = -1 AND bracket_index <> -1 AND season_id = " + SportsData.SEASON.id + " ORDER BY round, bracket_index";
+                                            "FROM matches " +
+                                            "INNER JOIN team AS h ON h.id = matches.home_competitor " +
+                                            "INNER JOIN team AS a ON a.id = matches.away_competitor " +
+                                            "WHERE qualification_id = -1 AND bracket_index <> -1 AND season_id = " + SportsData.SEASON.ID + " ORDER BY round, bracket_index", connection);
 
             try
             {
                 connection.Open();
-                DataTable dt = new DataTable();
+                DataTable dt = new();
                 dt.Load(cmd.ExecuteReader());
 
                 //load matches
                 foreach (DataRow dtRow in dt.Rows)
                 {
-                    Team home = new Team();
+                    Team home = new();
                     home.Name = dtRow["home_name"].ToString();
-                    home.id = int.Parse(dtRow["home_competitor"].ToString());
-                    Team away = new Team();
+                    home.ID = int.Parse(dtRow["home_competitor"].ToString());
+                    Team away = new();
                     away.Name = dtRow["away_name"].ToString();
-                    away.id = int.Parse(dtRow["away_competitor"].ToString());
+                    away.ID = int.Parse(dtRow["away_competitor"].ToString());
 
-                    Match m = new Match
+                    Match m = new()
                     {
-                        id = int.Parse(dtRow["id"].ToString()),
+                        ID = int.Parse(dtRow["id"].ToString()),
                         Datetime = DateTime.Parse(dtRow["datetime"].ToString()),
                         Played = Convert.ToBoolean(int.Parse(dtRow["played"].ToString())),
                         HomeTeam = home,
                         AwayTeam = away,
                         HomeScore = int.Parse(dtRow["home_score"].ToString()),
                         AwayScore = int.Parse(dtRow["away_score"].ToString()),
-                        serieNumber = int.Parse(dtRow["serie_match_number"].ToString())
+                        SerieNumber = int.Parse(dtRow["serie_match_number"].ToString())
                     };
 
                     int round = int.Parse(dtRow["round"].ToString());
                     int index = int.Parse(dtRow["bracket_index"].ToString());
                     int firstTeamID = int.Parse(dtRow["bracket_first_team"].ToString());
 
-                    Bracket.Series[round][index].InsertMatch(m, firstTeamID, (SportsData.SEASON.PlayOffBestOf / 2) + 1);
+                    CurrentBracket.Series[round][index].InsertMatch(m, firstTeamID, (SportsData.SEASON.PlayOffBestOf / 2) + 1);
 
-                    if (firstTeamID != SportsData.NO_ID)
+                    if (firstTeamID != SportsData.NOID)
                     {
-                        Bracket.IsEnabledTreeAfterInsertionAt(round, index, 1, 1);
+                        CurrentBracket.IsEnabledTreeAfterInsertionAt(round, index, 1, 1);
                     }
-                    if (home.id != SportsData.NO_ID && away.id != SportsData.NO_ID)
+                    if (home.ID != SportsData.NOID && away.ID != SportsData.NOID)
                     {
-                        Bracket.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
+                        CurrentBracket.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
                     }
-                    else if (firstTeamID == SportsData.NO_ID)
+                    else if (firstTeamID == SportsData.NOID)
                     {
-                        Bracket.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
+                        CurrentBracket.IsEnabledTreeAfterInsertionAt(round, index, 2, 1);
                     }
 
-                    if (NotSelectedTeams.Count(x => x.id == home.id) == 1)
+                    if (NotSelectedTeams.Count(x => x.ID == home.ID) == 1)
                     {
-                        NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.id == home.id));
+                        _ = NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.ID == home.ID));
                     }
-                    if (NotSelectedTeams.Count(x => x.id == away.id) == 1)
+                    if (NotSelectedTeams.Count(x => x.ID == away.ID) == 1)
                     {
-                        NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.id == away.id));
+                        _ = NotSelectedTeams.Remove(NotSelectedTeams.First(x => x.ID == away.ID));
                     }
                 }
 
-                Bracket.PrepareSeries();
+                CurrentBracket.PrepareSeries();
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -637,292 +511,6 @@ namespace CSharpZapoctak.ViewModels
                     connection.Close();
                 }
             }
-        }
-
-        private void MatchDetail(Match m)
-        {
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, m, new PlayOffScheduleViewModel(ns)))).Execute(null);
-        }
-
-        private void AddMatch(Serie s)
-        {
-            (int, int) roundIndex = Bracket.GetSerieRoundIndex(s);
-
-            int matchNumber = s.Matches.Count(x => x.Played) + 1;
-
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, new PlayOffScheduleViewModel(ns), Bracket.id, roundIndex.Item2, roundIndex.Item1, matchNumber, s.FirstTeam, s.SecondTeam))).Execute(null);
-        }
-
-        private void RemoveFirstTeamFromSerie(Serie s)
-        {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd;
-
-            if (s.Matches[0].HomeTeam.id == SportsData.NO_ID || s.Matches[0].AwayTeam.id == SportsData.NO_ID)
-            {
-                //DELETE
-                cmd = new MySqlCommand("DELETE FROM matches WHERE id = " + s.Matches[0].id, connection);
-                s.Matches.RemoveAt(0);
-            }
-            else
-            {
-                //UPDATE
-                if (s.Matches[0].HomeTeam.id == s.FirstTeam.id)
-                {
-                    //delete home
-                    cmd = new MySqlCommand("UPDATE matches SET home_competitor = -1 WHERE id = " + s.Matches[0].id, connection);
-                    s.Matches[0].HomeTeam = new Team();
-                }
-                else
-                {
-                    //delete away
-                    cmd = new MySqlCommand("UPDATE matches SET away_competitor = -1 WHERE id = " + s.Matches[0].id, connection);
-                    s.Matches[0].AwayTeam = new Team();
-                }
-            }
-
-            try
-            {
-                connection.Open();
-                cmd.ExecuteNonQuery();
-                connection.Close();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-
-            NotSelectedTeams.Add(s.FirstTeam);
-            s.FirstTeam = new Team();
-
-            (int, int) roundIndex = Bracket.GetSerieRoundIndex(s);
-            Bracket.ResetSeriesAdvanced(roundIndex.Item1, roundIndex.Item2, 1);
-            Bracket.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, -1);
-            Bracket.PrepareSeries();
-        }
-
-        private void AddFirstTeamToSerie(Serie s)
-        {
-            (int, int) roundIndex = Bracket.GetSerieRoundIndex(s);
-
-            if (s.FirstSelectedTeam == null || !NotSelectedTeams.Contains(s.FirstSelectedTeam))
-            {
-                return;
-            }
-
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd;
-
-            if (s.Matches.Count == 0)
-            {
-                //INSERT
-                cmd = new MySqlCommand("INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                       "VALUES (" + SportsData.SEASON.id + ", 0, " + Bracket.id + ", " + roundIndex.Item2 + "," +
-                                       " " + roundIndex.Item1 + ", -1, " + s.FirstSelectedTeam.id + ", -1, " + s.FirstSelectedTeam.id + ")", connection);
-            }
-            else
-            {
-                //UPDATE
-                if (s.Matches[0].HomeTeam.id == SportsData.NO_ID)
-                {
-                    //home
-                    cmd = new MySqlCommand("UPDATE matches SET home_competitor = " + s.FirstSelectedTeam.id + ", bracket_first_team = " + s.FirstSelectedTeam.id + " WHERE id = " + s.Matches[0].id, connection);
-                    s.Matches[0].HomeTeam = s.FirstSelectedTeam;
-                }
-                else
-                {
-                    //away
-                    cmd = new MySqlCommand("UPDATE matches SET away_competitor = " + s.FirstSelectedTeam.id + ", bracket_first_team = " + s.FirstSelectedTeam.id + " WHERE id = " + s.Matches[0].id, connection);
-                    s.Matches[0].AwayTeam = s.FirstSelectedTeam;
-                }
-            }
-
-            int matchID = SportsData.NO_ID;
-            try
-            {
-                connection.Open();
-                cmd.ExecuteNonQuery();
-                matchID = (int)cmd.LastInsertedId;
-                connection.Close();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-
-            s.FirstTeam = s.FirstSelectedTeam;
-            s.FirstSelectedTeam = new Team();
-            s.winner = new Team();
-            s.RemoveFirstTeamVisibility = Visibility.Visible;
-            s.RemoveSecondTeamVisibility = Visibility.Visible;
-            NotSelectedTeams.Remove(s.FirstTeam);
-
-            if (s.Matches.Count == 0)
-            {
-                Match m = new Match { id = matchID, Played = false, HomeTeam = s.FirstTeam, AwayTeam = new Team(), serieNumber = -1 };
-                s.InsertMatch(m, s.FirstTeam.id, 1);
-            }
-            if (roundIndex.Item1 < Bracket.Series.Count - 1)
-            {
-                int newPosition = 2;
-                if (roundIndex.Item2 % 2 == 0) { newPosition = 1; }
-                Bracket.ResetSeriesAdvanced(roundIndex.Item1 + 1, roundIndex.Item2 / 2, newPosition);
-            }
-
-            Bracket.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, 1);
-            Bracket.PrepareSeries();
-        }
-
-        private void RemoveSecondTeamFromSerie(Serie s)
-        {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd;
-
-            if (s.Matches[0].HomeTeam.id == SportsData.NO_ID || s.Matches[0].AwayTeam.id == SportsData.NO_ID)
-            {
-                //DELETE
-                cmd = new MySqlCommand("DELETE FROM matches WHERE id = " + s.Matches[0].id, connection);
-                s.Matches.RemoveAt(0);
-            }
-            else
-            {
-                //UPDATE
-                if (s.Matches[0].HomeTeam.id == s.SecondTeam.id)
-                {
-                    //delete home
-                    cmd = new MySqlCommand("UPDATE matches SET home_competitor = -1 WHERE id = " + s.Matches[0].id, connection);
-                    s.Matches[0].HomeTeam = new Team();
-                }
-                else
-                {
-                    //delete away
-                    cmd = new MySqlCommand("UPDATE matches SET away_competitor = -1 WHERE id = " + s.Matches[0].id, connection);
-                    s.Matches[0].AwayTeam = new Team();
-                }
-            }
-
-            try
-            {
-                connection.Open();
-                cmd.ExecuteNonQuery();
-                connection.Close();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-
-            NotSelectedTeams.Add(s.SecondTeam);
-            s.SecondTeam = new Team();
-
-            (int, int) roundIndex = Bracket.GetSerieRoundIndex(s);
-            Bracket.ResetSeriesAdvanced(roundIndex.Item1, roundIndex.Item2, 2);
-            Bracket.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, -1);
-            Bracket.PrepareSeries();
-        }
-
-        private void AddSecondTeamToSerie(Serie s)
-        {
-            (int, int) roundIndex = Bracket.GetSerieRoundIndex(s);
-
-            if (s.SecondSelectedTeam == null || !NotSelectedTeams.Contains(s.SecondSelectedTeam))
-            {
-                return;
-            }
-
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd;
-
-            if (s.Matches.Count == 0)
-            {
-                //INSERT
-                cmd = new MySqlCommand("INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                       "VALUES (" + SportsData.SEASON.id + ", 0, " + Bracket.id + ", " + roundIndex.Item2 + "," +
-                                       " " + roundIndex.Item1 + ", -1, -1, " + s.SecondSelectedTeam.id + ", -1)", connection);
-            }
-            else
-            {
-                //UPDATE
-                if (s.Matches[0].HomeTeam.id == SportsData.NO_ID)
-                {
-                    //home
-                    cmd = new MySqlCommand("UPDATE matches SET home_competitor = " + s.SecondSelectedTeam.id + " WHERE id = " + s.Matches[0].id, connection);
-                    s.Matches[0].HomeTeam = s.SecondSelectedTeam;
-                }
-                else
-                {
-                    //away
-                    cmd = new MySqlCommand("UPDATE matches SET away_competitor = " + s.SecondSelectedTeam.id + " WHERE id = " + s.Matches[0].id, connection);
-                    s.Matches[0].AwayTeam = s.SecondSelectedTeam;
-                }
-            }
-
-            int matchID = SportsData.NO_ID;
-            try
-            {
-                connection.Open();
-                cmd.ExecuteNonQuery();
-                matchID = (int)cmd.LastInsertedId;
-                connection.Close();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-
-            s.SecondTeam = s.SecondSelectedTeam;
-            s.SecondSelectedTeam = new Team();
-            s.winner = new Team();
-            s.RemoveFirstTeamVisibility = Visibility.Visible;
-            s.RemoveSecondTeamVisibility = Visibility.Visible;
-            NotSelectedTeams.Remove(s.SecondTeam);
-
-            if (s.Matches.Count == 0)
-            {
-                Match m = new Match { id = matchID, Played = false, AwayTeam = s.SecondTeam, HomeTeam = new Team(), serieNumber = -1 };
-                s.InsertMatch(m, SportsData.NO_ID, 1);
-            }
-            if (roundIndex.Item1 < Bracket.Series.Count - 1)
-            {
-                int newPosition = 2;
-                if (roundIndex.Item2 % 2 == 0) { newPosition = 1; }
-                Bracket.ResetSeriesAdvanced(roundIndex.Item1 + 1, roundIndex.Item2 / 2, newPosition);
-            }
-
-            Bracket.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, 1);
-            Bracket.PrepareSeries();
         }
     }
 }

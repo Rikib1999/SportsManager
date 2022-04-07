@@ -15,13 +15,13 @@ namespace CSharpZapoctak.ViewModels
         }
         */
 
-        private Sport iceHockey = new Sport { name = "ice_hockey" };
+        private Sport iceHockey = new() { Name = "ice_hockey" };
         public Sport IceHockey
         {
-            get { return iceHockey; }
-            set { iceHockey = value; }
+            get => iceHockey;
+            set => iceHockey = value;
         }
-        
+
         /*
         private Sport tennis = new Sport { name = "tennis" };
         public Sport Tennis
@@ -31,11 +31,11 @@ namespace CSharpZapoctak.ViewModels
         }
         */
 
-        private Sport floorball = new Sport { name = "floorball" };
+        private Sport floorball = new() { Name = "floorball" };
         public Sport Floorball
         {
-            get { return floorball; }
-            set { floorball = value; }
+            get => floorball;
+            set => floorball = value;
         }
 
         public ICommand NavigateSportCommand { get; }

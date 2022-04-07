@@ -7,7 +7,7 @@ namespace CSharpZapoctak.Models
         private IStats stats;
         public IStats Stats
         {
-            get { return stats; }
+            get => stats;
             set
             {
                 stats = value;
@@ -18,7 +18,7 @@ namespace CSharpZapoctak.Models
         private bool status = true;
         public bool Status
         {
-            get { return status; }
+            get => status;
             set
             {
                 status = value;
@@ -29,7 +29,7 @@ namespace CSharpZapoctak.Models
         private Country country;
         public Country Country
         {
-            get { return country; }
+            get => country;
             set
             {
                 country = value;
@@ -40,7 +40,7 @@ namespace CSharpZapoctak.Models
         private DateTime dateOfCreation = DateTime.Today;
         public DateTime DateOfCreation
         {
-            get { return dateOfCreation; }
+            get => dateOfCreation;
             set
             {
                 dateOfCreation = value;
@@ -50,10 +50,10 @@ namespace CSharpZapoctak.Models
 
         public Team()
         {
-            id = SportsData.NO_ID;
+            ID = SportsData.NOID;
             Name = "";
             Info = "";
-            LogoPath = "";
+            ImagePath = "";
             Status = true;
             Country = null;
             DateOfCreation = DateTime.Today;
@@ -61,10 +61,10 @@ namespace CSharpZapoctak.Models
 
         public Team(Team t)
         {
-            id = t.id;
+            ID = t.ID;
             Name = t.Name;
             Info = t.Info;
-            LogoPath = t.LogoPath;
+            ImagePath = t.ImagePath;
             Status = t.Status;
             Country = t.Country;
             DateOfCreation = t.DateOfCreation;

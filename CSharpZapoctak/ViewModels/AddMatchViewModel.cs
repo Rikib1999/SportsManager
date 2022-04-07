@@ -25,7 +25,7 @@ namespace CSharpZapoctak.ViewModels
         private string name;
         public string Name
         {
-            get { return name; }
+            get => name;
             set
             {
                 name = value;
@@ -36,7 +36,7 @@ namespace CSharpZapoctak.ViewModels
         private string position;
         public string Position
         {
-            get { return position; }
+            get => position;
             set
             {
                 position = value;
@@ -44,10 +44,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int? number = null;
+        private int? number;
         public int? Number
         {
-            get { return number; }
+            get => number;
             set
             {
                 number = value;
@@ -58,12 +58,12 @@ namespace CSharpZapoctak.ViewModels
         private bool present;
         public bool Present
         {
-            get { return present; }
+            get => present;
             set
             {
                 present = value;
 
-                ObservableCollection<PlayerInRoster> n = new ObservableCollection<PlayerInRoster>();
+                ObservableCollection<PlayerInRoster> n = new();
                 foreach (PlayerInRoster p in vm.HomePlayers)
                 {
                     if (p.Present)
@@ -166,7 +166,7 @@ namespace CSharpZapoctak.ViewModels
 
     class Period : NotifyPropertyChanged
     {
-        private static readonly object _lock = new object();
+        private static readonly object _lock = new();
 
         public Period(AddMatchViewModel vm, bool overtime = false)
         {
@@ -225,7 +225,7 @@ namespace CSharpZapoctak.ViewModels
         private int number;
         public int Number
         {
-            get { return number; }
+            get => number;
             set
             {
                 number = value;
@@ -238,7 +238,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PlayerInRoster> homeRoster;
         public ObservableCollection<PlayerInRoster> HomeRoster
         {
-            get { return homeRoster; }
+            get => homeRoster;
             set
             {
                 homeRoster = value;
@@ -253,7 +253,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PlayerInRoster> awayRoster;
         public ObservableCollection<PlayerInRoster> AwayRoster
         {
-            get { return awayRoster; }
+            get => awayRoster;
             set
             {
                 awayRoster = value;
@@ -269,7 +269,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Goal> goals;
         public ObservableCollection<Goal> Goals
         {
-            get { return goals; }
+            get => goals;
             set
             {
                 goals = value;
@@ -280,7 +280,7 @@ namespace CSharpZapoctak.ViewModels
         private Goal newGoal;
         public Goal NewGoal
         {
-            get { return newGoal; }
+            get => newGoal;
             set
             {
                 newGoal = value;
@@ -291,7 +291,7 @@ namespace CSharpZapoctak.ViewModels
         private string goalSide;
         public string GoalSide
         {
-            get { return goalSide; }
+            get => goalSide;
             set
             {
                 if (goalSide != value)
@@ -316,7 +316,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PlayerInRoster> goalsRoster;
         public ObservableCollection<PlayerInRoster> GoalsRoster
         {
-            get { return goalsRoster; }
+            get => goalsRoster;
             set
             {
                 goalsRoster = value;
@@ -341,22 +341,22 @@ namespace CSharpZapoctak.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewGoal.Side))
             {
-                MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewGoal.Scorer == null)
             {
-                MessageBox.Show("Please select scorer.", "Scorer not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select scorer.", "Scorer not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewGoal.Scorer == NewGoal.Assist)
             {
-                MessageBox.Show("Goal and assist can not be made by the same player.", "Goal and assist error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Goal and assist can not be made by the same player.", "Goal and assist error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if ((NewGoal.PenaltyShot && NewGoal.OwnGoal) || (NewGoal.PenaltyShot && NewGoal.DelayedPenalty))
             {
-                MessageBox.Show("Own goal or delayed penalty goal can not be scored on penalty shot.", "Own goal or delayed penalty goal on penalty shot", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Own goal or delayed penalty goal can not be scored on penalty shot.", "Own goal or delayed penalty goal on penalty shot", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewGoal.TimeInSeconds >= duration * 60)
@@ -367,7 +367,7 @@ namespace CSharpZapoctak.ViewModels
 
             if (NewGoal.PenaltyShot || NewGoal.OwnGoal)
             {
-                NewGoal.Assist = new PlayerInRoster { id = SportsData.NO_ID };
+                NewGoal.Assist = new PlayerInRoster { id = SportsData.NOID };
             }
 
             Goals.Add(NewGoal);
@@ -381,7 +381,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Penalty> penalties;
         public ObservableCollection<Penalty> Penalties
         {
-            get { return penalties; }
+            get => penalties;
             set
             {
                 penalties = value;
@@ -392,7 +392,7 @@ namespace CSharpZapoctak.ViewModels
         private Penalty newPenalty;
         public Penalty NewPenalty
         {
-            get { return newPenalty; }
+            get => newPenalty;
             set
             {
                 newPenalty = value;
@@ -403,7 +403,7 @@ namespace CSharpZapoctak.ViewModels
         private string penaltySide;
         public string PenaltySide
         {
-            get { return penaltySide; }
+            get => penaltySide;
             set
             {
                 if (penaltySide != value)
@@ -427,7 +427,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PlayerInRoster> penaltyRoster;
         public ObservableCollection<PlayerInRoster> PenaltyRoster
         {
-            get { return penaltyRoster; }
+            get => penaltyRoster;
             set
             {
                 penaltyRoster = value;
@@ -452,17 +452,17 @@ namespace CSharpZapoctak.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewPenalty.Side))
             {
-                MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewPenalty.Player == null)
             {
-                MessageBox.Show("Please select player.", "Player not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select player.", "Player not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewPenalty.PenaltyReason == null || NewPenalty.PenaltyType == null)
             {
-                MessageBox.Show("Please select penalty reason and type.", "Penalty not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select penalty reason and type.", "Penalty not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewPenalty.TimeInSeconds >= duration * 60)
@@ -482,7 +482,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PenaltyShot> penaltyShots;
         public ObservableCollection<PenaltyShot> PenaltyShots
         {
-            get { return penaltyShots; }
+            get => penaltyShots;
             set
             {
                 penaltyShots = value;
@@ -493,7 +493,7 @@ namespace CSharpZapoctak.ViewModels
         private PenaltyShot newPenaltyShot;
         public PenaltyShot NewPenaltyShot
         {
-            get { return newPenaltyShot; }
+            get => newPenaltyShot;
             set
             {
                 newPenaltyShot = value;
@@ -504,7 +504,7 @@ namespace CSharpZapoctak.ViewModels
         private string penaltyShotSide;
         public string PenaltyShotSide
         {
-            get { return penaltyShotSide; }
+            get => penaltyShotSide;
             set
             {
                 if (penaltyShotSide != value)
@@ -528,7 +528,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PlayerInRoster> penaltyShotRoster;
         public ObservableCollection<PlayerInRoster> PenaltyShotRoster
         {
-            get { return penaltyShotRoster; }
+            get => penaltyShotRoster;
             set
             {
                 penaltyShotRoster = value;
@@ -553,12 +553,12 @@ namespace CSharpZapoctak.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewPenaltyShot.Side))
             {
-                MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewPenaltyShot.Player == null)
             {
-                MessageBox.Show("Please select player.", "Player not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select player.", "Player not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewPenaltyShot.TimeInSeconds >= duration * 60)
@@ -578,7 +578,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<GoalieShift> goalieShifts;
         public ObservableCollection<GoalieShift> GoalieShifts
         {
-            get { return goalieShifts; }
+            get => goalieShifts;
             set
             {
                 goalieShifts = value;
@@ -589,7 +589,7 @@ namespace CSharpZapoctak.ViewModels
         private GoalieShift newGoalieShift;
         public GoalieShift NewGoalieShift
         {
-            get { return newGoalieShift; }
+            get => newGoalieShift;
             set
             {
                 newGoalieShift = value;
@@ -600,7 +600,7 @@ namespace CSharpZapoctak.ViewModels
         private string goalieShiftSide;
         public string GoalieShiftSide
         {
-            get { return goalieShiftSide; }
+            get => goalieShiftSide;
             set
             {
                 if (goalieShiftSide != value)
@@ -624,7 +624,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PlayerInRoster> goalieShiftRoster;
         public ObservableCollection<PlayerInRoster> GoalieShiftRoster
         {
-            get { return goalieShiftRoster; }
+            get => goalieShiftRoster;
             set
             {
                 goalieShiftRoster = value;
@@ -649,17 +649,17 @@ namespace CSharpZapoctak.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewGoalieShift.Side))
             {
-                MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewGoalieShift.Player == null)
             {
-                MessageBox.Show("Please select player.", "Player not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select player.", "Player not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewGoalieShift.EndTimeInSeconds - NewGoalieShift.StartTimeInSeconds < 1)
             {
-                MessageBox.Show("Goaltender shift must last at least 1 second.", "Shift is too short", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Goaltender shift must last at least 1 second.", "Shift is too short", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewGoalieShift.EndTimeInSeconds > duration * 60 || NewGoalieShift.StartTimeInSeconds > duration * 60)
@@ -679,7 +679,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<TimeOut> timeOuts;
         public ObservableCollection<TimeOut> TimeOuts
         {
-            get { return timeOuts; }
+            get => timeOuts;
             set
             {
                 timeOuts = value;
@@ -690,7 +690,7 @@ namespace CSharpZapoctak.ViewModels
         private TimeOut newTimeOut;
         public TimeOut NewTimeOut
         {
-            get { return newTimeOut; }
+            get => newTimeOut;
             set
             {
                 newTimeOut = value;
@@ -701,7 +701,7 @@ namespace CSharpZapoctak.ViewModels
         private string timeOutSide;
         public string TimeOutSide
         {
-            get { return timeOutSide; }
+            get => timeOutSide;
             set
             {
                 if (timeOutSide != value)
@@ -730,7 +730,7 @@ namespace CSharpZapoctak.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewTimeOut.Side))
             {
-                MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please select side.", "Side not selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (NewTimeOut.TimeInSeconds >= duration * 60)
@@ -754,7 +754,7 @@ namespace CSharpZapoctak.ViewModels
         private BasicStat stat;
         public BasicStat Stat
         {
-            get { return stat; }
+            get => stat;
             set
             {
                 stat = value;
@@ -765,7 +765,7 @@ namespace CSharpZapoctak.ViewModels
         private Period period;
         public Period Period
         {
-            get { return period; }
+            get => period;
             set
             {
                 period = value;
@@ -829,7 +829,7 @@ namespace CSharpZapoctak.ViewModels
         private Event inPenaltyEvent;
         public Event InPenaltyEvent
         {
-            get { return inPenaltyEvent; }
+            get => inPenaltyEvent;
             set
             {
                 inPenaltyEvent = value;
@@ -840,7 +840,7 @@ namespace CSharpZapoctak.ViewModels
         private Event outPenaltyEvent;
         public Event OutPenaltyEvent
         {
-            get { return outPenaltyEvent; }
+            get => outPenaltyEvent;
             set
             {
                 outPenaltyEvent = value;
@@ -908,7 +908,7 @@ namespace CSharpZapoctak.ViewModels
         private State inPenalty;
         public State InPenalty
         {
-            get { return inPenalty; }
+            get => inPenalty;
             set
             {
                 inPenalty = value;
@@ -919,7 +919,7 @@ namespace CSharpZapoctak.ViewModels
         private State outPenalty;
         public State OutPenalty
         {
-            get { return outPenalty; }
+            get => outPenalty;
             set
             {
                 outPenalty = value;
@@ -930,7 +930,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<SwapEvent> swapEvents;
         public ObservableCollection<SwapEvent> SwapEvents
         {
-            get { return swapEvents; }
+            get => swapEvents;
             set
             {
                 swapEvents = value;
@@ -953,7 +953,7 @@ namespace CSharpZapoctak.ViewModels
         private int minute;
         public int Minute
         {
-            get { return minute; }
+            get => minute;
             set
             {
                 minute = value;
@@ -964,7 +964,7 @@ namespace CSharpZapoctak.ViewModels
         private int second;
         public int Second
         {
-            get { return second; }
+            get => second;
             set
             {
                 second = value;
@@ -985,7 +985,7 @@ namespace CSharpZapoctak.ViewModels
         private string side;
         public string Side
         {
-            get { return side; }
+            get => side;
             set
             {
                 side = value;
@@ -1040,16 +1040,16 @@ namespace CSharpZapoctak.ViewModels
             switch (this)
             {
                 case Goal:
-                    period.Goals.Remove((Goal)this);
+                    _ = period.Goals.Remove((Goal)this);
                     break;
                 case Penalty:
-                    period.Penalties.Remove((Penalty)this);
+                    _ = period.Penalties.Remove((Penalty)this);
                     break;
                 case PenaltyShot:
-                    period.PenaltyShots.Remove((PenaltyShot)this);
+                    _ = period.PenaltyShots.Remove((PenaltyShot)this);
                     break;
                 case TimeOut:
-                    period.TimeOuts.Remove((TimeOut)this);
+                    _ = period.TimeOuts.Remove((TimeOut)this);
                     break;
                 default:
                     break;
@@ -1061,14 +1061,14 @@ namespace CSharpZapoctak.ViewModels
 
     class Goal : BasicStat
     {
-        public bool gameLosingOwnGoal = false;
-        public bool gameWinningGoal = false;
+        public bool gameLosingOwnGoal;
+        public bool gameWinningGoal;
         public PlayerInRoster goalie;
 
-        private PlayerInRoster scorer = new PlayerInRoster();
+        private PlayerInRoster scorer = new();
         public PlayerInRoster Scorer
         {
-            get { return scorer; }
+            get => scorer;
             set
             {
                 scorer = value;
@@ -1076,10 +1076,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private PlayerInRoster assist = new PlayerInRoster();
+        private PlayerInRoster assist = new();
         public PlayerInRoster Assist
         {
-            get { return assist; }
+            get => assist;
             set
             {
                 assist = value;
@@ -1090,7 +1090,7 @@ namespace CSharpZapoctak.ViewModels
         private bool penaltyShot;
         public bool PenaltyShot
         {
-            get { return penaltyShot; }
+            get => penaltyShot;
             set
             {
                 penaltyShot = value;
@@ -1101,7 +1101,7 @@ namespace CSharpZapoctak.ViewModels
         private bool ownGoal;
         public bool OwnGoal
         {
-            get { return ownGoal; }
+            get => ownGoal;
             set
             {
                 ownGoal = value;
@@ -1112,7 +1112,7 @@ namespace CSharpZapoctak.ViewModels
         private bool delayedPenalty;
         public bool DelayedPenalty
         {
-            get { return delayedPenalty; }
+            get => delayedPenalty;
             set
             {
                 delayedPenalty = value;
@@ -1120,7 +1120,7 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        public bool emptyNet = false;
+        public bool emptyNet;
 
         public string Type
         {
@@ -1153,13 +1153,13 @@ namespace CSharpZapoctak.ViewModels
     {
         public int startTime;
         public int endTime;
-        public int duration = 0;
-        public bool punished = false;
+        public int duration;
+        public bool punished;
 
-        private PlayerInRoster player = new PlayerInRoster();
+        private PlayerInRoster player = new();
         public PlayerInRoster Player
         {
-            get { return player; }
+            get => player;
             set
             {
                 player = value;
@@ -1170,7 +1170,7 @@ namespace CSharpZapoctak.ViewModels
         private PenaltyReason penaltyReason;
         public PenaltyReason PenaltyReason
         {
-            get { return penaltyReason; }
+            get => penaltyReason;
             set
             {
                 penaltyReason = value;
@@ -1181,7 +1181,7 @@ namespace CSharpZapoctak.ViewModels
         private PenaltyType penaltyType;
         public PenaltyType PenaltyType
         {
-            get { return penaltyType; }
+            get => penaltyType;
             set
             {
                 penaltyType = value;
@@ -1202,10 +1202,10 @@ namespace CSharpZapoctak.ViewModels
     {
         public PlayerInRoster goalie;
 
-        private PlayerInRoster player = new PlayerInRoster();
+        private PlayerInRoster player = new();
         public PlayerInRoster Player
         {
-            get { return player; }
+            get => player;
             set
             {
                 player = value;
@@ -1216,7 +1216,7 @@ namespace CSharpZapoctak.ViewModels
         private bool wasGoal;
         public bool WasGoal
         {
-            get { return wasGoal; }
+            get => wasGoal;
             set
             {
                 wasGoal = value;
@@ -1241,7 +1241,7 @@ namespace CSharpZapoctak.ViewModels
         private int startMinute;
         public int StartMinute
         {
-            get { return startMinute; }
+            get => startMinute;
             set
             {
                 startMinute = value;
@@ -1252,7 +1252,7 @@ namespace CSharpZapoctak.ViewModels
         private int startSecond;
         public int StartSecond
         {
-            get { return startSecond; }
+            get => startSecond;
             set
             {
                 startSecond = value;
@@ -1273,7 +1273,7 @@ namespace CSharpZapoctak.ViewModels
         private int endMinute;
         public int EndMinute
         {
-            get { return endMinute; }
+            get => endMinute;
             set
             {
                 endMinute = value;
@@ -1284,7 +1284,7 @@ namespace CSharpZapoctak.ViewModels
         private int endSecond;
         public int EndSecond
         {
-            get { return endSecond; }
+            get => endSecond;
             set
             {
                 endSecond = value;
@@ -1305,7 +1305,7 @@ namespace CSharpZapoctak.ViewModels
         private string side;
         public string Side
         {
-            get { return side; }
+            get => side;
             set
             {
                 side = value;
@@ -1313,10 +1313,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private PlayerInRoster player = new PlayerInRoster();
+        private PlayerInRoster player = new();
         public PlayerInRoster Player
         {
-            get { return player; }
+            get => player;
             set
             {
                 player = value;
@@ -1374,10 +1374,10 @@ namespace CSharpZapoctak.ViewModels
             Entered = entered;
         }
 
-        private PlayerInRoster player = new PlayerInRoster();
+        private PlayerInRoster player = new();
         public PlayerInRoster Player
         {
-            get { return player; }
+            get => player;
             set
             {
                 player = value;
@@ -1388,7 +1388,7 @@ namespace CSharpZapoctak.ViewModels
         private bool entered;
         public bool Entered
         {
-            get { return entered; }
+            get => entered;
             set
             {
                 entered = value;
@@ -1441,7 +1441,7 @@ namespace CSharpZapoctak.ViewModels
         private int number;
         public int Number
         {
-            get { return number; }
+            get => number;
             set
             {
                 number = value;
@@ -1452,7 +1452,7 @@ namespace CSharpZapoctak.ViewModels
         private string side;
         public string Side
         {
-            get { return side; }
+            get => side;
             set
             {
                 side = value;
@@ -1460,10 +1460,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private PlayerInRoster player = new PlayerInRoster();
+        private PlayerInRoster player = new();
         public PlayerInRoster Player
         {
-            get { return player; }
+            get => player;
             set
             {
                 player = value;
@@ -1474,7 +1474,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PlayerInRoster> playerRoster;
         public ObservableCollection<PlayerInRoster> PlayerRoster
         {
-            get { return playerRoster; }
+            get => playerRoster;
             set
             {
                 playerRoster = value;
@@ -1482,10 +1482,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private PlayerInRoster goalie = new PlayerInRoster();
+        private PlayerInRoster goalie = new();
         public PlayerInRoster Goalie
         {
-            get { return goalie; }
+            get => goalie;
             set
             {
                 goalie = value;
@@ -1496,7 +1496,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PlayerInRoster> goalieRoster;
         public ObservableCollection<PlayerInRoster> GoalieRoster
         {
-            get { return goalieRoster; }
+            get => goalieRoster;
             set
             {
                 goalieRoster = value;
@@ -1507,7 +1507,7 @@ namespace CSharpZapoctak.ViewModels
         private bool wasGoal;
         public bool WasGoal
         {
-            get { return wasGoal; }
+            get => wasGoal;
             set
             {
                 wasGoal = value;
@@ -1627,7 +1627,7 @@ namespace CSharpZapoctak.ViewModels
         private DateTime matchDate = DateTime.Today;
         public DateTime MatchDate
         {
-            get { return matchDate; }
+            get => matchDate;
             set
             {
                 matchDate = value;
@@ -1638,7 +1638,7 @@ namespace CSharpZapoctak.ViewModels
         private int matchTimeHours;
         public int MatchTimeHours
         {
-            get { return matchTimeHours; }
+            get => matchTimeHours;
             set
             {
                 matchTimeHours = value;
@@ -1649,7 +1649,7 @@ namespace CSharpZapoctak.ViewModels
         private int matchTimeMinutes;
         public int MatchTimeMinutes
         {
-            get { return matchTimeMinutes; }
+            get => matchTimeMinutes;
             set
             {
                 matchTimeMinutes = value;
@@ -1667,7 +1667,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Team> availableTeamsHome;
         public ObservableCollection<Team> AvailableTeamsHome
         {
-            get { return availableTeamsHome; }
+            get => availableTeamsHome;
             set
             {
                 availableTeamsHome = value;
@@ -1678,7 +1678,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Team> availableTeamsAway;
         public ObservableCollection<Team> AvailableTeamsAway
         {
-            get { return availableTeamsAway; }
+            get => availableTeamsAway;
             set
             {
                 availableTeamsAway = value;
@@ -1689,7 +1689,7 @@ namespace CSharpZapoctak.ViewModels
         private Team homeTeam;
         public Team HomeTeam
         {
-            get { return homeTeam; }
+            get => homeTeam;
             set
             {
                 if (homeTeam != null)
@@ -1697,7 +1697,7 @@ namespace CSharpZapoctak.ViewModels
                     AvailableTeamsAway.Add(homeTeam);
                 }
                 homeTeam = value;
-                AvailableTeamsAway.Remove(homeTeam);
+                _ = AvailableTeamsAway.Remove(homeTeam);
                 LoadRoster("Home");
 
                 foreach (Period p in Periods)
@@ -1740,7 +1740,7 @@ namespace CSharpZapoctak.ViewModels
         private Team awayTeam;
         public Team AwayTeam
         {
-            get { return awayTeam; }
+            get => awayTeam;
             set
             {
                 if (awayTeam != null)
@@ -1748,7 +1748,7 @@ namespace CSharpZapoctak.ViewModels
                     AvailableTeamsHome.Add(awayTeam);
                 }
                 awayTeam = value;
-                AvailableTeamsHome.Remove(awayTeam);
+                _ = AvailableTeamsHome.Remove(awayTeam);
                 LoadRoster("Away");
 
                 foreach (Period p in Periods)
@@ -1788,10 +1788,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ObservableCollection<PlayerInRoster> homePlayers = new ObservableCollection<PlayerInRoster>();
+        private ObservableCollection<PlayerInRoster> homePlayers = new();
         public ObservableCollection<PlayerInRoster> HomePlayers
         {
-            get { return homePlayers; }
+            get => homePlayers;
             set
             {
                 homePlayers = value;
@@ -1799,10 +1799,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ObservableCollection<PlayerInRoster> awayPlayers = new ObservableCollection<PlayerInRoster>();
+        private ObservableCollection<PlayerInRoster> awayPlayers = new();
         public ObservableCollection<PlayerInRoster> AwayPlayers
         {
-            get { return awayPlayers; }
+            get => awayPlayers;
             set
             {
                 awayPlayers = value;
@@ -1810,10 +1810,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ObservableCollection<PlayerInRoster> homeRoster = new ObservableCollection<PlayerInRoster>();
+        private ObservableCollection<PlayerInRoster> homeRoster = new();
         public ObservableCollection<PlayerInRoster> HomeRoster
         {
-            get { return homeRoster; }
+            get => homeRoster;
             set
             {
                 homeRoster = value;
@@ -1821,10 +1821,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ObservableCollection<PlayerInRoster> awayRoster = new ObservableCollection<PlayerInRoster>();
+        private ObservableCollection<PlayerInRoster> awayRoster = new();
         public ObservableCollection<PlayerInRoster> AwayRoster
         {
-            get { return awayRoster; }
+            get => awayRoster;
             set
             {
                 awayRoster = value;
@@ -1834,18 +1834,18 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Match info
-        int qualificationID = SportsData.NO_ID;
+        int qualificationID = SportsData.NOID;
         int bracketIndex = -1;
         int round = -1;
         int serieMatchNumber = -1;
-        int bracketFirstTeamID = SportsData.NO_ID;
+        int bracketFirstTeamID = SportsData.NOID;
         int HomeScore;
         int AwayScore;
 
         private bool played;
         public bool Played
         {
-            get { return played; }
+            get => played;
             set
             {
                 played = value;
@@ -1868,7 +1868,7 @@ namespace CSharpZapoctak.ViewModels
         private bool forfeit;
         public bool Forfeit
         {
-            get { return forfeit; }
+            get => forfeit;
             set
             {
                 forfeit = value;
@@ -1887,7 +1887,7 @@ namespace CSharpZapoctak.ViewModels
         private string forfeitWinnerSide;
         public string ForfeitWinnerSide
         {
-            get { return forfeitWinnerSide; }
+            get => forfeitWinnerSide;
             set
             {
                 forfeitWinnerSide = value;
@@ -1900,7 +1900,7 @@ namespace CSharpZapoctak.ViewModels
         private int periodCount;
         public int PeriodCount
         {
-            get { return periodCount; }
+            get => periodCount;
             set
             {
                 int actualCount = Periods.Count;
@@ -1936,7 +1936,7 @@ namespace CSharpZapoctak.ViewModels
         private int periodDuration;
         public int PeriodDuration
         {
-            get { return periodDuration; }
+            get => periodDuration;
             set
             {
                 periodDuration = value;
@@ -1988,7 +1988,7 @@ namespace CSharpZapoctak.ViewModels
         private bool overtime;
         public bool Overtime
         {
-            get { return overtime; }
+            get => overtime;
             set
             {
                 overtime = value;
@@ -2007,7 +2007,7 @@ namespace CSharpZapoctak.ViewModels
         private bool isShootout;
         public bool IsShootout
         {
-            get { return isShootout; }
+            get => isShootout;
             set
             {
                 isShootout = value;
@@ -2026,7 +2026,7 @@ namespace CSharpZapoctak.ViewModels
         private int shootoutSeries;
         public int ShootoutSeries
         {
-            get { return shootoutSeries; }
+            get => shootoutSeries;
             set
             {
                 if (value == Math.Round((float)Shootout.Count / 2.0))
@@ -2065,7 +2065,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Period> periods;
         public ObservableCollection<Period> Periods
         {
-            get { return periods; }
+            get => periods;
             set
             {
                 periods = value;
@@ -2076,7 +2076,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<ShootoutShot> shootout;
         public ObservableCollection<ShootoutShot> Shootout
         {
-            get { return shootout; }
+            get => shootout;
             set
             {
                 shootout = value;
@@ -2089,7 +2089,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility loadingVisibility = Visibility.Collapsed;
         public Visibility LoadingVisibility
         {
-            get { return loadingVisibility; }
+            get => loadingVisibility;
             set
             {
                 loadingVisibility = value;
@@ -2100,7 +2100,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility pageVisibility = Visibility.Visible;
         public Visibility PageVisibility
         {
-            get { return pageVisibility; }
+            get => pageVisibility;
             set
             {
                 pageVisibility = value;
@@ -2111,7 +2111,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility notPlayedSaveButtonVisibility = Visibility.Visible;
         public Visibility NotPlayedSaveButtonVisibility
         {
-            get { return notPlayedSaveButtonVisibility; }
+            get => notPlayedSaveButtonVisibility;
             set
             {
                 notPlayedSaveButtonVisibility = value;
@@ -2122,7 +2122,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility formsVisibility = Visibility.Collapsed;
         public Visibility FormsVisibility
         {
-            get { return formsVisibility; }
+            get => formsVisibility;
             set
             {
                 formsVisibility = value;
@@ -2133,7 +2133,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility forfeitVisibility = Visibility.Collapsed;
         public Visibility ForfeitVisibility
         {
-            get { return forfeitVisibility; }
+            get => forfeitVisibility;
             set
             {
                 forfeitVisibility = value;
@@ -2144,7 +2144,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility forfeitSideVisibility = Visibility.Collapsed;
         public Visibility ForfeitSideVisibility
         {
-            get { return forfeitSideVisibility; }
+            get => forfeitSideVisibility;
             set
             {
                 forfeitSideVisibility = value;
@@ -2155,7 +2155,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility shootoutVisibility = Visibility.Collapsed;
         public Visibility ShootoutVisibility
         {
-            get { return shootoutVisibility; }
+            get => shootoutVisibility;
             set
             {
                 shootoutVisibility = value;
@@ -2166,7 +2166,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility checkButtonVisibility = Visibility.Collapsed;
         public Visibility CheckButtonVisibility
         {
-            get { return checkButtonVisibility; }
+            get => checkButtonVisibility;
             set
             {
                 checkButtonVisibility = value;
@@ -2177,7 +2177,7 @@ namespace CSharpZapoctak.ViewModels
         public Visibility saveButtonVisibility = Visibility.Collapsed;
         public Visibility SaveButtonVisibility
         {
-            get { return saveButtonVisibility; }
+            get => saveButtonVisibility;
             set
             {
                 saveButtonVisibility = value;
@@ -2197,7 +2197,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<string> sides;
         public ObservableCollection<string> Sides
         {
-            get { return sides; }
+            get => sides;
             set
             {
                 sides = value;
@@ -2350,7 +2350,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Event> events;
         public ObservableCollection<Event> Events
         {
-            get { return events; }
+            get => events;
             set
             {
                 events = value;
@@ -2361,7 +2361,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Event> conflictEvents;
         public ObservableCollection<Event> ConflictEvents
         {
-            get { return conflictEvents; }
+            get => conflictEvents;
             set
             {
                 conflictEvents = value;
@@ -2372,7 +2372,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<PenaltyEndCollision> penaltyEndCollisions;
         public ObservableCollection<PenaltyEndCollision> PenaltyEndCollisions
         {
-            get { return penaltyEndCollisions; }
+            get => penaltyEndCollisions;
             set
             {
                 penaltyEndCollisions = value;
@@ -2386,13 +2386,13 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Constructors
-        private static readonly object _lock = new object();
+        private static readonly object _lock = new();
 
         //ADD for group
         public AddMatchViewModel(NavigationStore navigationStore, int round)
         {
             ns = navigationStore;
-            seasonID = SportsData.SEASON.id;
+            seasonID = SportsData.SEASON.ID;
             scheduleToReturnVM = new GroupsScheduleViewModel(ns);
             this.round = round;
             Periods = new ObservableCollection<Period>();
@@ -2410,13 +2410,13 @@ namespace CSharpZapoctak.ViewModels
         public AddMatchViewModel(NavigationStore navigationStore, NotifyPropertyChanged scheduleToReturnVM, int qualificationID, int bracketIndex, int round, int serieMatchNumber, Team first, Team second)
         {
             ns = navigationStore;
-            seasonID = SportsData.SEASON.id;
+            seasonID = SportsData.SEASON.ID;
             this.scheduleToReturnVM = scheduleToReturnVM;
             this.qualificationID = qualificationID;
             this.bracketIndex = bracketIndex;
             this.round = round;
             this.serieMatchNumber = serieMatchNumber;
-            bracketFirstTeamID = first.id;
+            bracketFirstTeamID = first.ID;
             Periods = new ObservableCollection<Period>();
             BindingOperations.EnableCollectionSynchronization(Periods, _lock);
             Shootout = new ObservableCollection<ShootoutShot>();
@@ -2438,10 +2438,10 @@ namespace CSharpZapoctak.ViewModels
         {
             edit = true;
             ns = navigationStore;
-            seasonID = m.Season.id;
+            seasonID = m.Season.ID;
             match = m;
             this.scheduleToReturnVM = scheduleToReturnVM;
-            LoadMatchInfo(m.id);
+            LoadMatchInfo(m.ID);
 
             MatchDate = m.Datetime.Date;
             MatchTimeHours = m.Datetime.Hour;
@@ -2475,8 +2475,8 @@ namespace CSharpZapoctak.ViewModels
             PenaltyTypes = SportsData.LoadPenaltyTypes();
 
             //set teams
-            HomeTeam = AvailableTeamsHome.First(x => x.id == m.HomeTeam.id);
-            AwayTeam = AvailableTeamsAway.First(x => x.id == m.AwayTeam.id);
+            HomeTeam = AvailableTeamsHome.First(x => x.ID == m.HomeTeam.ID);
+            AwayTeam = AvailableTeamsAway.First(x => x.ID == m.AwayTeam.ID);
 
             if (m.Played)
             {
@@ -2489,13 +2489,13 @@ namespace CSharpZapoctak.ViewModels
                 PeriodDuration = m.PeriodDuration;
 
                 //set rosters
-                LoadExistingRosters(m.id);
+                LoadExistingRosters(m.ID);
 
                 //load all period events
-                LoadExistingEvents(m.id);
+                LoadExistingEvents(m.ID);
 
                 //load shootout
-                LoadExistingShootout(m.id);
+                LoadExistingShootout(m.ID);
             }
         }
         #endregion
@@ -2514,22 +2514,21 @@ namespace CSharpZapoctak.ViewModels
         {
             Strengths = new ObservableCollection<Strength>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id, situation, advantage FROM strength", connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT id, situation, advantage FROM strength", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Strength s = new Strength
+                    Strength s = new()
                     {
-                        id = int.Parse(row["id"].ToString()),
+                        ID = int.Parse(row["id"].ToString()),
                         Situation = row["situation"].ToString(),
                         Advantage = row["advantage"].ToString()
                     };
@@ -2539,7 +2538,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2555,9 +2554,8 @@ namespace CSharpZapoctak.ViewModels
             AvailableTeamsHome = new ObservableCollection<Team>();
             AvailableTeamsAway = new ObservableCollection<Team>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT team_id, t.name AS team_name, season_id " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT team_id, t.name AS team_name, season_id " +
                                                 "FROM team_enlistment " +
                                                 "INNER JOIN team AS t ON t.id = team_id " +
                                                 "WHERE season_id = " + seasonID, connection);
@@ -2565,15 +2563,15 @@ namespace CSharpZapoctak.ViewModels
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
                 foreach (DataRow tm in dataTable.Rows)
                 {
-                    Team t = new Team
+                    Team t = new()
                     {
-                        id = int.Parse(tm["team_id"].ToString()),
+                        ID = int.Parse(tm["team_id"].ToString()),
                         Name = tm["team_name"].ToString()
                     };
 
@@ -2583,7 +2581,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2596,20 +2594,19 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadRoster(string side)
         {
-            ObservableCollection<PlayerInRoster> roster = new ObservableCollection<PlayerInRoster>();
+            ObservableCollection<PlayerInRoster> roster = new();
             int teamID;
             if (side == "Home")
             {
-                teamID = HomeTeam.id;
+                teamID = HomeTeam.ID;
             }
             else
             {
-                teamID = AwayTeam.id;
+                teamID = AwayTeam.ID;
             }
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT player_id, number, pos.name AS position_name, p.first_name AS player_first_name, p.last_name AS player_last_name " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT player_id, number, pos.name AS position_name, p.first_name AS player_first_name, p.last_name AS player_last_name " +
                                                 "FROM player_enlistment " +
                                                 "INNER JOIN player AS p ON p.id = player_id " +
                                                 "INNER JOIN position AS pos ON pos.code = position_code " +
@@ -2618,13 +2615,13 @@ namespace CSharpZapoctak.ViewModels
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    PlayerInRoster p = new PlayerInRoster
+                    PlayerInRoster p = new()
                     {
                         id = int.Parse(row["player_id"].ToString()),
                         Name = row["player_first_name"].ToString() + " " + row["player_last_name"].ToString(),
@@ -2656,7 +2653,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2669,16 +2666,15 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadExistingRosters(int matchID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT player_id, side " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT player_id, side " +
                                                 "FROM player_matches " +
                                                 "WHERE match_id = " + matchID, connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
@@ -2696,7 +2692,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databseROSTERS.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databseROSTERS.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2709,14 +2705,13 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadMatchInfo(int matchID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT qualification_id, bracket_index, round, serie_match_number, bracket_first_team FROM matches WHERE id = " + matchID, connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT qualification_id, bracket_index, round, serie_match_number, bracket_first_team FROM matches WHERE id = " + matchID, connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 qualificationID = int.Parse(dataTable.Rows[0]["qualification_id"].ToString());
@@ -2727,7 +2722,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databseMATCH.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databseMATCH.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2741,23 +2736,23 @@ namespace CSharpZapoctak.ViewModels
         private void LoadExistingEvents(int matchID)
         {
             //load goals
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT player_id, assist_player_id, period, period_seconds, team_id, own_goal, penalty_shot, delayed_penalty " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT player_id, assist_player_id, period, period_seconds, team_id, own_goal, penalty_shot, delayed_penalty " +
                                                 "FROM goals WHERE match_id = " + matchID + " ORDER BY order_in_match", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Goal g = new Goal { DelayedPenalty = Convert.ToBoolean(int.Parse(row["delayed_penalty"].ToString())),
+                    Goal g = new()
+                    { DelayedPenalty = Convert.ToBoolean(int.Parse(row["delayed_penalty"].ToString())),
                         PenaltyShot = Convert.ToBoolean(int.Parse(row["penalty_shot"].ToString())),
                         OwnGoal = Convert.ToBoolean(int.Parse(row["own_goal"].ToString())),
-                        Side = HomeTeam.id == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
+                        Side = HomeTeam.ID == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
                         Minute = int.Parse(row["period_seconds"].ToString()) / 60,
                         Second = int.Parse(row["period_seconds"].ToString()) % 60
                     };
@@ -2767,12 +2762,12 @@ namespace CSharpZapoctak.ViewModels
                     if (g.Side == "Home")
                     {
                         g.Scorer = HomeRoster.First(x => x.id == scorerID);
-                        if (assistID != SportsData.NO_ID) { g.Assist = HomeRoster.First(x => x.id == assistID); } else { g.Assist = new PlayerInRoster { id = SportsData.NO_ID }; }
+                        if (assistID != SportsData.NOID) { g.Assist = HomeRoster.First(x => x.id == assistID); } else { g.Assist = new PlayerInRoster { id = SportsData.NOID }; }
                     }
                     else
                     {
                         g.Scorer = AwayRoster.First(x => x.id == scorerID);
-                        if (assistID != SportsData.NO_ID) { g.Assist = AwayRoster.First(x => x.id == assistID); } else { g.Assist = new PlayerInRoster { id = SportsData.NO_ID }; }
+                        if (assistID != SportsData.NOID) { g.Assist = AwayRoster.First(x => x.id == assistID); } else { g.Assist = new PlayerInRoster { id = SportsData.NOID }; }
                     }
 
                     int periodNumber = int.Parse(row["period"].ToString());
@@ -2795,9 +2790,9 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Penalty p = new Penalty
+                    Penalty p = new()
                     {
-                        Side = HomeTeam.id == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
+                        Side = HomeTeam.ID == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
                         Minute = int.Parse(row["period_seconds"].ToString()) / 60,
                         Second = int.Parse(row["period_seconds"].ToString()) % 60,
                         PenaltyReason = PenaltyReasons.First(x => x.Code == row["penalty_reason_id"].ToString()),
@@ -2834,9 +2829,9 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    PenaltyShot ps = new PenaltyShot
+                    PenaltyShot ps = new()
                     {
-                        Side = HomeTeam.id == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
+                        Side = HomeTeam.ID == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
                         Minute = int.Parse(row["period_seconds"].ToString()) / 60,
                         Second = int.Parse(row["period_seconds"].ToString()) % 60,
                         WasGoal = Convert.ToBoolean(int.Parse(row["was_goal"].ToString()))
@@ -2872,9 +2867,9 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    TimeOut t = new TimeOut
+                    TimeOut t = new()
                     {
-                        Side = HomeTeam.id == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
+                        Side = HomeTeam.ID == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
                         Minute = int.Parse(row["period_seconds"].ToString()) / 60,
                         Second = int.Parse(row["period_seconds"].ToString()) % 60
                     };
@@ -2899,9 +2894,9 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    GoalieShift s = new GoalieShift
+                    GoalieShift s = new()
                     {
-                        Side = HomeTeam.id == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
+                        Side = HomeTeam.ID == int.Parse(row["team_id"].ToString()) ? "Home" : "Away",
                         StartMinute = int.Parse(row["period_seconds"].ToString()) / 60,
                         StartSecond = int.Parse(row["period_seconds"].ToString()) % 60,
                         EndMinute = int.Parse(row["end_period_seconds"].ToString()) / 60,
@@ -2933,7 +2928,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -2946,15 +2941,14 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadExistingShootout(int matchID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT player_id, goalie_id, number, was_goal " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT player_id, goalie_id, number, was_goal " +
                                                 "FROM shootout_shots WHERE match_id = " + matchID + " ORDER BY number", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 ShootoutSeries = (dataTable.Rows.Count + 1) / 2;
@@ -2983,7 +2977,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception e)
             {
-                MessageBox.Show("Unable to connect to databse." + e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse." + e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -3000,12 +2994,12 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (HomeTeam == null)
                 {
-                    MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 if (AwayTeam == null)
                 {
-                    MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -3017,7 +3011,7 @@ namespace CSharpZapoctak.ViewModels
 
                 //select file (png, jpg)
                 string gamesheetPath = "";
-                OpenFileDialog openFileDialog = new OpenFileDialog();
+                OpenFileDialog openFileDialog = new();
                 openFileDialog.Filter = "Pictures (*.jpg;*.png)|*.jpg;*.png";
                 openFileDialog.DefaultExt = ".png";
 
@@ -3032,13 +3026,13 @@ namespace CSharpZapoctak.ViewModels
                 LoadingVisibility = Visibility.Visible;
 
                 //run python script on it
-                Process cmd = new Process();
+                Process cmd = new();
                 cmd.StartInfo.FileName = "cmd.exe";
                 cmd.StartInfo.RedirectStandardInput = true;
                 cmd.StartInfo.RedirectStandardOutput = true;
                 cmd.StartInfo.CreateNoWindow = true;
                 cmd.StartInfo.UseShellExecute = false;
-                cmd.Start();
+                _ = cmd.Start();
 
                 cmd.StandardInput.WriteLine("py " + SportsData.PythonOCRPath + " " + gamesheetPath + " " + HomePlayers.Count + " " + AwayPlayers.Count);
                 cmd.StandardInput.Flush();
@@ -3054,7 +3048,7 @@ namespace CSharpZapoctak.ViewModels
                 string[] data = output.Split("END", StringSplitOptions.RemoveEmptyEntries).Skip(1).ToArray();
                 Array.Resize(ref data, data.Length - 1);
 
-                List<string> errorList = new List<string>();
+                List<string> errorList = new();
 
                 //MATCH INFO
                 data[0] = data[0].Replace("\r\n", string.Empty).Replace("\r", string.Empty).Replace("\n", string.Empty);
@@ -3167,12 +3161,12 @@ namespace CSharpZapoctak.ViewModels
                     if (!ProcessGoalTypeCell(goal[5], out string goalType)) { errorList.Add(errorMessage + ", unrecognized goal type"); continue; }
 
                     //insert
-                    Goal g = new Goal();
+                    Goal g = new();
                     g.Minute = minute;
                     g.Second = second;
                     g.Side = side;
                     g.Scorer = player;
-                    g.Assist = wasAssist ? assist : new PlayerInRoster { id = SportsData.NO_ID };
+                    g.Assist = wasAssist ? assist : new PlayerInRoster { id = SportsData.NOID };
                     switch (goalType)
                     {
                         case "N":
@@ -3192,7 +3186,7 @@ namespace CSharpZapoctak.ViewModels
 
                     if (g.PenaltyShot || g.OwnGoal)
                     {
-                        g.Assist = new PlayerInRoster { id = SportsData.NO_ID };
+                        g.Assist = new PlayerInRoster { id = SportsData.NOID };
                     }
 
                     Period p = Periods.Last();
@@ -3239,7 +3233,7 @@ namespace CSharpZapoctak.ViewModels
                     if (!ProcessPenaltyTypeCell(penalty[5], out PenaltyType penaltyType)) { errorList.Add(errorMessage + ", unrecognized penalty type"); continue; }
 
                     //insert
-                    Penalty pn = new Penalty();
+                    Penalty pn = new();
                     pn.Minute = minute;
                     pn.Second = second;
                     pn.Side = side;
@@ -3289,7 +3283,7 @@ namespace CSharpZapoctak.ViewModels
                     if (!ProcessBooleanCell(penaltyShot[4], out bool scored, out bool empty) && !empty) { errorList.Add(errorMessage + ", can not tell if it was scored"); continue; }
 
                     //insert
-                    PenaltyShot ps = new PenaltyShot();
+                    PenaltyShot ps = new();
                     ps.Minute = minute;
                     ps.Second = second;
                     ps.Side = side;
@@ -3337,7 +3331,7 @@ namespace CSharpZapoctak.ViewModels
                     if (!ProcessPeriodTimeCell(goaltenderShift[4], out int endMinute, out int endSecond)) { errorList.Add(errorMessage + ", unrecognized end time"); continue; }
 
                     //insert
-                    GoalieShift shift = new GoalieShift();
+                    GoalieShift shift = new();
                     shift.Player = player;
                     shift.Side = side;
                     shift.StartMinute = startMinute;
@@ -3383,7 +3377,7 @@ namespace CSharpZapoctak.ViewModels
                     if (!ProcessSideCell(timeOut[2], out string side)) { errorList.Add(errorMessage + ", unrecognized side"); continue; }
 
                     //insert
-                    TimeOut to = new TimeOut();
+                    TimeOut to = new();
                     to.Minute = minute;
                     to.Second = second;
                     to.Side = side;
@@ -3405,11 +3399,11 @@ namespace CSharpZapoctak.ViewModels
 
                 //ERROR LIST
                 string s = "";
-                foreach (var item in errorList)
+                foreach (string item in errorList)
                 {
                     s += item + "\n";
                 }
-                MessageBox.Show(s, "Error list", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show(s, "Error list", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception) { }
             finally
@@ -3600,12 +3594,12 @@ namespace CSharpZapoctak.ViewModels
         {
             if (PeriodCount == 0)
             {
-                MessageBox.Show("There has to be at least 1 period played.", "No period played", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("There has to be at least 1 period played.", "No period played", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (PeriodDuration == 0)
             {
-                MessageBox.Show("Period duration can not be 0.", "Invalid period duration", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Period duration can not be 0.", "Invalid period duration", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -3639,10 +3633,10 @@ namespace CSharpZapoctak.ViewModels
                 }
                 foreach (GoalieShift gs in p.GoalieShifts)
                 {
-                    GoalieChange gIn = new GoalieChange(gs, true);
-                    GoalieChange gOut = new GoalieChange(gs, false);
-                    Event i = new Event { Stat = gIn, Period = p };
-                    Event o = new Event { Stat = gOut, Period = p };
+                    GoalieChange gIn = new(gs, true);
+                    GoalieChange gOut = new(gs, false);
+                    Event i = new() { Stat = gIn, Period = p };
+                    Event o = new() { Stat = gOut, Period = p };
                     gIn.pairEvent = o;
                     gOut.pairEvent = i;
                     Events.Add(i);
@@ -3656,7 +3650,7 @@ namespace CSharpZapoctak.ViewModels
                 Events[i].index = i;
             }
 
-            ObservableCollection<Event> tmp = new ObservableCollection<Event>();
+            ObservableCollection<Event> tmp = new();
             for (int i = 0; i < Events.Count; i++)
             {
                 bool found = false;
@@ -3687,7 +3681,7 @@ namespace CSharpZapoctak.ViewModels
 
             if (ConflictEvents.Count > 0)
             {
-                MessageBox.Show("More events happened at the same time. Please check if the order of events is correct.", "Order confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+                _ = MessageBox.Show("More events happened at the same time. Please check if the order of events is correct.", "Order confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -3779,7 +3773,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (Events[i].Stat.GetType() == typeof(PeriodEnd))
                 {
-                    Events.Remove(Events[i]);
+                    _ = Events.Remove(Events[i]);
                 }
             }
 
@@ -3803,13 +3797,13 @@ namespace CSharpZapoctak.ViewModels
                 Events.Add(new Event { Stat = new PeriodEnd(), Period = Periods[index] });
             }
 
-            List<Penalty> actualPenalties = new List<Penalty>();
+            List<Penalty> actualPenalties = new();
             timeSpans = new List<State>();
 
-            List<Penalty> fullPenalties = new List<Penalty>();
-            List<int> fullPenaltyStateIndices = new List<int>();
+            List<Penalty> fullPenalties = new();
+            List<int> fullPenaltyStateIndices = new();
 
-            State actualState = new State(Periods[0], 0, 0, 5, 5, false, false, 0, 0);
+            State actualState = new(Periods[0], 0, 0, 5, 5, false, false, 0, 0);
             bool end = false;
 
             for (int i = 0; i < Events.Count; i++)
@@ -3963,7 +3957,7 @@ namespace CSharpZapoctak.ViewModels
                                     actualPenalty.duration = actualPenalty.endTime + (Events[i].Period.duration * 60) - actualPenalty.startTime;
                                 }
                                 actualPenalty.punished = true;
-                                actualPenalties.Remove(actualPenalty);
+                                _ = actualPenalties.Remove(actualPenalty);
                                 if (actualPenalty.duration == actualPenalty.PenaltyType.Minutes * 60) { fullPenalties.Add(actualPenalty); fullPenaltyStateIndices.Add(timeSpans.Count - 1); }
                                 foreach (Penalty p in actualPenalties)
                                 {
@@ -3984,7 +3978,7 @@ namespace CSharpZapoctak.ViewModels
                                     actualPenalty.duration = actualPenalty.endTime + (Events[i].Period.duration * 60) - actualPenalty.startTime;
                                 }
                                 actualPenalty.punished = true;
-                                actualPenalties.Remove(actualPenalty);
+                                _ = actualPenalties.Remove(actualPenalty);
                                 if (actualPenalty.duration == actualPenalty.PenaltyType.Minutes * 60) { fullPenalties.Add(actualPenalty); fullPenaltyStateIndices.Add(timeSpans.Count - 1); }
                                 foreach (Penalty p in actualPenalties)
                                 {
@@ -4019,7 +4013,7 @@ namespace CSharpZapoctak.ViewModels
                 //when not the last state
                 if (fullPenaltyStateIndices[i] < timeSpans.Count - 1)
                 {
-                    PenaltyEndCollision penaltyEnd = new PenaltyEndCollision(timeSpans[fullPenaltyStateIndices[i]], timeSpans[fullPenaltyStateIndices[i] + 1], fullPenalties[i]);
+                    PenaltyEndCollision penaltyEnd = new(timeSpans[fullPenaltyStateIndices[i]], timeSpans[fullPenaltyStateIndices[i] + 1], fullPenalties[i]);
 
                     foreach (Event collidingE in Events)
                     {
@@ -4049,16 +4043,15 @@ namespace CSharpZapoctak.ViewModels
             int awayWins = 0;
             int firstToWin;
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT home_competitor, away_competitor, home_score, away_score " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT home_competitor, away_competitor, home_score, away_score " +
                                                 "FROM matches " +
                                                 "WHERE qualification_id = " + qualificationID + " AND played = 1 AND round = " + round + " AND bracket_index = " + bracketIndex, connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow tm in dataTable.Rows)
@@ -4068,7 +4061,7 @@ namespace CSharpZapoctak.ViewModels
                     int hScore = int.Parse(tm["home_score"].ToString());
                     int aScore = int.Parse(tm["away_score"].ToString());
 
-                    if (hTeam == HomeTeam.id)
+                    if (hTeam == HomeTeam.ID)
                     {
                         if (hScore > aScore)
                         {
@@ -4117,7 +4110,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             finally
@@ -4135,19 +4128,19 @@ namespace CSharpZapoctak.ViewModels
         {
             if (HomeTeam == null)
             {
-                MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (AwayTeam == null)
             {
-                MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             
             //load excel file
             string tempPath = System.IO.Path.GetTempFileName();
             System.IO.File.WriteAllBytes(tempPath, Properties.Resources.gamesheet);
-            Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
+            Microsoft.Office.Interop.Excel.Application excelApplication = new();
             Microsoft.Office.Interop.Excel._Workbook excelWorkbook;
             excelWorkbook = excelApplication.Workbooks.Open(tempPath);
             
@@ -4201,7 +4194,7 @@ namespace CSharpZapoctak.ViewModels
             //select path
             string gamesheetPath = "";
             
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            SaveFileDialog saveFileDialog = new();
             switch (format)
             {
                 case "PDF":
@@ -4248,35 +4241,34 @@ namespace CSharpZapoctak.ViewModels
             //validation
             if (serieMatchNumber != -1)
             {
-                MessageBox.Show("Qualification or play-off match needs to be played.", "Match not played", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Qualification or play-off match needs to be played.", "Match not played", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (HomeTeam == null)
             {
-                MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (AwayTeam == null)
             {
-                MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             if (!edit)
             {
-                bracketFirstTeamID = HomeTeam.id;
+                bracketFirstTeamID = HomeTeam.ID;
             }
 
             //saving
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
             string querry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, periods, " +
                                         "period_duration, home_competitor, away_competitor, home_score, away_score, datetime, overtime, shootout, forfeit, bracket_first_team) " +
                                         "VALUES (" + seasonID + ", " + 0 + ", " + qualificationID + ", " + bracketIndex +
-                                        ", " + round + ", " + serieMatchNumber + ", " + 0 + ", " + 0 + ", " + HomeTeam.id +
-                                        ", " + AwayTeam.id + ", " + 0 + ", " + 0 + ", '" + MatchDateTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + 0 +
+                                        ", " + round + ", " + serieMatchNumber + ", " + 0 + ", " + 0 + ", " + HomeTeam.ID +
+                                        ", " + AwayTeam.ID + ", " + 0 + ", " + 0 + ", '" + MatchDateTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + 0 +
                                         ", " + 0 + ", " + 0 + ", " + bracketFirstTeamID + ")";
 
             try
@@ -4285,36 +4277,36 @@ namespace CSharpZapoctak.ViewModels
                 transaction = connection.BeginTransaction();
                 cmd = new MySqlCommand(querry, connection);
                 cmd.Transaction = transaction;
-                cmd.ExecuteNonQuery();
+                _ = cmd.ExecuteNonQuery();
                 int matchID = (int)cmd.LastInsertedId;
 
                 if (edit)
                 {
                     //delete match from DB
-                    querry = "DELETE FROM matches WHERE id = " + match.id;
+                    querry = "DELETE FROM matches WHERE id = " + match.ID;
 
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
                     //delete all player/goalie match enlistments and all stats
-                    List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
+                    List<string> databases = new() { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
                     foreach (string db in databases)
                     {
-                        querry = "DELETE FROM " + db + " WHERE match_id = " + match.id;
+                        querry = "DELETE FROM " + db + " WHERE match_id = " + match.ID;
                         cmd = new MySqlCommand(querry, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
                     }
                 }
 
                 transaction.Commit();
                 connection.Close();
 
-                ScheduleViewModel scheduleViewModel = new ScheduleViewModel(ns);
+                ScheduleViewModel scheduleViewModel = new(ns);
                 if (edit)
                 {
-                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, new Match { id = matchID }, scheduleToReturnVM))).Execute(null);
+                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, new Match { ID = matchID }, scheduleToReturnVM))).Execute(null);
                 }
                 else
                 {
@@ -4332,7 +4324,7 @@ namespace CSharpZapoctak.ViewModels
             catch (Exception)
             {
                 transaction.Rollback();
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -4399,7 +4391,7 @@ namespace CSharpZapoctak.ViewModels
             //save successful penalty shots - pair them with penalty shot goals by player_id, goalie_id, time...
             foreach (Period period in Periods)
             {
-                List<Goal> goals = new List<Goal>();
+                List<Goal> goals = new();
                 foreach (Event e in Events)
                 {
                     if (e.Stat.GetType() == typeof(Goal) && e.Period == period && ((Goal)e.Stat).PenaltyShot)
@@ -4448,7 +4440,7 @@ namespace CSharpZapoctak.ViewModels
             }
 
             //shutouts
-            List<Shutout> shutouts = new List<Shutout>();
+            List<Shutout> shutouts = new();
             if (!Forfeit)
             {
                 if (awayScore == 0)
@@ -4515,24 +4507,24 @@ namespace CSharpZapoctak.ViewModels
             }
 
             //validation
-            if (bracketIndex != -1 && qualificationID != SportsData.NO_ID && ExceedsFirstToWin(homeScore, awayScore))
+            if (bracketIndex != -1 && qualificationID != SportsData.NOID && ExceedsFirstToWin(homeScore, awayScore))
             {
-                MessageBox.Show("Match can not be added. The winner of this match already has the required number of wins to win the series.", "Series match number of violation", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Match can not be added. The winner of this match already has the required number of wins to win the series.", "Series match number of violation", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (HomeTeam == null)
             {
-                MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select the home team.", "Home team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (AwayTeam == null)
             {
-                MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select the away team.", "Away team missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (IsShootout && ShootoutSeries == 0)
             {
-                MessageBox.Show("Shootout must have at least 1 serie.", "No shootout serie", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Shootout must have at least 1 serie.", "No shootout serie", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (IsShootout && ShootoutSeries > 0)
@@ -4541,34 +4533,33 @@ namespace CSharpZapoctak.ViewModels
                 {
                     if (!Shootout[i].Player.Present || !Shootout[i].Goalie.Present)
                     {
-                        MessageBox.Show("Shootout atempt missing.", "Incomplete shootout", MessageBoxButton.OK, MessageBoxImage.Error);
+                        _ = MessageBox.Show("Shootout atempt missing.", "Incomplete shootout", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                 }
                 if ((!Shootout[Shootout.Count - 2].Player.Present || !Shootout[Shootout.Count - 2].Goalie.Present) && (!Shootout[Shootout.Count - 1].Player.Present || !Shootout[Shootout.Count - 1].Goalie.Present))
                 {
-                    MessageBox.Show("Shootout atempt missing.", "Incomplete shootout", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Shootout atempt missing.", "Incomplete shootout", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
 
             //saving
-            int matchID = SportsData.NO_ID;
+            int matchID = SportsData.NOID;
 
             if (!edit)
             {
-                bracketFirstTeamID = HomeTeam.id;
+                bracketFirstTeamID = HomeTeam.ID;
             }
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
             string matchInsertionQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, periods, " +
                                         "period_duration, home_competitor, away_competitor, home_score, away_score, datetime, overtime, shootout, forfeit, bracket_first_team) " +
                                         "VALUES (" + seasonID + ", " + 1 + ", " + qualificationID + ", " + bracketIndex +
-                                        ", " + round + ", " + serieMatchNumber + ", " + PeriodCount + ", " + PeriodDuration + ", " + HomeTeam.id +
-                                        ", " + AwayTeam.id + ", " + homeScore + ", " + awayScore + ", '" + MatchDateTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + Convert.ToInt32(Overtime) +
+                                        ", " + round + ", " + serieMatchNumber + ", " + PeriodCount + ", " + PeriodDuration + ", " + HomeTeam.ID +
+                                        ", " + AwayTeam.ID + ", " + homeScore + ", " + awayScore + ", '" + MatchDateTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + Convert.ToInt32(Overtime) +
                                         ", " + Convert.ToInt32(IsShootout) + ", " + Convert.ToInt32(Forfeit) + ", " + bracketFirstTeamID + ")";
 
             try
@@ -4579,15 +4570,15 @@ namespace CSharpZapoctak.ViewModels
                 //match insertion
                 cmd = new MySqlCommand(matchInsertionQuerry, connection);
                 cmd.Transaction = transaction;
-                cmd.ExecuteNonQuery();
+                _ = cmd.ExecuteNonQuery();
                 matchID = (int)cmd.LastInsertedId;
 
                 //time-outs insertion
                 foreach (Event t in Events.Where(x => x.Stat.GetType() == typeof(TimeOut)))
                 {
-                    int teamID = t.Stat.Side == "Home" ? HomeTeam.id : AwayTeam.id;
-                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.id : HomeTeam.id;
-                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).id;
+                    int teamID = t.Stat.Side == "Home" ? HomeTeam.ID : AwayTeam.ID;
+                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.ID : HomeTeam.ID;
+                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).ID;
                     int teamScore = t.Stat.Side == "Home" ? t.Stat.homeScore : t.Stat.awayScore;
                     int opponentScore = t.Stat.Side == "Home" ? t.Stat.awayScore : t.Stat.homeScore;
 
@@ -4595,7 +4586,7 @@ namespace CSharpZapoctak.ViewModels
                                               "VALUES (" + matchID + ", " + t.Period.Number + ", " + t.Stat.TimeInSeconds + ", " + t.index + ", " + teamID + ", " + opponentTeamID + ", " + strengthID + ", " + teamScore + ", " + opponentScore + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //period scores insertion
@@ -4605,36 +4596,36 @@ namespace CSharpZapoctak.ViewModels
                     int awayPeriodScore = p.Goals.Where(x => (x.Side == "Away" && !x.OwnGoal) || (x.Side == "Home" && x.OwnGoal)).Count();
 
                     string querry = "INSERT INTO period_score(match_id, period, home_team_id, away_team_id, home_score, away_score) " +
-                                              "VALUES (" + matchID + ", " + p.Number + ", " + HomeTeam.id + ", " + AwayTeam.id + ", " + homePeriodScore + ", " + awayPeriodScore + ")";
+                                              "VALUES (" + matchID + ", " + p.Number + ", " + HomeTeam.ID + ", " + AwayTeam.ID + ", " + homePeriodScore + ", " + awayPeriodScore + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //game states insertion
                 foreach (State s in timeSpans)
                 {
-                    int strengthID = Strengths.First(x => x.Situation == s.StrengthToString()).id;
+                    int strengthID = Strengths.First(x => x.Situation == s.StrengthToString()).ID;
 
                     string querry = "INSERT INTO game_state(match_id, period, home_team_id, away_team_id, start_period_seconds, end_period_seconds, strength_id, home_score, away_score) " +
-                                              "VALUES (" + matchID + ", " + s.period.Number + ", " + HomeTeam.id + ", " + AwayTeam.id + ", " + s.startTime + ", " + s.endTime + ", " + strengthID + ", " + s.homeGoals + ", " + s.awayGoals + ")";
+                                              "VALUES (" + matchID + ", " + s.period.Number + ", " + HomeTeam.ID + ", " + AwayTeam.ID + ", " + s.startTime + ", " + s.endTime + ", " + strengthID + ", " + s.homeGoals + ", " + s.awayGoals + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //shutouts insertion
                 foreach (Shutout so in shutouts)
                 {
-                    int goalieID = so.goalie == null ? SportsData.NO_ID : so.goalie.id;
-                    int teamID = so.side == "Home" ? HomeTeam.id : AwayTeam.id;
-                    int opponentTeamID = so.side == "Home" ? AwayTeam.id : HomeTeam.id;
+                    int goalieID = so.goalie == null ? SportsData.NOID : so.goalie.id;
+                    int teamID = so.side == "Home" ? HomeTeam.ID : AwayTeam.ID;
+                    int opponentTeamID = so.side == "Home" ? AwayTeam.ID : HomeTeam.ID;
 
                     string querry = "INSERT INTO shutouts(match_id, goalie_id, team_id, opponent_team_id) " +
                                               "VALUES (" + matchID + ", " + goalieID + ", " + teamID + ", " + opponentTeamID + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //penalties insertion
@@ -4642,9 +4633,9 @@ namespace CSharpZapoctak.ViewModels
                 {
                     Penalty p = (Penalty)t.Stat;
 
-                    int teamID = t.Stat.Side == "Home" ? HomeTeam.id : AwayTeam.id;
-                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.id : HomeTeam.id;
-                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).id;
+                    int teamID = t.Stat.Side == "Home" ? HomeTeam.ID : AwayTeam.ID;
+                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.ID : HomeTeam.ID;
+                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).ID;
                     int teamScore = t.Stat.Side == "Home" ? t.Stat.homeScore : t.Stat.awayScore;
                     int opponentScore = t.Stat.Side == "Home" ? t.Stat.awayScore : t.Stat.homeScore;
 
@@ -4652,7 +4643,7 @@ namespace CSharpZapoctak.ViewModels
                                               "VALUES (" + matchID + ", " + p.Player.id + ", " + t.Period.Number + ", " + t.Stat.TimeInSeconds + ", " + t.index + ", " + teamID + ", " + opponentTeamID + ", " + strengthID + ", " + teamScore + ", " + opponentScore + ", " + p.startTime + ", " + p.endTime + ", " + p.duration + ", " + p.PenaltyReason.Code + ", '" + p.PenaltyType.Code + "', " + Convert.ToInt32(p.punished) + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //goals insertion
@@ -4660,9 +4651,9 @@ namespace CSharpZapoctak.ViewModels
                 {
                     Goal g = (Goal)t.Stat;
 
-                    int teamID = t.Stat.Side == "Home" ? HomeTeam.id : AwayTeam.id;
-                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.id : HomeTeam.id;
-                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).id;
+                    int teamID = t.Stat.Side == "Home" ? HomeTeam.ID : AwayTeam.ID;
+                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.ID : HomeTeam.ID;
+                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).ID;
                     int teamScore = t.Stat.Side == "Home" ? t.Stat.homeScore : t.Stat.awayScore;
                     int opponentScore = t.Stat.Side == "Home" ? t.Stat.awayScore : t.Stat.homeScore;
                     int gwg_glog = 0;
@@ -4674,14 +4665,14 @@ namespace CSharpZapoctak.ViewModels
                     {
                         gwg_glog = -1;
                     }
-                    int goalieID = g.goalie == null ? SportsData.NO_ID : g.goalie.id;
-                    int assistID = g.Assist == null ? SportsData.NO_ID : g.Assist.id;
+                    int goalieID = g.goalie == null ? SportsData.NOID : g.goalie.id;
+                    int assistID = g.Assist == null ? SportsData.NOID : g.Assist.id;
 
                     string querry = "INSERT INTO goals(match_id, player_id, goalie_id, assist_player_id, period, period_seconds, order_in_match, team_id, opponent_team_id, strength_id, team_score, opponent_score, gwg_glog, own_goal, empty_net, penalty_shot, delayed_penalty) " +
                                               "VALUES (" + matchID + ", " + g.Scorer.id + ", " + goalieID + ", " + assistID + ", " + t.Period.Number + ", " + t.Stat.TimeInSeconds + ", " + t.index + ", " + teamID + ", " + opponentTeamID + ", " + strengthID + ", " + teamScore + ", " + opponentScore + ", " + gwg_glog + ", " + Convert.ToInt32(g.OwnGoal) + ", " + Convert.ToInt32(g.emptyNet) + ", " + Convert.ToInt32(g.PenaltyShot) + ", " + Convert.ToInt32(g.DelayedPenalty) + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //penalty shots insertion
@@ -4689,32 +4680,32 @@ namespace CSharpZapoctak.ViewModels
                 {
                     PenaltyShot ps = (PenaltyShot)t.Stat;
 
-                    int teamID = t.Stat.Side == "Home" ? HomeTeam.id : AwayTeam.id;
-                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.id : HomeTeam.id;
-                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).id;
+                    int teamID = t.Stat.Side == "Home" ? HomeTeam.ID : AwayTeam.ID;
+                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.ID : HomeTeam.ID;
+                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).ID;
                     int teamScore = t.Stat.Side == "Home" ? t.Stat.homeScore : t.Stat.awayScore;
                     int opponentScore = t.Stat.Side == "Home" ? t.Stat.awayScore : t.Stat.homeScore;
-                    int goalieID = ps.goalie == null ? SportsData.NO_ID : ps.goalie.id;
+                    int goalieID = ps.goalie == null ? SportsData.NOID : ps.goalie.id;
 
                     string querry = "INSERT INTO penalty_shots(match_id, player_id, goalie_id, period, period_seconds, order_in_match, team_id, opponent_team_id, strength_id, team_score, opponent_score, was_goal) " +
                                               "VALUES (" + matchID + ", " + ps.Player.id + ", " + goalieID + ", " + t.Period.Number + ", " + t.Stat.TimeInSeconds + ", " + t.index + ", " + teamID + ", " + opponentTeamID + ", " + strengthID + ", " + teamScore + ", " + opponentScore + ", " + Convert.ToInt32(ps.WasGoal) + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //shootout shots insertion
                 foreach (ShootoutShot ss in Shootout.Where(x => x.Player.Present && x.Goalie.Present))
                 {
-                    int teamID = ss.Side == "Home" ? HomeTeam.id : AwayTeam.id;
-                    int opponentTeamID = ss.Side == "Home" ? AwayTeam.id : HomeTeam.id;
+                    int teamID = ss.Side == "Home" ? HomeTeam.ID : AwayTeam.ID;
+                    int opponentTeamID = ss.Side == "Home" ? AwayTeam.ID : HomeTeam.ID;
                     int decidingGoal = decidingShootoutGoalIndex == ss.Number && ss.Side == decidingShootoutGoalSide ? 1 : 0;
 
                     string querry = "INSERT INTO shootout_shots(match_id, player_id, goalie_id, number, team_id, opponent_team_id, was_goal, deciding_goal) " +
                                               "VALUES (" + matchID + ", " + ss.Player.id + ", " + ss.Goalie.id + ", " + ss.Number + ", " + teamID + ", " + opponentTeamID + ", " + Convert.ToInt32(ss.WasGoal) + ", " + decidingGoal + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //shifts insertion
@@ -4723,9 +4714,9 @@ namespace CSharpZapoctak.ViewModels
                     GoalieChange gch = (GoalieChange)t.Stat;
                     if (!gch.Entered) { continue; }
 
-                    int teamID = t.Stat.Side == "Home" ? HomeTeam.id : AwayTeam.id;
-                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.id : HomeTeam.id;
-                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).id;
+                    int teamID = t.Stat.Side == "Home" ? HomeTeam.ID : AwayTeam.ID;
+                    int opponentTeamID = t.Stat.Side == "Home" ? AwayTeam.ID : HomeTeam.ID;
+                    int strengthID = Strengths.First(x => x.Situation == t.Stat.strength).ID;
                     int teamScore = t.Stat.Side == "Home" ? t.Stat.homeScore : t.Stat.awayScore;
                     int opponentScore = t.Stat.Side == "Home" ? t.Stat.awayScore : t.Stat.homeScore;
                     int duration = gch.pairEvent.Stat.TimeInSeconds - gch.TimeInSeconds;
@@ -4734,7 +4725,7 @@ namespace CSharpZapoctak.ViewModels
                                               "VALUES (" + matchID + ", " + gch.Player.id + ", " + t.Period.Number + ", " + t.Stat.TimeInSeconds + ", " + t.index + ", " + gch.pairEvent.index + ", " + teamID + ", " + opponentTeamID + ", " + strengthID + ", " + teamScore + ", " + opponentScore + ", " + gch.pairEvent.Stat.TimeInSeconds + ", " + duration + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //player matches insertion
@@ -4751,10 +4742,10 @@ namespace CSharpZapoctak.ViewModels
                     }
 
                     string querry = "INSERT INTO player_matches(player_id, match_id, result, team_id, side) " +
-                                              "VALUES (" + p.id + ", " + matchID + ", " + result + ", " + HomeTeam.id + ", 'H')";
+                                              "VALUES (" + p.id + ", " + matchID + ", " + result + ", " + HomeTeam.ID + ", 'H')";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
                 foreach (PlayerInRoster p in AwayRoster)
                 {
@@ -4769,14 +4760,14 @@ namespace CSharpZapoctak.ViewModels
                     }
 
                     string querry = "INSERT INTO player_matches(player_id, match_id, result, team_id, side) " +
-                                              "VALUES (" + p.id + ", " + matchID + ", " + result + ", " + AwayTeam.id + ", 'A')";
+                                              "VALUES (" + p.id + ", " + matchID + ", " + result + ", " + AwayTeam.ID + ", 'A')";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 //goalie matches insertion
-                List<GoalieInMatch> goalies = new List<GoalieInMatch>();
+                List<GoalieInMatch> goalies = new();
                 for (int i = 0; i < Events.Count; i++)
                 {
                     if (Events[i].Stat.GetType() == typeof(GoalieChange) && ((GoalieChange)Events[i].Stat).Entered)
@@ -4810,7 +4801,7 @@ namespace CSharpZapoctak.ViewModels
                 for (int i = 0; i < goalies.Count; i++)
                 {
                     string side = goalies[i].side == "Home" ? "H" : "A";
-                    int teamID = goalies[i].side == "Home" ? HomeTeam.id : AwayTeam.id;
+                    int teamID = goalies[i].side == "Home" ? HomeTeam.ID : AwayTeam.ID;
 
                     int result = 0;
                     if (side == "H")
@@ -4840,36 +4831,36 @@ namespace CSharpZapoctak.ViewModels
                                               "VALUES (" + goalies[i].id + ", " + matchID + ", " + result + ", " + teamID + ", '" + side + "', " + goalies[i].started + ", " + goalies[i].relieved + ")";
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                 }
 
                 if (edit)
                 {
                     //delete match from DB
-                    string querry = "DELETE FROM matches WHERE id = " + match.id;
+                    string querry = "DELETE FROM matches WHERE id = " + match.ID;
 
                     cmd = new MySqlCommand(querry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
                     //delete all player/goalie match enlistments and all stats
-                    List<string> databases = new List<string> { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
+                    List<string> databases = new() { "player_matches", "goalie_matches", "penalties", "goals", "penalty_shots", "shutouts", "shifts", "shootout_shots", "time_outs", "period_score", "game_state" };
                     foreach (string db in databases)
                     {
-                        querry = "DELETE FROM " + db + " WHERE match_id = " + match.id;
+                        querry = "DELETE FROM " + db + " WHERE match_id = " + match.ID;
                         cmd = new MySqlCommand(querry, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
                     }
                 }
 
                 transaction.Commit();
                 connection.Close();
 
-                ScheduleViewModel scheduleViewModel = new ScheduleViewModel(ns);
+                ScheduleViewModel scheduleViewModel = new(ns);
                 if (edit)
                 {
-                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, new Match { id = matchID }, scheduleToReturnVM))).Execute(null);
+                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, new Match { ID = matchID }, scheduleToReturnVM))).Execute(null);
                 }
                 else
                 {
@@ -4895,7 +4886,7 @@ namespace CSharpZapoctak.ViewModels
             catch (Exception)
             {
                 transaction.Rollback();
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -4923,10 +4914,10 @@ namespace CSharpZapoctak.ViewModels
 
         public void GenerateMatch()
         {
-            Random r = new Random();
+            Random r = new();
 
             //date and time
-            DateTime start = new DateTime(2019, 10, 1);
+            DateTime start = new(2019, 10, 1);
             int range = (new DateTime(2020, 3, 15) - start).Days;
             MatchDate = start.AddDays(r.Next(range));
             MatchTimeHours = r.Next(8, 14);
@@ -4969,7 +4960,7 @@ namespace CSharpZapoctak.ViewModels
             PeriodCount = 3;
             PeriodDuration = 10;
 
-            List<Goal> allGoals = new List<Goal>();
+            List<Goal> allGoals = new();
 
             foreach (Period p in Periods)
             {
@@ -5012,10 +5003,10 @@ namespace CSharpZapoctak.ViewModels
                             }
                             else
                             {
-                                p.Goals.Last().Assist = new PlayerInRoster { id = SportsData.NO_ID };
+                                p.Goals.Last().Assist = new PlayerInRoster { id = SportsData.NOID };
                             }
                             //if no assist, penalty shot = 10%, own goal = 3%
-                            if (p.Goals.Last().Assist.id == SportsData.NO_ID)
+                            if (p.Goals.Last().Assist.id == SportsData.NOID)
                             {
                                 int probability = r.Next(1, 100);
                                 if (probability <= 10)
@@ -5144,10 +5135,10 @@ namespace CSharpZapoctak.ViewModels
 
                 while (!end)
                 {
-                    ShootoutShot firstShot = new ShootoutShot(number, firstSide,
+                    ShootoutShot firstShot = new(number, firstSide,
                         firstSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
                         firstSide == "Home" ? AwayRoster.Where(x => x.id == homeGoalieID).First() : HomeRoster.Where(x => x.id == awayGoalieID).First());
-                    ShootoutShot secondShot = new ShootoutShot(number, secondSide,
+                    ShootoutShot secondShot = new(number, secondSide,
                         secondSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
                         secondSide == "Home" ? AwayRoster.Where(x => x.id == homeGoalieID).First() : HomeRoster.Where(x => x.id == awayGoalieID).First());
 

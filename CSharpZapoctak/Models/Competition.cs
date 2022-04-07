@@ -1,15 +1,16 @@
-﻿using CSharpZapoctak.ViewModels;
+﻿using CSharpZapoctak.Others;
+using CSharpZapoctak.ViewModels;
 
 namespace CSharpZapoctak.Models
 {
-    public class Competition : NotifyPropertyChanged
+    public class Competition : NotifyPropertyChanged, IHasImage, IEntity
     {
-        public int id = SportsData.NO_ID;
+        public int ID { get; set; } = SportsData.NOID;
 
         private string name = "";
         public string Name
         {
-            get { return name; }
+            get => name;
             set
             {
                 name = value;
@@ -20,7 +21,7 @@ namespace CSharpZapoctak.Models
         private string info;
         public string Info
         {
-            get { return info; }
+            get => info;
             set
             {
                 info = value;
@@ -28,13 +29,13 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private string logoPath;
-        public string LogoPath
+        private string imagePath;
+        public string ImagePath
         {
-            get { return logoPath; }
+            get => imagePath;
             set
             {
-                logoPath = value;
+                imagePath = value;
                 OnPropertyChanged();
             }
         }

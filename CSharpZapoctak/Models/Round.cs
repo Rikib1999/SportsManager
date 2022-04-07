@@ -6,14 +6,14 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.Models
 {
-    class Round : NotifyPropertyChanged
+    public class Round : NotifyPropertyChanged
     {
-        public int id = SportsData.NO_ID;
+        public int ID { get; set; } = SportsData.NOID;
 
         private string name = "";
         public string Name
         {
-            get { return name; }
+            get => name;
             set
             {
                 name = value;
@@ -24,7 +24,7 @@ namespace CSharpZapoctak.Models
         private int seasonID;
         public int SeasonID
         {
-            get { return seasonID; }
+            get => seasonID;
             set
             {
                 seasonID = value;
@@ -35,7 +35,7 @@ namespace CSharpZapoctak.Models
         private Visibility roundVisibility = Visibility.Visible;
         public Visibility RoundVisibility
         {
-            get { return roundVisibility; }
+            get => roundVisibility;
             set
             {
                 roundVisibility = value;
@@ -58,21 +58,16 @@ namespace CSharpZapoctak.Models
 
         private void SetRoundVisibility()
         {
-            if (RoundVisibility == Visibility.Visible)
-            {
-                RoundVisibility = Visibility.Collapsed;
-            }
-            else
-            {
-                RoundVisibility = Visibility.Visible;
-            }
+            RoundVisibility = RoundVisibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
         }
 
         private ObservableCollection<Match> matches;
 
         public ObservableCollection<Match> Matches
         {
-            get { return matches; }
+            get => matches;
             set
             {
                 matches = value;

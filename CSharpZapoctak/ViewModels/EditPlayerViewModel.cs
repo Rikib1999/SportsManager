@@ -1,38 +1,23 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
-using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class EditPlayerViewModel : NotifyPropertyChanged
+    public class EditPlayerViewModel : TemplateEditViewModel<Player>
     {
-        private Player player;
         public Player Player
         {
-            get { return player; }
+            get => Entity;
             set
             {
-                player = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private BitmapImage bitmap;
-        public BitmapImage Bitmap
-        {
-            get { return bitmap; }
-            set
-            {
-                bitmap = value;
+                Entity = value;
                 OnPropertyChanged();
             }
         }
@@ -40,7 +25,7 @@ namespace CSharpZapoctak.ViewModels
         private string newPlaysWith;
         public string NewPlaysWith
         {
-            get { return newPlaysWith; }
+            get => newPlaysWith;
             set
             {
                 newPlaysWith = value;
@@ -51,50 +36,11 @@ namespace CSharpZapoctak.ViewModels
         private string newGender;
         public string NewGender
         {
-            get { return newGender; }
+            get => newGender;
             set
             {
                 newGender = value;
                 OnPropertyChanged();
-            }
-        }
-
-        private ICommand loadImageCommand;
-        public ICommand LoadImageCommand
-        {
-            get
-            {
-                if (loadImageCommand == null)
-                {
-                    loadImageCommand = new RelayCommand(param => LoadImage());
-                }
-                return loadImageCommand;
-            }
-        }
-
-        private ICommand removeImageCommand;
-        public ICommand RemoveImageCommand
-        {
-            get
-            {
-                if (removeImageCommand == null)
-                {
-                    removeImageCommand = new RelayCommand(param => RemoveImage());
-                }
-                return removeImageCommand;
-            }
-        }
-
-        private ICommand saveCommand;
-        public ICommand SaveCommand
-        {
-            get
-            {
-                if (saveCommand == null)
-                {
-                    saveCommand = new RelayCommand(param => Save());
-                }
-                return saveCommand;
             }
         }
 
@@ -104,174 +50,87 @@ namespace CSharpZapoctak.ViewModels
 
         public ObservableCollection<Country> Countries { get; } = new ObservableCollection<Country>();
 
-        public NavigationStore ns;
-
         public EditPlayerViewModel(NavigationStore navigationStore, Player p)
         {
             Player = p;
-            Countries = SportsData.countries;
-            ns = navigationStore;
-
-            Player.Citizenship = SportsData.countries.Where(x => x.CodeTwo == Player.Citizenship.CodeTwo).First();
-            Player.BirthplaceCountry = SportsData.countries.Where(x => x.CodeTwo == Player.BirthplaceCountry.CodeTwo).First();
-            Countries = SportsData.countries;
+            NavigateBackCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayerViewModel(navigationStore, Player)));
+            Countries = SportsData.Countries;
             LoadGenders();
             LoadPlaysWith();
+
+            Player.Citizenship = SportsData.Countries.First(x => x.CodeTwo == Player.Citizenship.CodeTwo);
+            Player.BirthplaceCountry = SportsData.Countries.First(x => x.CodeTwo == Player.BirthplaceCountry.CodeTwo);
 
             NewGender = Player.Gender == "M" ? "Male" : "Female";
             NewPlaysWith = Player.PlaysWith == "R" ? "Right" : "Left";
 
-            if (!string.IsNullOrWhiteSpace(Player.PhotoPath))
+            if (!string.IsNullOrWhiteSpace(Player.ImagePath))
             {
-                if (Player.PhotoPath != SportsData.ResourcesPath + "\\male.png" && Player.PhotoPath != SportsData.ResourcesPath + "\\female.png")
+                if (Player.ImagePath != SportsData.ResourcesPath + "\\male.png" && Player.ImagePath != SportsData.ResourcesPath + "\\female.png")
                 {
-                    MemoryStream ms = new MemoryStream();
-                    byte[] arrbytFileContent = File.ReadAllBytes(Player.PhotoPath);
-                    ms.Write(arrbytFileContent, 0, arrbytFileContent.Length);
-                    ms.Position = 0;
-
-                    bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.StreamSource = ms;
-                    bitmap.EndInit();
-                    Bitmap = bitmap;
+                    Bitmap = ImageHandler.ImageToBitmap(Player.ImagePath);
                 }
                 else
                 {
-                    Player.PhotoPath = "";
+                    Player.ImagePath = "";
                 }
             }
         }
 
         private void LoadGenders()
         {
-            Genders = new ObservableCollection<string>();
+            Genders = new();
             Genders.Add("Male");
             Genders.Add("Female");
         }
 
         private void LoadPlaysWith()
         {
-            PlaysWith = new ObservableCollection<string>();
+            PlaysWith = new();
             PlaysWith.Add("Right");
             PlaysWith.Add("Left");
         }
 
-        private void LoadImage()
-        {
-            OpenFileDialog open = new OpenFileDialog();
-            open.DefaultExt = ".png";
-            open.Filter = "Pictures (*.jpg;*.png)|*.jpg;*.png";
-
-            if (open.ShowDialog() == true)
-            {
-                Player.PhotoPath = open.FileName;
-
-                MemoryStream ms = new MemoryStream();
-                byte[] arrbytFileContent = File.ReadAllBytes(Player.PhotoPath);
-                ms.Write(arrbytFileContent, 0, arrbytFileContent.Length);
-                ms.Position = 0;
-
-                bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = ms;
-                bitmap.EndInit();
-                Bitmap = bitmap;
-                GC.Collect();
-            }
-        }
-
-        private void RemoveImage()
-        {
-            Player.PhotoPath = "";
-            Bitmap = new BitmapImage();
-            GC.Collect();
-        }
-
-        private void Save()
+        protected override void Save()
         {
             if (string.IsNullOrWhiteSpace(Player.FirstName) || string.IsNullOrWhiteSpace(Player.LastName))
             {
-                MessageBox.Show("Player name can not be empty.", "No name", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Player name can not be empty.", "No name", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             Player.Gender = NewGender == "Male" ? "M" : "F";
             Player.PlaysWith = NewPlaysWith == "Right" ? "R" : "L";
 
             //UPDATE
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("UPDATE player " +
-                                                "SET first_name = '" + Player.FirstName + "', " +
-                                                "last_name = '" + Player.LastName + "', " +
-                                                "birthdate = '" + Player.Birthdate.ToString("yyyy-MM-dd H:mm:ss") + "', " +
-                                                "gender = '" + Player.Gender + "', " +
-                                                "height = " + Player.Height + ", " +
-                                                "weight = " + Player.Weight + ", " +
-                                                "plays_with = '" + Player.PlaysWith + "', " +
-                                                "citizenship = '" + Player.Citizenship.CodeTwo + "', " +
-                                                "birthplace_city = '" + Player.BirthplaceCity + "', " +
-                                                "birthplace_country = '" + Player.BirthplaceCountry.CodeTwo + "', " +
-                                                "status = '" + Convert.ToInt32(Player.Status) + "', " +
-                                                "info = '" + Player.Info + "' " +
-                                                "WHERE id = " + Player.id, connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("UPDATE player " +
+                                   "SET first_name = '" + Player.FirstName + "', " +
+                                   "last_name = '" + Player.LastName + "', " +
+                                   "birthdate = '" + Player.Birthdate.ToString("yyyy-MM-dd H:mm:ss") + "', " +
+                                   "gender = '" + Player.Gender + "', " +
+                                   "height = " + Player.Height + ", " +
+                                   "weight = " + Player.Weight + ", " +
+                                   "plays_with = '" + Player.PlaysWith + "', " +
+                                   "citizenship = '" + Player.Citizenship.CodeTwo + "', " +
+                                   "birthplace_city = '" + Player.BirthplaceCity + "', " +
+                                   "birthplace_country = '" + Player.BirthplaceCountry.CodeTwo + "', " +
+                                   "status = '" + Convert.ToInt32(Player.Status) + "', " +
+                                   "info = '" + Player.Info + "' " +
+                                   "WHERE id = " + Player.ID, connection);
 
             try
             {   //execute querry
                 connection.Open();
-                cmd.ExecuteNonQuery();
+                _ = cmd.ExecuteNonQuery();
 
-                //SAVE PHOTO
-                //if logo is not selected
-                if (string.IsNullOrWhiteSpace(Player.PhotoPath))
-                {
-                    //if there is photo in the database then delete it
-                    //get previous photo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + Player.id + ".*");
-                    string previousFilePath = "";
-                    //if it exists
-                    if (previousImgPath.Length != 0)
-                    {
-                        previousFilePath = previousImgPath.First();
-                    }
-                    //delete photo
-                    if (!string.IsNullOrWhiteSpace(previousFilePath))
-                    {
-                        GC.Collect();
-                        File.Delete(previousFilePath);
-                    }
-                }
-                else
-                {
-                    //get current photo
-                    string[] imgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + Player.id + ".*");
-                    string filePath = "";
-                    //if photo existed
-                    if (imgPath.Length != 0)
-                    {
-                        filePath = imgPath.First();
-                    }
-                    //if photo did not exist declare its path
-                    if (string.IsNullOrWhiteSpace(filePath))
-                    {
-                        filePath = SportsData.PlayerPhotosPath + @"\" + SportsData.SPORT.name + Player.id + Path.GetExtension(Player.PhotoPath);
-                    }
-                    //if photo had changed
-                    if (Player.PhotoPath != filePath)
-                    {
-                        GC.Collect();
-                        File.Delete(filePath);
-                        filePath = Path.ChangeExtension(filePath, Path.GetExtension(Player.PhotoPath));
-                        File.Copy(Player.PhotoPath, filePath);
-                        Player.PhotoPath = filePath;
-                    }
-                }
+                //save logo
+                UpdateImage();
 
-                new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new PlayerViewModel(ns, Player))).Execute(null);
+                NavigateBackCommand.Execute(null);
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

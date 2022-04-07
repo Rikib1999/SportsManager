@@ -16,27 +16,27 @@ namespace CSharpZapoctak
             //create folders for images, if they do not exist
             if (!Directory.Exists(SportsData.AppDataPath))
             {
-                Directory.CreateDirectory(SportsData.AppDataPath);
+                _ = Directory.CreateDirectory(SportsData.AppDataPath);
             }
             if (!Directory.Exists(SportsData.ImagesPath))
             {
-                Directory.CreateDirectory(SportsData.ImagesPath);
+                _ = Directory.CreateDirectory(SportsData.ImagesPath);
             }
             if (!Directory.Exists(SportsData.CompetitionLogosPath))
             {
-                Directory.CreateDirectory(SportsData.CompetitionLogosPath);
+                _ = Directory.CreateDirectory(SportsData.CompetitionLogosPath);
             }
             if (!Directory.Exists(SportsData.SeasonLogosPath))
             {
-                Directory.CreateDirectory(SportsData.SeasonLogosPath);
+                _ = Directory.CreateDirectory(SportsData.SeasonLogosPath);
             }
             if (!Directory.Exists(SportsData.TeamLogosPath))
             {
-                Directory.CreateDirectory(SportsData.TeamLogosPath);
+                _ = Directory.CreateDirectory(SportsData.TeamLogosPath);
             }
             if (!Directory.Exists(SportsData.PlayerPhotosPath))
             {
-                Directory.CreateDirectory(SportsData.PlayerPhotosPath);
+                _ = Directory.CreateDirectory(SportsData.PlayerPhotosPath);
             }
             if (!File.Exists(SportsData.PythonOCRPath))
             {
@@ -46,9 +46,9 @@ namespace CSharpZapoctak
                 f.Dispose();
             }
 
-            Task.Run(() => SportsData.LoadCountries());
+            _ = Task.Run(() => SportsData.LoadCountries());
 
-            NavigationStore navigationStore = new NavigationStore();
+            NavigationStore navigationStore = new();
 
             //starts with SportsSelectionView
             navigationStore.CurrentViewModel = new SportsSelectionViewModel(navigationStore);

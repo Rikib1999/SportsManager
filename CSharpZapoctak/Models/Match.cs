@@ -3,16 +3,16 @@ using System;
 
 namespace CSharpZapoctak.Models
 {
-    class Match : NotifyPropertyChanged
+    public class Match : NotifyPropertyChanged
     {
-        public int id = SportsData.NO_ID;
+        public int ID { get; set; } = SportsData.NOID;
 
-        public int serieNumber;
+        public int SerieNumber { get; set; }
 
         private IStats stats;
         public IStats Stats
         {
-            get { return stats; }
+            get => stats;
             set
             {
                 stats = value;
@@ -23,7 +23,7 @@ namespace CSharpZapoctak.Models
         private Competition competition;
         public Competition Competition
         {
-            get { return competition; }
+            get => competition;
             set
             {
                 competition = value;
@@ -34,7 +34,7 @@ namespace CSharpZapoctak.Models
         private Season season;
         public Season Season
         {
-            get { return season; }
+            get => season;
             set
             {
                 season = value;
@@ -45,7 +45,7 @@ namespace CSharpZapoctak.Models
         private bool played;
         public bool Played
         {
-            get { return played; }
+            get => played;
             set
             {
                 played = value;
@@ -56,7 +56,7 @@ namespace CSharpZapoctak.Models
         private int periods;
         public int Periods
         {
-            get { return periods; }
+            get => periods;
             set
             {
                 periods = value;
@@ -67,7 +67,7 @@ namespace CSharpZapoctak.Models
         private int periodDuration;
         public int PeriodDuration
         {
-            get { return periodDuration; }
+            get => periodDuration;
             set
             {
                 periodDuration = value;
@@ -78,7 +78,7 @@ namespace CSharpZapoctak.Models
         private DateTime datetime;
         public DateTime Datetime
         {
-            get { return datetime; }
+            get => datetime;
             set
             {
                 datetime = value;
@@ -86,15 +86,12 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public string DatetimeToString
-        {
-            get { return Datetime.ToString("g"); }
-        }
+        public string DatetimeToString => Datetime.ToString("g");
 
         private Team homeTeam;
         public Team HomeTeam
         {
-            get { return homeTeam; }
+            get => homeTeam;
             set
             {
                 homeTeam = value;
@@ -105,7 +102,7 @@ namespace CSharpZapoctak.Models
         private Team awayTeam;
         public Team AwayTeam
         {
-            get { return awayTeam; }
+            get => awayTeam;
             set
             {
                 awayTeam = value;
@@ -116,7 +113,7 @@ namespace CSharpZapoctak.Models
         private int homeScore;
         public int HomeScore
         {
-            get { return homeScore; }
+            get => homeScore;
             set
             {
                 homeScore = value;
@@ -127,7 +124,7 @@ namespace CSharpZapoctak.Models
         private int awayScore;
         public int AwayScore
         {
-            get { return awayScore; }
+            get => awayScore;
             set
             {
                 awayScore = value;
@@ -138,7 +135,7 @@ namespace CSharpZapoctak.Models
         private bool overtime;
         public bool Overtime
         {
-            get { return overtime; }
+            get => overtime;
             set
             {
                 overtime = value;
@@ -149,7 +146,7 @@ namespace CSharpZapoctak.Models
         private bool shootout;
         public bool Shootout
         {
-            get { return shootout; }
+            get => shootout;
             set
             {
                 shootout = value;
@@ -160,7 +157,7 @@ namespace CSharpZapoctak.Models
         private bool forfeit;
         public bool Forfeit
         {
-            get { return forfeit; }
+            get => forfeit;
             set
             {
                 forfeit = value;
@@ -184,10 +181,7 @@ namespace CSharpZapoctak.Models
 
         public string ResultType()
         {
-            if (Overtime) { return " ot"; }
-            if (Shootout) { return " so"; }
-            if (Forfeit) { return " ff"; }
-            return "";
+            return Overtime ? " ot" : Shootout ? " so" : Forfeit ? " ff" : "";
         }
     }
 }

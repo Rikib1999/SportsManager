@@ -8,7 +8,7 @@ namespace CSharpZapoctak.Others
 {
     public class ZoomBorder : Border
     {
-        private UIElement child = null;
+        private UIElement child;
         private Point origin;
         private Point start;
 
@@ -26,7 +26,7 @@ namespace CSharpZapoctak.Others
 
         public override UIElement Child
         {
-            get { return base.Child; }
+            get => base.Child;
             set
             {
                 if (value != null && value != this.Child)
@@ -40,10 +40,10 @@ namespace CSharpZapoctak.Others
             this.child = element;
             if (child != null)
             {
-                TransformGroup group = new TransformGroup();
-                ScaleTransform st = new ScaleTransform();
+                TransformGroup group = new();
+                ScaleTransform st = new();
                 group.Children.Add(st);
-                TranslateTransform tt = new TranslateTransform();
+                TranslateTransform tt = new();
                 group.Children.Add(tt);
                 child.RenderTransform = group;
                 child.RenderTransformOrigin = new Point(0.0, 0.0);
@@ -61,12 +61,12 @@ namespace CSharpZapoctak.Others
             if (child != null)
             {
                 // reset zoom
-                var st = GetScaleTransform(child);
+                ScaleTransform st = GetScaleTransform(child);
                 st.ScaleX = 1.0;
                 st.ScaleY = 1.0;
 
                 // reset pan
-                var tt = GetTranslateTransform(child);
+                TranslateTransform tt = GetTranslateTransform(child);
                 tt.X = 0.0;
                 tt.Y = 0.0;
             }
@@ -78,8 +78,8 @@ namespace CSharpZapoctak.Others
         {
             if (child != null)
             {
-                var st = GetScaleTransform(child);
-                var tt = GetTranslateTransform(child);
+                ScaleTransform st = GetScaleTransform(child);
+                TranslateTransform tt = GetTranslateTransform(child);
 
                 double zoom = e.Delta > 0 ? .2 : -.2;
                 if (!(e.Delta > 0) && (st.ScaleX < .4 || st.ScaleY < .4))
@@ -109,11 +109,11 @@ namespace CSharpZapoctak.Others
         {
             if (child != null)
             {
-                var tt = GetTranslateTransform(child);
+                TranslateTransform tt = GetTranslateTransform(child);
                 start = e.GetPosition(this);
                 origin = new Point(tt.X, tt.Y);
                 this.Cursor = Cursors.Hand;
-                child.CaptureMouse();
+                _ = child.CaptureMouse();
             }
         }
 
@@ -137,7 +137,7 @@ namespace CSharpZapoctak.Others
             {
                 if (child.IsMouseCaptured)
                 {
-                    var tt = GetTranslateTransform(child);
+                    TranslateTransform tt = GetTranslateTransform(child);
                     Vector v = start - e.GetPosition(this);
                     tt.X = origin.X - v.X;
                     tt.Y = origin.Y - v.Y;

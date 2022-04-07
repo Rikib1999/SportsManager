@@ -7,7 +7,7 @@ namespace CSharpZapoctak.Models
         private string name = "";
         public string Name
         {
-            get { return name; }
+            get => name;
             set
             {
                 name = value;
@@ -18,7 +18,7 @@ namespace CSharpZapoctak.Models
         private string code;
         public string Code
         {
-            get { return code; }
+            get => code;
             set
             {
                 code = value;
@@ -29,7 +29,7 @@ namespace CSharpZapoctak.Models
         private int minutes;
         public int Minutes
         {
-            get { return minutes; }
+            get => minutes;
             set
             {
                 minutes = value;
@@ -37,9 +37,6 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public string FullName
-        {
-            get { return Name + " (" + Code + ")"; }
-        }
+        public string FullName => Name + " (" + Code + ")";
     }
 }

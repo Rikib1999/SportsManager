@@ -6,14 +6,14 @@ using System.Windows;
 
 namespace CSharpZapoctak.Models
 {
-    class Bracket : NotifyPropertyChanged
+    public class Bracket : NotifyPropertyChanged
     {
-        public int id = SportsData.NO_ID;
+        public int ID { get; set; } = SportsData.NOID;
 
         private string name = "";
         public string Name
         {
-            get { return name; }
+            get => name;
             set
             {
                 name = value;
@@ -24,7 +24,7 @@ namespace CSharpZapoctak.Models
         private int seasonID;
         public int SeasonID
         {
-            get { return seasonID; }
+            get => seasonID;
             set
             {
                 seasonID = value;
@@ -38,7 +38,7 @@ namespace CSharpZapoctak.Models
         /// </summary>
         public ObservableCollection<List<Serie>> Series
         {
-            get { return series; }
+            get => series;
             set
             {
                 series = value;
@@ -48,7 +48,7 @@ namespace CSharpZapoctak.Models
 
         public Bracket(int id, string name, int seasonID, int rounds)
         {
-            this.id = id;
+            ID = id;
             Name = name;
             SeasonID = seasonID;
 
@@ -66,10 +66,10 @@ namespace CSharpZapoctak.Models
             int pow = 1;
             for (int i = 0; i < rounds; i++)
             {
-                List<Serie> round = new List<Serie>();
+                List<Serie> round = new();
                 for (int j = 0; j < pow; j++)
                 {
-                    Serie s = new Serie();
+                    Serie s = new();
                     round.Add(s);
                     if (i == 0)
                     {
@@ -107,14 +107,14 @@ namespace CSharpZapoctak.Models
             {
                 if (index % 2 == 0)
                 {
-                    if (Series[round + 1][index / 2].FirstTeam.id == SportsData.NO_ID)
+                    if (Series[round + 1][index / 2].FirstTeam.ID == SportsData.NOID)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (Series[round + 1][index / 2].SecondTeam.id == SportsData.NO_ID)
+                    if (Series[round + 1][index / 2].SecondTeam.ID == SportsData.NOID)
                     {
                         return false;
                     }
@@ -129,25 +129,25 @@ namespace CSharpZapoctak.Models
             if (round < Series.Count)
             {
                 //if has winner
-                if (Series[round][index].winner.id != SportsData.NO_ID)
+                if (Series[round][index].Winner.ID != SportsData.NOID)
                 {
                     return true;
                 }
                 //if there are not winners before
-                if (round != 0 && (Series[round - 1][index * 2].winner.id == SportsData.NO_ID || Series[round - 1][(index * 2) + 1].winner.id == SportsData.NO_ID))
+                if (round != 0 && (Series[round - 1][index * 2].Winner.ID == SportsData.NOID || Series[round - 1][(index * 2) + 1].Winner.ID == SportsData.NOID))
                 {
                     return false;
                 }
-                if (Series[round][index].FirstTeam.id != SportsData.NO_ID && Series[round][index].SecondTeam.id == SportsData.NO_ID)
+                if (Series[round][index].FirstTeam.ID != SportsData.NOID && Series[round][index].SecondTeam.ID == SportsData.NOID)
                 {
-                    Series[round][index].winner = Series[round][index].FirstTeam;
+                    Series[round][index].Winner = Series[round][index].FirstTeam;
                 }
-                if (Series[round][index].FirstTeam.id == SportsData.NO_ID && Series[round][index].SecondTeam.id != SportsData.NO_ID)
+                if (Series[round][index].FirstTeam.ID == SportsData.NOID && Series[round][index].SecondTeam.ID != SportsData.NOID)
                 {
-                    Series[round][index].winner = Series[round][index].SecondTeam;
+                    Series[round][index].Winner = Series[round][index].SecondTeam;
                 }
 
-                return Series[round][index].winner.id != SportsData.NO_ID;
+                return Series[round][index].Winner.ID != SportsData.NOID;
             }
             return false;
         }
@@ -166,15 +166,15 @@ namespace CSharpZapoctak.Models
                         //advance winner to the next match
                         if (i % 2 == 0)
                         {
-                            Series[r + 1][i / 2].FirstTeam = Series[r][i].winner;
+                            Series[r + 1][i / 2].FirstTeam = Series[r][i].Winner;
                         }
                         else
                         {
-                            Series[r + 1][i / 2].SecondTeam = Series[r][i].winner;
+                            Series[r + 1][i / 2].SecondTeam = Series[r][i].Winner;
                         }
                     }
 
-                    if (Series[r][i].winner.id == SportsData.NO_ID && Series[r][i].FirstTeam.id != SportsData.NO_ID && Series[r][i].SecondTeam.id != SportsData.NO_ID)
+                    if (Series[r][i].Winner.ID == SportsData.NOID && Series[r][i].FirstTeam.ID != SportsData.NOID && Series[r][i].SecondTeam.ID != SportsData.NOID)
                     {
                         Series[r][i].AddMatchVisibility = Visibility.Visible;
                     }
@@ -188,13 +188,13 @@ namespace CSharpZapoctak.Models
         {
             if (round == -1) { return; }
 
-            if (Series[round][index].Matches.Count(x => x.Played) > 0)
+            if (Series[round][index].Matches.Any(x => x.Played))
             {
                 CollapseAllRemoveButton(round, index);
             }
             else if (Series[round][index].Matches.Count > 0)
             {
-                if (Series[round][index].Matches[0].HomeTeam.id == SportsData.NO_ID)
+                if (Series[round][index].Matches[0].HomeTeam.ID == SportsData.NOID)
                 {
                     Series[round][index].RemoveFirstTeamVisibility = Visibility.Collapsed;
                     CollapseRemoveButton(round - 1, index * 2);
@@ -205,7 +205,7 @@ namespace CSharpZapoctak.Models
                     CollapseAllRemoveButton(round - 1, index * 2);
                 }
 
-                if (Series[round][index].Matches[0].AwayTeam.id == SportsData.NO_ID)
+                if (Series[round][index].Matches[0].AwayTeam.ID == SportsData.NOID)
                 {
                     Series[round][index].RemoveSecondTeamVisibility = Visibility.Collapsed;
                     CollapseRemoveButton(round - 1, index * 2);
@@ -248,7 +248,7 @@ namespace CSharpZapoctak.Models
             {
                 Series[round][index].SecondTeam = new Team();
             }
-            Series[round][index].winner = new Team();
+            Series[round][index].Winner = new Team();
             Series[round][index].RemoveFirstTeamVisibility = Visibility.Visible;
             Series[round][index].RemoveSecondTeamVisibility = Visibility.Visible;
             Series[round][index].AddMatchVisibility = Visibility.Collapsed;

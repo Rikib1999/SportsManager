@@ -1,284 +1,18 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
-using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class SeasonsSelectionViewModel : NotifyPropertyChanged
+    public class SeasonsSelectionViewModel : NotifyPropertyChanged
     {
-        public class SeasonStats : NotifyPropertyChanged, IStats
-        {
-            #region Properties
-            private string format = "";
-            public string Format
-            {
-                get { return format; }
-                set
-                {
-                    format = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int matches = 0;
-            public int Matches
-            {
-                get { return matches; }
-                set
-                {
-                    matches = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int teams = 0;
-            public int Teams
-            {
-                get { return teams; }
-                set
-                {
-                    teams = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int players = 0;
-            public int Players
-            {
-                get { return players; }
-                set
-                {
-                    players = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int goals = 0;
-            public int Goals
-            {
-                get { return goals; }
-                set
-                {
-                    goals = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private float goalsPerGame = 0;
-            public float GoalsPerGame
-            {
-                get { return goalsPerGame; }
-                set
-                {
-                    goalsPerGame = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int assists = 0;
-            public int Assists
-            {
-                get { return assists; }
-                set
-                {
-                    assists = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private float assistsPerGame = 0;
-            public float AssistsPerGame
-            {
-                get { return assistsPerGame; }
-                set
-                {
-                    assistsPerGame = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int penalties = 0;
-            public int Penalties
-            {
-                get { return penalties; }
-                set
-                {
-                    penalties = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private float penaltiesPerGame = 0;
-            public float PenaltiesPerGame
-            {
-                get { return penaltiesPerGame; }
-                set
-                {
-                    penaltiesPerGame = value;
-                    OnPropertyChanged();
-                }
-            }
-            #endregion
-
-            public SeasonStats(Season s)
-            {
-                Format = s.Format();
-                CalculateStats(s.id).Await();
-            }
-
-            public async Task CalculateStats(int seasonID)
-            {
-                List<Task> tasks = new List<Task>();
-                //await matches so they are available for ...PerGame calculations
-                await Task.Run(() => CountMatches(seasonID));
-                tasks.Add(Task.Run(() => CountTeams(seasonID)));
-                tasks.Add(Task.Run(() => CountPlayers(seasonID)));
-                tasks.Add(Task.Run(() => CountGoals(seasonID)));
-                tasks.Add(Task.Run(() => CountAssists(seasonID)));
-                tasks.Add(Task.Run(() => CountPenalties(seasonID)));
-                await Task.WhenAll(tasks);
-            }
-
-            private async Task CountMatches(int seasonID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM matches WHERE season_id = " + seasonID, connection);
-                try
-                {
-                    connection.Open();
-                    Matches = (int)(long)await cmd.ExecuteScalarAsync();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            private async Task CountTeams(int seasonID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM team_enlistment WHERE season_id = " + seasonID, connection);
-                try
-                {
-                    connection.Open();
-                    Teams = (int)(long)await cmd.ExecuteScalarAsync();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            private async Task CountPlayers(int seasonID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(DISTINCT player_id) FROM player_enlistment WHERE season_id = " + seasonID, connection);
-                try
-                {
-                    connection.Open();
-                    Players = (int)(long)await cmd.ExecuteScalarAsync();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            private async Task CountGoals(int seasonID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
-                                                    "INNER JOIN matches AS m ON m.id = match_id " +
-                                                    "WHERE m.season_id = " + seasonID, connection);
-                try
-                {
-                    connection.Open();
-                    Goals = (int)(long)await cmd.ExecuteScalarAsync();
-                    if (Matches != 0) { GoalsPerGame = (float)Math.Round((float)Goals / (float)Matches, 2); }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            private async Task CountAssists(int seasonID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
-                                                    "INNER JOIN matches AS m ON m.id = match_id " +
-                                                    "WHERE assist_player_id <> -1 AND m.season_id = " + seasonID, connection);
-                try
-                {
-                    connection.Open();
-                    Assists = (int)(long)await cmd.ExecuteScalarAsync();
-                    if (Matches != 0) { AssistsPerGame = (float)Math.Round((float)Assists / (float)Matches, 2); }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            private async Task CountPenalties(int seasonID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM penalties " +
-                                                    "INNER JOIN matches AS m ON m.id = match_id " +
-                                                    "WHERE m.season_id = " + seasonID, connection);
-                try
-                {
-                    connection.Open();
-                    Penalties = (int)(long)await cmd.ExecuteScalarAsync();
-                    if (Matches != 0) { PenaltiesPerGame = (float)Math.Round((float)Penalties / (float)Matches, 2); }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
         public ICommand NavigateAddSeasonCommand { get; set; }
 
         public ICommand NavigateSeasonCommand { get; set; }
@@ -306,42 +40,34 @@ namespace CSharpZapoctak.ViewModels
             NavigateSeasonCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonViewModel(navigationStore)));
             SelectedSeason = null;
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT w.name AS winner, winner_id, c.name AS competition_name, seasons.id, competition_id, seasons.name, seasons.info, qualification_count, " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT w.name AS winner, winner_id, c.name AS competition_name, seasons.id, competition_id, seasons.name, seasons.info, qualification_count, " +
                                                 "qualification_rounds, group_count, play_off_rounds, play_off_best_of, play_off_started, points_for_W, points_for_OW, points_for_T, points_for_OL, points_for_L " +
                                                 "FROM seasons " +
-                                                "INNER JOIN competitions AS c ON c.id = seasons.competition_id", connection);
-            if (SportsData.SPORT.name == "tennis")
-            {
-                cmd.CommandText += " INNER JOIN player AS w ON w.id = seasons.winner_id";
-            }
-            else
-            {
-                cmd.CommandText += " INNER JOIN team AS w ON w.id = seasons.winner_id";
-            }
+                                                "INNER JOIN competitions AS c ON c.id = seasons.competition_id " +
+                                                "INNER JOIN team AS w ON w.id = seasons.winner_id", connection);
             if (SportsData.IsCompetitionSet())
             {
-                cmd.CommandText += " WHERE competition_id = " + SportsData.COMPETITION.id;
+                cmd.CommandText += " WHERE competition_id = " + SportsData.COMPETITION.ID;
             }
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 Seasons = new ObservableCollection<Season>();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Competition c = new Competition();
+                    Competition c = new();
                     c.Name = row["competition_name"].ToString();
-                    c.id = int.Parse(row["competition_id"].ToString());
+                    c.ID = int.Parse(row["competition_id"].ToString());
 
-                    Season s = new Season
+                    Season s = new()
                     {
-                        id = int.Parse(row["id"].ToString()),
+                        ID = int.Parse(row["id"].ToString()),
                         Competition = c,
                         Name = row["name"].ToString(),
                         Info = row["info"].ToString(),
@@ -359,10 +85,10 @@ namespace CSharpZapoctak.ViewModels
                         PointsForOTLoss = int.Parse(row["points_for_OL"].ToString()),
                         PointsForLoss = int.Parse(row["points_for_L"].ToString())
                     };
-                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.name + row["id"].ToString() + ".*");
+                    string[] imgPath = System.IO.Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.Name + row["id"].ToString() + ".*");
                     if (imgPath.Length != 0)
                     {
-                        s.LogoPath = imgPath.First();
+                        s.ImagePath = imgPath.First();
                     }
 
                     s.Stats = new SeasonStats(s); ;
@@ -371,7 +97,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

@@ -1,7 +1,7 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
-using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
@@ -24,16 +24,16 @@ namespace CSharpZapoctak.ViewModels
         #region Variables
         private NavigationStore ns;
 
-        private int groupLetterCounter = 0;
+        private int groupLetterCounter;
 
-        private Random r = new Random();
+        private Random r = new();
 
         public ObservableCollection<Competition> Competitions { get; set; }
 
         private Season currentSeason;
         public Season CurrentSeason
         {
-            get { return currentSeason; }
+            get => currentSeason;
             set
             {
                 currentSeason = value;
@@ -44,7 +44,7 @@ namespace CSharpZapoctak.ViewModels
         private Team newTeam;
         public Team NewTeam
         {
-            get { return newTeam; }
+            get => newTeam;
             set
             {
                 newTeam = value;
@@ -55,7 +55,7 @@ namespace CSharpZapoctak.ViewModels
         private Team existingTeam;
         public Team ExistingTeam
         {
-            get { return existingTeam; }
+            get => existingTeam;
             set
             {
                 existingTeam = value;
@@ -66,7 +66,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Team> existingTeams;
         public ObservableCollection<Team> ExistingTeams
         {
-            get { return existingTeams; }
+            get => existingTeams;
             set
             {
                 existingTeams = value;
@@ -77,7 +77,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Team> teams;
         public ObservableCollection<Team> Teams
         {
-            get { return teams; }
+            get => teams;
             set
             {
                 teams = value;
@@ -88,7 +88,7 @@ namespace CSharpZapoctak.ViewModels
         private BitmapImage bitmapSeason;
         public BitmapImage BitmapSeason
         {
-            get { return bitmapSeason; }
+            get => bitmapSeason;
             set
             {
                 bitmapSeason = value;
@@ -99,7 +99,7 @@ namespace CSharpZapoctak.ViewModels
         private BitmapImage bitmapTeam;
         public BitmapImage BitmapTeam
         {
-            get { return bitmapTeam; }
+            get => bitmapTeam;
             set
             {
                 bitmapTeam = value;
@@ -110,7 +110,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Country> countries;
         public ObservableCollection<Country> Countries
         {
-            get { return countries; }
+            get => countries;
             set
             {
                 countries = value;
@@ -121,7 +121,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Team> notSelectedTeams;
         public ObservableCollection<Team> NotSelectedTeams
         {
-            get { return notSelectedTeams; }
+            get => notSelectedTeams;
             set
             {
                 notSelectedTeams = value;
@@ -425,7 +425,7 @@ namespace CSharpZapoctak.ViewModels
         private string qualificationHeader = "Qualification";
         public string QualificationHeader
         {
-            get { return qualificationHeader; }
+            get => qualificationHeader;
             set
             {
                 qualificationHeader = value;
@@ -433,10 +433,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private bool qualificationSet = false;
+        private bool qualificationSet;
         public bool QualificationSet
         {
-            get { return qualificationSet; }
+            get => qualificationSet;
             set
             {
                 qualificationSet = value;
@@ -458,7 +458,7 @@ namespace CSharpZapoctak.ViewModels
         private bool qualificationEnabled = true;
         public bool QualificationEnabled
         {
-            get { return qualificationEnabled; }
+            get => qualificationEnabled;
             set
             {
                 qualificationEnabled = value;
@@ -477,7 +477,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility qualificationVisibility = Visibility.Collapsed;
         public Visibility QualificationVisibility
         {
-            get { return qualificationVisibility; }
+            get => qualificationVisibility;
             set
             {
                 qualificationVisibility = value;
@@ -488,7 +488,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Bracket> qualificationBrackets;
         public ObservableCollection<Bracket> QualificationBrackets
         {
-            get { return qualificationBrackets; }
+            get => qualificationBrackets;
             set
             {
                 qualificationBrackets = value;
@@ -499,7 +499,7 @@ namespace CSharpZapoctak.ViewModels
         private int qualificationCount;
         public int QualificationCount
         {
-            get { return qualificationCount; }
+            get => qualificationCount;
             set
             {
                 if (value == QualificationBrackets.Count)
@@ -511,7 +511,7 @@ namespace CSharpZapoctak.ViewModels
                     int newTeamCount = QualificationRoundOf * value;
                     if (newTeamCount > 256)
                     {
-                        MessageBox.Show("Qualification can hold up to 256 teams only. You have set " + newTeamCount + " teams.", "Qualification limit", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        _ = MessageBox.Show("Qualification can hold up to 256 teams only. You have set " + newTeamCount + " teams.", "Qualification limit", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
@@ -541,7 +541,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         for (int i = 0; i < dif; i++)
                         {
-                            Bracket b = new Bracket(QualificationRoundsCount);
+                            Bracket b = new(QualificationRoundsCount);
                             b.Name = "Bracket " + (++qualificationCount);
                             QualificationBrackets.Add(b);
                         }
@@ -555,7 +555,7 @@ namespace CSharpZapoctak.ViewModels
         private int qualificationRoundsCount;
         public int QualificationRoundsCount
         {
-            get { return qualificationRoundsCount; }
+            get => qualificationRoundsCount;
             set
             {
                 if (value == qualificationRoundsCount) { return; }
@@ -563,7 +563,7 @@ namespace CSharpZapoctak.ViewModels
                 int newTeamCount = (int)Math.Pow(2, value) * QualificationCount;
                 if (newTeamCount > 256)
                 {
-                    MessageBox.Show("Qualification can hold up to 256 teams only. You have set " + newTeamCount + " teams.", "Qualification limit", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    _ = MessageBox.Show("Qualification can hold up to 256 teams only. You have set " + newTeamCount + " teams.", "Qualification limit", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -589,7 +589,7 @@ namespace CSharpZapoctak.ViewModels
                 QualificationBrackets = new ObservableCollection<Bracket>();
                 for (int i = 1; i <= QualificationCount; i++)
                 {
-                    Bracket b = new Bracket(QualificationRoundsCount);
+                    Bracket b = new(QualificationRoundsCount);
                     b.Name = "Bracket " + i;
                     QualificationBrackets.Add(b);
                 }
@@ -600,7 +600,7 @@ namespace CSharpZapoctak.ViewModels
         private int qualificationRoundOf;
         public int QualificationRoundOf
         {
-            get { return qualificationRoundOf; }
+            get => qualificationRoundOf;
             set
             {
                 if (value == qualificationRoundOf) { return; }
@@ -608,7 +608,7 @@ namespace CSharpZapoctak.ViewModels
                 int newTeamCount = value * QualificationCount;
                 if (newTeamCount > 256)
                 {
-                    MessageBox.Show("Qualification can hold up to 256 teams only. You have set " + newTeamCount + " teams.", "Qualification limit", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    _ = MessageBox.Show("Qualification can hold up to 256 teams only. You have set " + newTeamCount + " teams.", "Qualification limit", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -634,7 +634,7 @@ namespace CSharpZapoctak.ViewModels
                 QualificationBrackets = new ObservableCollection<Bracket>();
                 for (int i = 1; i <= QualificationCount; i++)
                 {
-                    Bracket b = new Bracket(QualificationRoundsCount);
+                    Bracket b = new(QualificationRoundsCount);
                     b.Name = "Bracket " + i;
                     QualificationBrackets.Add(b);
                 }
@@ -647,7 +647,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<Group> groups;
         public ObservableCollection<Group> Groups
         {
-            get { return groups; }
+            get => groups;
             set
             {
                 groups = value;
@@ -658,7 +658,7 @@ namespace CSharpZapoctak.ViewModels
         private string groupsHeader = "Groups";
         public string GroupsHeader
         {
-            get { return groupsHeader; }
+            get => groupsHeader;
             set
             {
                 groupsHeader = value;
@@ -666,10 +666,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private bool groupsSet = false;
+        private bool groupsSet;
         public bool GroupsSet
         {
-            get { return groupsSet; }
+            get => groupsSet;
             set
             {
                 groupsSet = value;
@@ -696,7 +696,7 @@ namespace CSharpZapoctak.ViewModels
         private bool groupsEnabled = true;
         public bool GroupsEnabled
         {
-            get { return groupsEnabled; }
+            get => groupsEnabled;
             set
             {
                 groupsEnabled = value;
@@ -715,7 +715,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility groupsVisibility = Visibility.Collapsed;
         public Visibility GroupsVisibility
         {
-            get { return groupsVisibility; }
+            get => groupsVisibility;
             set
             {
                 groupsVisibility = value;
@@ -726,7 +726,7 @@ namespace CSharpZapoctak.ViewModels
         private int groupsCount;
         public int GroupsCount
         {
-            get { return groupsCount; }
+            get => groupsCount;
             set
             {
                 if (value == Groups.Count)
@@ -764,10 +764,10 @@ namespace CSharpZapoctak.ViewModels
         #region PlayOff
         public Bracket PlayOff { get; set; }
 
-        private bool playOffSet = false;
+        private bool playOffSet;
         public bool PlayOffSet
         {
-            get { return playOffSet; }
+            get => playOffSet;
             set
             {
                 playOffSet = value;
@@ -787,7 +787,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility playOffVisibility = Visibility.Collapsed;
         public Visibility PlayOffVisibility
         {
-            get { return playOffVisibility; }
+            get => playOffVisibility;
             set
             {
                 playOffVisibility = value;
@@ -798,7 +798,7 @@ namespace CSharpZapoctak.ViewModels
         private int playOffRoundsCount;
         public int PlayOffRoundsCount
         {
-            get { return playOffRoundsCount; }
+            get => playOffRoundsCount;
             set
             {
                 if (value == playOffRoundsCount)
@@ -829,7 +829,7 @@ namespace CSharpZapoctak.ViewModels
         private int playOffRoundOf;
         public int PlayOffRoundOf
         {
-            get { return playOffRoundOf; }
+            get => playOffRoundOf;
             set
             {
                 if (value == playOffRoundOf)
@@ -860,7 +860,7 @@ namespace CSharpZapoctak.ViewModels
         private int playOffBestOf;
         public int PlayOffBestOf
         {
-            get { return playOffBestOf; }
+            get => playOffBestOf;
             set
             {
                 if (value == playOffBestOf)
@@ -876,7 +876,7 @@ namespace CSharpZapoctak.ViewModels
         private int playOffFirstTo;
         public int PlayOffFirstTo
         {
-            get { return playOffFirstTo; }
+            get => playOffFirstTo;
             set
             {
                 if (value == playOffFirstTo)
@@ -902,14 +902,14 @@ namespace CSharpZapoctak.ViewModels
             NewTeam = new Team();
             ExistingTeam = new Team();
 
-            Countries = SportsData.countries;
-            Task t1 = new Task(LoadExistingTeams);
+            Countries = SportsData.Countries;
+            Task t1 = new(LoadExistingTeams);
             t1.Start();
             LoadCompetitions();
 
             if (SportsData.IsCompetitionSet())
             {
-                CurrentSeason.Competition = Competitions.Where(x => x.id == SportsData.COMPETITION.id).First();
+                CurrentSeason.Competition = Competitions.Where(x => x.ID == SportsData.COMPETITION.ID).First();
             }
             Teams = new ObservableCollection<Team>();
             QualificationBrackets = new ObservableCollection<Bracket>();
@@ -924,14 +924,13 @@ namespace CSharpZapoctak.ViewModels
         #region Loading
         private void LoadCompetitions()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id , name FROM competitions", connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT id , name FROM competitions", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
@@ -939,9 +938,9 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow compet in dataTable.Rows)
                 {
-                    Competition c = new Competition
+                    Competition c = new()
                     {
-                        id = int.Parse(compet["id"].ToString()),
+                        ID = int.Parse(compet["id"].ToString()),
                         Name = compet["name"].ToString(),
                     };
                     Competitions.Add(c);
@@ -949,7 +948,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -964,32 +963,31 @@ namespace CSharpZapoctak.ViewModels
         {
             ExistingTeams = new ObservableCollection<Team>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id, name FROM team", connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT id, name FROM team", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
                 connection.Close();
 
                 foreach (DataRow tm in dataTable.Rows)
                 {
-                    Team t = new Team
+                    Team t = new()
                     {
-                        id = int.Parse(tm["id"].ToString()),
+                        ID = int.Parse(tm["id"].ToString()),
                         Name = tm["name"].ToString(),
                     };
 
-                    string[] imgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.name + t.id + ".*");
+                    string[] imgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.Name + t.ID + ".*");
                     if (imgPath.Length != 0)
                     {
-                        t.LogoPath = imgPath.First();
+                        t.ImagePath = imgPath.First();
                     }
 
-                    if (t.id != SportsData.NO_ID)
+                    if (t.ID != SportsData.NOID)
                     {
                         ExistingTeams.Add(t);
                     }
@@ -997,7 +995,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -1010,34 +1008,17 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadImage(Competition entity)
         {
-            OpenFileDialog open = new OpenFileDialog();
-            open.DefaultExt = ".png";
-            open.Filter = "Pictures (*.jpg;*.png)|*.jpg;*.png";
+            entity.ImagePath = ImageHandler.SelectImagePath();
 
-            if (open.ShowDialog() == true)
+            if (entity.ImagePath != null)
             {
-                entity.LogoPath = open.FileName;
-
-                MemoryStream ms = new MemoryStream();
-                byte[] arrbytFileContent = File.ReadAllBytes(entity.LogoPath);
-                ms.Write(arrbytFileContent, 0, arrbytFileContent.Length);
-                ms.Position = 0;
-
                 if (entity.GetType() == typeof(Team))
                 {
-                    bitmapTeam = new BitmapImage();
-                    bitmapTeam.BeginInit();
-                    bitmapTeam.StreamSource = ms;
-                    bitmapTeam.EndInit();
-                    BitmapTeam = bitmapTeam;
+                    BitmapTeam = ImageHandler.ImageToBitmap(entity.ImagePath);
                 }
                 else
                 {
-                    bitmapSeason = new BitmapImage();
-                    bitmapSeason.BeginInit();
-                    bitmapSeason.StreamSource = ms;
-                    bitmapSeason.EndInit();
-                    BitmapSeason = bitmapSeason;
+                    BitmapSeason = ImageHandler.ImageToBitmap(entity.ImagePath);
                 }
                 GC.Collect();
             }
@@ -1053,10 +1034,10 @@ namespace CSharpZapoctak.ViewModels
             }
             if (NewTeam.Country == null)
             {
-                MessageBox.Show("Please select country.", "Country not selected", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select country.", "Country not selected", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            Team t = new Team(NewTeam);
+            Team t = new(NewTeam);
             Teams.Add(t);
             NotSelectedTeams.Add(t);
             NewTeam = new Team();
@@ -1065,13 +1046,13 @@ namespace CSharpZapoctak.ViewModels
 
         private void AddExistingTeam()
         {
-            if (ExistingTeam == null || ExistingTeam.id == SportsData.NO_ID)
+            if (ExistingTeam == null || ExistingTeam.ID == SportsData.NOID)
             {
                 return;
             }
-            if (!Teams.Any(x => x.id == ExistingTeam.id))
+            if (!Teams.Any(x => x.ID == ExistingTeam.ID))
             {
-                Team t = new Team(ExistingTeam);
+                Team t = new(ExistingTeam);
                 Teams.Add(t);
                 NotSelectedTeams.Add(t);
             }
@@ -1079,13 +1060,13 @@ namespace CSharpZapoctak.ViewModels
 
         private void RemoveTeam(Team t)
         {
-            Teams.Remove(t);
-            NotSelectedTeams.Remove(t);
+            _ = Teams.Remove(t);
+            _ = NotSelectedTeams.Remove(t);
             foreach (Group g in Groups)
             {
                 if (g.Teams.Contains(t))
                 {
-                    g.Teams.Remove(t);
+                    _ = g.Teams.Remove(t);
                 }
             }
             foreach (List<Serie> r in PlayOff.Series)
@@ -1315,7 +1296,7 @@ namespace CSharpZapoctak.ViewModels
         private void RemoveTeamFromGroup(object param)
         {
             IList teamAndGroup = (IList)param;
-            ((Group)teamAndGroup[1]).Teams.Remove((Team)teamAndGroup[0]);
+            _ = ((Group)teamAndGroup[1]).Teams.Remove((Team)teamAndGroup[0]);
             NotSelectedTeams.Add((Team)teamAndGroup[0]);
         }
 
@@ -1325,7 +1306,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 NotSelectedTeams.Add(t);
             }
-            Groups.Remove(g);
+            _ = Groups.Remove(g);
             GroupsCount = Groups.Count;
         }
 
@@ -1337,7 +1318,7 @@ namespace CSharpZapoctak.ViewModels
                 return;
             }
             ((Group)teamAndGroup[1]).Teams.Add((Team)teamAndGroup[0]);
-            NotSelectedTeams.Remove((Team)teamAndGroup[0]);
+            _ = NotSelectedTeams.Remove((Team)teamAndGroup[0]);
         }
         #endregion
 
@@ -1442,7 +1423,7 @@ namespace CSharpZapoctak.ViewModels
             }
             s.FirstTeam = s.FirstSelectedTeam;
             s.FirstSelectedTeam = new Team();
-            NotSelectedTeams.Remove(s.FirstTeam);
+            _ = NotSelectedTeams.Remove(s.FirstTeam);
 
             (int, int) roundIndex = b.GetSerieRoundIndex(s);
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, 1);
@@ -1473,7 +1454,7 @@ namespace CSharpZapoctak.ViewModels
             }
             s.SecondTeam = s.SecondSelectedTeam;
             s.SecondSelectedTeam = new Team();
-            NotSelectedTeams.Remove(s.SecondTeam);
+            _ = NotSelectedTeams.Remove(s.SecondTeam);
 
             (int, int) roundIndex = b.GetSerieRoundIndex(s);
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, 1);
@@ -1483,7 +1464,7 @@ namespace CSharpZapoctak.ViewModels
         #region Others
         private void RemoveImage(Competition entity)
         {
-            entity.LogoPath = "";
+            entity.ImagePath = "";
             if (entity.GetType() == typeof(Team))
             {
                 BitmapTeam = new BitmapImage();
@@ -1502,7 +1483,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 n--;
                 int k = r.Next(n + 1);
-                var v = list[k];
+                object v = list[k];
                 list[k] = list[n];
                 list[n] = v;
             }
@@ -1511,49 +1492,49 @@ namespace CSharpZapoctak.ViewModels
         private void Save()
         {
             //validation
-            if (CurrentSeason.Competition.id == SportsData.NO_ID)
+            if (CurrentSeason.Competition.ID == SportsData.NOID)
             {
-                MessageBox.Show("Please select competition.", "Competition not selected", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select competition.", "Competition not selected", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (string.IsNullOrWhiteSpace(CurrentSeason.Name))
             {
-                MessageBox.Show("Season name is required.", "Season name missing", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Season name is required.", "Season name missing", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (Teams.Count < 2)
             {
-                MessageBox.Show("At least two teams are needed.", "Too few teams", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("At least two teams are needed.", "Too few teams", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (!QualificationSet && !GroupsSet && !PlayOffSet)
             {
-                MessageBox.Show("Please select a format.", "Format not selected", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please select a format.", "Format not selected", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (PlayOffSet && PlayOffRoundsCount < 1)
             {
-                MessageBox.Show("Please set the number of rounds of play-off.", "Play-off not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please set the number of rounds of play-off.", "Play-off not set", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (PlayOffSet && PlayOffBestOf < 1)
             {
-                MessageBox.Show("Please set the number of matches in series of play-off.", "Play-off series not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please set the number of matches in series of play-off.", "Play-off series not set", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (QualificationSet && (QualificationCount < 1 || QualificationRoundOf < 1))
             {
-                MessageBox.Show("Please set the number of brackets and rounds of qualification.", "Qualification not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please set the number of brackets and rounds of qualification.", "Qualification not set", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (GroupsSet && GroupsCount < 1)
             {
-                MessageBox.Show("Please set the number of groups.", "Groups not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please set the number of groups.", "Groups not set", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (GroupsSet && (CurrentSeason.PointsForWin == null || CurrentSeason.PointsForOTWin == null || CurrentSeason.PointsForTie == null || CurrentSeason.PointsForOTLoss == null || CurrentSeason.PointsForLoss == null))
             {
-                MessageBox.Show("Please set the number of points for match results in groups section.", "Points not set", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Please set the number of points for match results in groups section.", "Points not set", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (!GroupsSet)
@@ -1611,18 +1592,17 @@ namespace CSharpZapoctak.ViewModels
                 }
                 if (notAssigned)
                 {
-                    MessageBox.Show("All teams need to be assigned. Please assign team " + t.Name + " to a qualification, group or play-off.", "Team not assigned", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("All teams need to be assigned. Please assign team " + t.Name + " to a qualification, group or play-off.", "Team not assigned", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlTransaction transaction = null;
             MySqlCommand cmd = null;
             string seasonInsertQuerry = "INSERT INTO seasons(competition_id, name, info, winner_id, qualification_count, qualification_rounds, group_count, play_off_rounds, play_off_best_of, " +
                                         "points_for_W, points_for_OW, points_for_T, points_for_OL, points_for_L, play_off_started) " +
-                                        "VALUES (" + CurrentSeason.Competition.id + ", '" + CurrentSeason.Name + "', '" + CurrentSeason.Info + "', " + -1 +
+                                        "VALUES (" + CurrentSeason.Competition.ID + ", '" + CurrentSeason.Name + "', '" + CurrentSeason.Info + "', " + -1 +
                                         ", " + QualificationCount + ", " + QualificationRoundsCount + ", " + GroupsCount + ", " + PlayOffRoundsCount + ", " + PlayOffBestOf +
                                         ", " + CurrentSeason.PointsForWin + ", " + CurrentSeason.PointsForOTWin + ", " + CurrentSeason.PointsForTie + ", " + CurrentSeason.PointsForOTLoss +
                                         ", " + CurrentSeason.PointsForLoss + ", '" + 0 + "')";
@@ -1635,30 +1615,30 @@ namespace CSharpZapoctak.ViewModels
                 //season insertion
                 cmd = new MySqlCommand(seasonInsertQuerry, connection);
                 cmd.Transaction = transaction;
-                cmd.ExecuteNonQuery();
-                currentSeason.id = (int)cmd.LastInsertedId;
+                _ = cmd.ExecuteNonQuery();
+                currentSeason.ID = (int)cmd.LastInsertedId;
 
-                if (!string.IsNullOrWhiteSpace(CurrentSeason.LogoPath))
+                if (!string.IsNullOrWhiteSpace(CurrentSeason.ImagePath))
                 {
-                    string filePath = SportsData.SeasonLogosPath + "/" + SportsData.SPORT.name + CurrentSeason.id + Path.GetExtension(CurrentSeason.LogoPath);
-                    File.Copy(CurrentSeason.LogoPath, filePath);
-                    CurrentSeason.LogoPath = filePath;
+                    string filePath = SportsData.SeasonLogosPath + "/" + SportsData.SPORT.Name + CurrentSeason.ID + Path.GetExtension(CurrentSeason.ImagePath);
+                    File.Copy(CurrentSeason.ImagePath, filePath);
+                    CurrentSeason.ImagePath = filePath;
                 }
 
                 //new teams insertion
-                foreach (Team t in Teams.Where(x => x.id == SportsData.NO_ID))
+                foreach (Team t in Teams.Where(x => x.ID == SportsData.NOID))
                 {
                     string teamInsertQuerry = "INSERT INTO team(name, info, status, country, date_of_creation) " +
                                               "VALUES ('" + t.Name + "', '" + t.Info + "', " + Convert.ToInt32(t.Status) + ", '" + t.Country.CodeTwo + "', '" + t.DateOfCreation.ToString("yyyy-MM-dd H:mm:ss") + "')";
                     cmd = new MySqlCommand(teamInsertQuerry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
-                    t.id = (int)cmd.LastInsertedId;
+                    _ = cmd.ExecuteNonQuery();
+                    t.ID = (int)cmd.LastInsertedId;
 
-                    if (!string.IsNullOrWhiteSpace(t.LogoPath))
+                    if (!string.IsNullOrWhiteSpace(t.ImagePath))
                     {
-                        string filePath = SportsData.TeamLogosPath + "/" + SportsData.SPORT.name + t.id + Path.GetExtension(t.LogoPath);
-                        File.Copy(t.LogoPath, filePath);
+                        string filePath = SportsData.TeamLogosPath + "/" + SportsData.SPORT.Name + t.ID + Path.GetExtension(t.ImagePath);
+                        File.Copy(t.ImagePath, filePath);
                     }
                 }
 
@@ -1666,46 +1646,46 @@ namespace CSharpZapoctak.ViewModels
                 foreach (Bracket b in QualificationBrackets)
                 {
                     string qualificationInsertQuerry = "INSERT INTO brackets(season_id, name) " +
-                                              "VALUES (" + CurrentSeason.id + ", '" + b.Name + "')";
+                                              "VALUES (" + CurrentSeason.ID + ", '" + b.Name + "')";
                     cmd = new MySqlCommand(qualificationInsertQuerry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
-                    b.id = (int)cmd.LastInsertedId;
+                    _ = cmd.ExecuteNonQuery();
+                    b.ID = (int)cmd.LastInsertedId;
 
                     for (int i = 0; i < b.Series.Count; i++)
                     {
                         for (int j = 0; j < b.Series[i].Count; j++)
                         {
-                            int firstID = SportsData.NO_ID;
-                            int secondID = SportsData.NO_ID;
+                            int firstID = SportsData.NOID;
+                            int secondID = SportsData.NOID;
                             if (Teams.Contains(b.Series[i][j].FirstTeam))
                             {
-                                firstID = b.Series[i][j].FirstTeam.id;
+                                firstID = b.Series[i][j].FirstTeam.ID;
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + firstID + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                              "VALUES (" + firstID + ", " + CurrentSeason.ID + ", " + -1 + ")";
                                 cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                                 cmd.Transaction = transaction;
-                                cmd.ExecuteNonQuery();
+                                _ = cmd.ExecuteNonQuery();
                             }
                             if (Teams.Contains(b.Series[i][j].SecondTeam))
                             {
-                                secondID = b.Series[i][j].SecondTeam.id;
+                                secondID = b.Series[i][j].SecondTeam.ID;
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + secondID + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                              "VALUES (" + secondID + ", " + CurrentSeason.ID + ", " + -1 + ")";
                                 cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                                 cmd.Transaction = transaction;
-                                cmd.ExecuteNonQuery();
+                                _ = cmd.ExecuteNonQuery();
                             }
-                            if (firstID != SportsData.NO_ID || secondID != SportsData.NO_ID)
+                            if (firstID != SportsData.NOID || secondID != SportsData.NOID)
                             {
                                 //match insertion
                                 string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                              "VALUES (" + CurrentSeason.id + ", 0, " + b.id + ", " + j + ", " + i + ", -1, " + firstID + ", " + secondID + ", " + firstID + ")";
+                                              "VALUES (" + CurrentSeason.ID + ", 0, " + b.ID + ", " + j + ", " + i + ", -1, " + firstID + ", " + secondID + ", " + firstID + ")";
                                 cmd = new MySqlCommand(macthInsertQuerry, connection);
                                 cmd.Transaction = transaction;
-                                cmd.ExecuteNonQuery();
+                                _ = cmd.ExecuteNonQuery();
                             }
                         }
                     }
@@ -1715,20 +1695,20 @@ namespace CSharpZapoctak.ViewModels
                 foreach (Group g in Groups)
                 {
                     string groupInsertQuerry = "INSERT INTO groups(season_id, name) " +
-                                              "VALUES (" + CurrentSeason.id + ", '" + g.Name + "')";
+                                              "VALUES (" + CurrentSeason.ID + ", '" + g.Name + "')";
                     cmd = new MySqlCommand(groupInsertQuerry, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
-                    g.id = (int)cmd.LastInsertedId;
+                    _ = cmd.ExecuteNonQuery();
+                    g.ID = (int)cmd.LastInsertedId;
 
                     //team enlistment
                     foreach (Team t in g.Teams)
                     {
                         string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + t.id + ", " + CurrentSeason.id + ", " + g.id + ")";
+                                              "VALUES (" + t.ID + ", " + CurrentSeason.ID + ", " + g.ID + ")";
                         cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
                     }
                 }
 
@@ -1739,36 +1719,36 @@ namespace CSharpZapoctak.ViewModels
                     {
                         for (int j = 0; j < PlayOff.Series[i].Count; j++)
                         {
-                            int firstID = SportsData.NO_ID;
-                            int secondID = SportsData.NO_ID;
+                            int firstID = SportsData.NOID;
+                            int secondID = SportsData.NOID;
                             if (Teams.Contains(PlayOff.Series[i][j].FirstTeam))
                             {
-                                firstID = PlayOff.Series[i][j].FirstTeam.id;
+                                firstID = PlayOff.Series[i][j].FirstTeam.ID;
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + firstID + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                              "VALUES (" + firstID + ", " + CurrentSeason.ID + ", " + -1 + ")";
                                 cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                                 cmd.Transaction = transaction;
-                                cmd.ExecuteNonQuery();
+                                _ = cmd.ExecuteNonQuery();
                             }
                             if (Teams.Contains(PlayOff.Series[i][j].SecondTeam))
                             {
-                                secondID = PlayOff.Series[i][j].SecondTeam.id;
+                                secondID = PlayOff.Series[i][j].SecondTeam.ID;
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
-                                              "VALUES (" + secondID + ", " + CurrentSeason.id + ", " + -1 + ")";
+                                              "VALUES (" + secondID + ", " + CurrentSeason.ID + ", " + -1 + ")";
                                 cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
                                 cmd.Transaction = transaction;
-                                cmd.ExecuteNonQuery();
+                                _ = cmd.ExecuteNonQuery();
                             }
-                            if (firstID != SportsData.NO_ID || secondID != SportsData.NO_ID)
+                            if (firstID != SportsData.NOID || secondID != SportsData.NOID)
                             {
                                 //match insertion
                                 string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
-                                              "VALUES (" + CurrentSeason.id + ", 0, -1, " + j + ", " + i + ", -1, " + firstID + ", " + secondID + ", " + firstID + ")";
+                                              "VALUES (" + CurrentSeason.ID + ", 0, -1, " + j + ", " + i + ", -1, " + firstID + ", " + secondID + ", " + firstID + ")";
                                 cmd = new MySqlCommand(macthInsertQuerry, connection);
                                 cmd.Transaction = transaction;
-                                cmd.ExecuteNonQuery();
+                                _ = cmd.ExecuteNonQuery();
                             }
                         }
                     }
@@ -1780,7 +1760,7 @@ namespace CSharpZapoctak.ViewModels
                 CurrentSeason.PlayOffStarted = false;
                 CurrentSeason.QualificationCount = QualificationCount;
                 CurrentSeason.QualificationRounds = QualificationRoundsCount;
-                CurrentSeason.WinnerID = SportsData.NO_ID;
+                CurrentSeason.WinnerID = SportsData.NOID;
                 CurrentSeason.WinnerName = "";
 
                 transaction.Commit();
@@ -1791,7 +1771,7 @@ namespace CSharpZapoctak.ViewModels
             catch (Exception)
             {
                 transaction.Rollback();
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

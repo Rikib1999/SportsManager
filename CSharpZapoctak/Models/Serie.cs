@@ -5,18 +5,18 @@ using System.Windows;
 
 namespace CSharpZapoctak.Models
 {
-    class Score : NotifyPropertyChanged
+    public class TeamScoreInSerieMatch : NotifyPropertyChanged
     {
-        public Score(int score, Match match)
+        public TeamScoreInSerieMatch(int score, Match match)
         {
             Value = score;
             Match = match;
         }
 
-        public int value;
+        private int value;
         public int Value
         {
-            get { return value; }
+            get => value;
             set
             {
                 this.value = value;
@@ -24,10 +24,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Match match;
+        private Match match;
         public Match Match
         {
-            get { return match; }
+            get => match;
             set
             {
                 match = value;
@@ -36,16 +36,16 @@ namespace CSharpZapoctak.Models
         }
     }
 
-    class Serie : NotifyPropertyChanged
+    public class Serie : NotifyPropertyChanged
     {
-        private Team firstTeam = new Team { id = SportsData.NO_ID, Name = "-- no team --" };
+        private Team firstTeam = new() { ID = SportsData.NOID, Name = "-- no team --" };
         public Team FirstTeam
         {
-            get { return firstTeam; }
+            get => firstTeam;
             set
             {
                 firstTeam = value;
-                if (value.id != SportsData.NO_ID)
+                if (value.ID != SportsData.NOID)
                 {
                     FirstSelectedVisibility = Visibility.Visible;
                     FirstNotSelectedVisibility = Visibility.Collapsed;
@@ -59,14 +59,14 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private Team secondTeam = new Team { id = SportsData.NO_ID, Name = "-- no team --" };
+        private Team secondTeam = new() { ID = SportsData.NOID, Name = "-- no team --" };
         public Team SecondTeam
         {
-            get { return secondTeam; }
+            get => secondTeam;
             set
             {
                 secondTeam = value;
-                if (value.id != SportsData.NO_ID)
+                if (value.ID != SportsData.NOID)
                 {
                     SecondSelectedVisibility = Visibility.Visible;
                     SecondNotSelectedVisibility = Visibility.Collapsed;
@@ -80,10 +80,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private ObservableCollection<Match> matches = new ObservableCollection<Match>();
+        private ObservableCollection<Match> matches = new();
         public ObservableCollection<Match> Matches
         {
-            get { return matches; }
+            get => matches;
             set
             {
                 matches = value;
@@ -91,10 +91,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Visibility preLineVisibility = Visibility.Visible;
+        private Visibility preLineVisibility = Visibility.Visible;
         public Visibility PreLineVisibility
         {
-            get { return preLineVisibility; }
+            get => preLineVisibility;
             set
             {
                 preLineVisibility = value;
@@ -102,10 +102,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Visibility postLineVisibility = Visibility.Visible;
+        private Visibility postLineVisibility = Visibility.Visible;
         public Visibility PostLineVisibility
         {
-            get { return postLineVisibility; }
+            get => postLineVisibility;
             set
             {
                 postLineVisibility = value;
@@ -114,12 +114,12 @@ namespace CSharpZapoctak.Models
         }
 
         #region Setting matches
-        public Team winner = new Team { id = SportsData.NO_ID, Name = "-- no team --" };
+        public Team Winner { get; set; } = new() { ID = SportsData.NOID, Name = "-- no team --" };
 
-        public ObservableCollection<Score> firstScore = new ObservableCollection<Score>();
-        public ObservableCollection<Score> FirstScore
+        private ObservableCollection<TeamScoreInSerieMatch> firstScore = new();
+        public ObservableCollection<TeamScoreInSerieMatch> FirstScore
         {
-            get { return firstScore; }
+            get => firstScore;
             set
             {
                 firstScore = value;
@@ -127,10 +127,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public ObservableCollection<Score> secondScore = new ObservableCollection<Score>();
-        public ObservableCollection<Score> SecondScore
+        private ObservableCollection<TeamScoreInSerieMatch> secondScore = new();
+        public ObservableCollection<TeamScoreInSerieMatch> SecondScore
         {
-            get { return secondScore; }
+            get => secondScore;
             set
             {
                 secondScore = value;
@@ -138,10 +138,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Visibility addMatchVisibility = Visibility.Collapsed;
+        private Visibility addMatchVisibility = Visibility.Collapsed;
         public Visibility AddMatchVisibility
         {
-            get { return addMatchVisibility; }
+            get => addMatchVisibility;
             set
             {
                 addMatchVisibility = value;
@@ -149,10 +149,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Visibility removeFirstTeamVisibility = Visibility.Visible;
+        private Visibility removeFirstTeamVisibility = Visibility.Visible;
         public Visibility RemoveFirstTeamVisibility
         {
-            get { return removeFirstTeamVisibility; }
+            get => removeFirstTeamVisibility;
             set
             {
                 removeFirstTeamVisibility = value;
@@ -160,10 +160,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Visibility removeSecondTeamVisibility = Visibility.Visible;
+        private Visibility removeSecondTeamVisibility = Visibility.Visible;
         public Visibility RemoveSecondTeamVisibility
         {
-            get { return removeSecondTeamVisibility; }
+            get => removeSecondTeamVisibility;
             set
             {
                 removeSecondTeamVisibility = value;
@@ -171,10 +171,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Visibility addFirstTeamVisibility = Visibility.Visible;
+        private Visibility addFirstTeamVisibility = Visibility.Visible;
         public Visibility AddFirstTeamVisibility
         {
-            get { return addFirstTeamVisibility; }
+            get => addFirstTeamVisibility;
             set
             {
                 addFirstTeamVisibility = value;
@@ -182,10 +182,10 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public Visibility addSecondTeamVisibility = Visibility.Visible;
+        private Visibility addSecondTeamVisibility = Visibility.Visible;
         public Visibility AddSecondTeamVisibility
         {
-            get { return addSecondTeamVisibility; }
+            get => addSecondTeamVisibility;
             set
             {
                 addSecondTeamVisibility = value;
@@ -196,9 +196,9 @@ namespace CSharpZapoctak.Models
         public void InsertMatch(Match m, int firstTeamID, int firstToWin)
         {
             //set teams
-            if (FirstTeam.id == SportsData.NO_ID || SecondTeam.id == SportsData.NO_ID)
+            if (FirstTeam.ID == SportsData.NOID || SecondTeam.ID == SportsData.NOID)
             {
-                if (m.HomeTeam.id == firstTeamID)
+                if (m.HomeTeam.ID == firstTeamID)
                 {
                     FirstTeam = m.HomeTeam;
                     SecondTeam = m.AwayTeam;
@@ -211,20 +211,20 @@ namespace CSharpZapoctak.Models
             }
 
             //add match
-            if (Matches.Count == 0 || Matches[Matches.Count - 1].serieNumber < m.serieNumber)
+            if (Matches.Count == 0 || Matches[^1].SerieNumber < m.SerieNumber)
             {
                 Matches.Add(m);
                 if (m.Played)
                 {
-                    if (m.HomeTeam.id == FirstTeam.id)
+                    if (m.HomeTeam.ID == FirstTeam.ID)
                     {
-                        FirstScore.Add(new Score(m.HomeScore, m));
-                        SecondScore.Add(new Score(m.AwayScore, m));
+                        FirstScore.Add(new TeamScoreInSerieMatch(m.HomeScore, m));
+                        SecondScore.Add(new TeamScoreInSerieMatch(m.AwayScore, m));
                     }
                     else
                     {
-                        FirstScore.Add(new Score(m.AwayScore, m));
-                        SecondScore.Add(new Score(m.HomeScore, m));
+                        FirstScore.Add(new TeamScoreInSerieMatch(m.AwayScore, m));
+                        SecondScore.Add(new TeamScoreInSerieMatch(m.HomeScore, m));
                     }
                 }
             }
@@ -233,24 +233,24 @@ namespace CSharpZapoctak.Models
                 int matchCount = Matches.Count;
                 for (int i = 0; i < matchCount; i++)
                 {
-                    if (Matches[i].serieNumber > m.serieNumber)
+                    if (Matches[i].SerieNumber > m.SerieNumber)
                     {
                         Matches.Insert(i, m);
 
                         int insertAt = i;
-                        if (Matches.Count(x => !x.Played) > 0 && insertAt != 0) { insertAt--; }
+                        if (Matches.Any(x => !x.Played) && insertAt != 0) { insertAt--; }
 
                         if (m.Played)
                         {
-                            if (m.HomeTeam.id == FirstTeam.id)
+                            if (m.HomeTeam.ID == FirstTeam.ID)
                             {
-                                FirstScore.Insert(insertAt, new Score(m.HomeScore, m));
-                                SecondScore.Insert(insertAt, new Score(m.AwayScore, m));
+                                FirstScore.Insert(insertAt, new TeamScoreInSerieMatch(m.HomeScore, m));
+                                SecondScore.Insert(insertAt, new TeamScoreInSerieMatch(m.AwayScore, m));
                             }
                             else
                             {
-                                FirstScore.Insert(insertAt, new Score(m.AwayScore, m));
-                                SecondScore.Insert(insertAt, new Score(m.HomeScore, m));
+                                FirstScore.Insert(insertAt, new TeamScoreInSerieMatch(m.AwayScore, m));
+                                SecondScore.Insert(insertAt, new TeamScoreInSerieMatch(m.HomeScore, m));
                             }
                         }
                         break;
@@ -265,20 +265,20 @@ namespace CSharpZapoctak.Models
             {
                 if (match.HomeScore > match.AwayScore)
                 {
-                    if (match.HomeTeam.id == FirstTeam.id) { firstWins++; } else { secondWins++; }
+                    if (match.HomeTeam.ID == FirstTeam.ID) { firstWins++; } else { secondWins++; }
                 }
                 else if (match.HomeScore < match.AwayScore)
                 {
-                    if (match.HomeTeam.id == FirstTeam.id) { secondWins++; } else { firstWins++; }
+                    if (match.HomeTeam.ID == FirstTeam.ID) { secondWins++; } else { firstWins++; }
                 }
             }
             if (firstWins >= firstToWin)
             {
-                winner = FirstTeam;
+                Winner = FirstTeam;
             }
             else if (secondWins >= firstToWin)
             {
-                winner = SecondTeam;
+                Winner = SecondTeam;
             }
         }
         #endregion
@@ -287,7 +287,7 @@ namespace CSharpZapoctak.Models
         private Team firstSelectedTeam;
         public Team FirstSelectedTeam
         {
-            get { return firstSelectedTeam; }
+            get => firstSelectedTeam;
             set
             {
                 firstSelectedTeam = value;
@@ -298,7 +298,7 @@ namespace CSharpZapoctak.Models
         private Team secondSelectedTeam;
         public Team SecondSelectedTeam
         {
-            get { return secondSelectedTeam; }
+            get => secondSelectedTeam;
             set
             {
                 secondSelectedTeam = value;
@@ -309,7 +309,7 @@ namespace CSharpZapoctak.Models
         private bool firstIsEnabled = true;
         public bool FirstIsEnabled
         {
-            get { return firstIsEnabled; }
+            get => firstIsEnabled;
             set
             {
                 firstIsEnabled = value;
@@ -321,25 +321,18 @@ namespace CSharpZapoctak.Models
         private int firstLock;
         public int FirstLock
         {
-            get { return firstLock; }
+            get => firstLock;
             set
             {
                 firstLock = value;
-                if (firstLock == 0)
-                {
-                    FirstIsEnabled = true;
-                }
-                else
-                {
-                    FirstIsEnabled = false;
-                }
+                FirstIsEnabled = firstLock == 0;
             }
         }
 
         private Visibility firstSelectedVisibility = Visibility.Collapsed;
         public Visibility FirstSelectedVisibility
         {
-            get { return firstSelectedVisibility; }
+            get => firstSelectedVisibility;
             set
             {
                 firstSelectedVisibility = value;
@@ -350,7 +343,7 @@ namespace CSharpZapoctak.Models
         private Visibility firstNotSelectedVisibility = Visibility.Visible;
         public Visibility FirstNotSelectedVisibility
         {
-            get { return firstNotSelectedVisibility; }
+            get => firstNotSelectedVisibility;
             set
             {
                 firstNotSelectedVisibility = value;
@@ -361,7 +354,7 @@ namespace CSharpZapoctak.Models
         private bool secondIsEnabled = true;
         public bool SecondIsEnabled
         {
-            get { return secondIsEnabled; }
+            get => secondIsEnabled;
             set
             {
                 secondIsEnabled = value;
@@ -373,25 +366,18 @@ namespace CSharpZapoctak.Models
         private int secondLock;
         public int SecondLock
         {
-            get { return secondLock; }
+            get => secondLock;
             set
             {
                 secondLock = value;
-                if (secondLock == 0)
-                {
-                    SecondIsEnabled = true;
-                }
-                else
-                {
-                    SecondIsEnabled = false;
-                }
+                SecondIsEnabled = secondLock == 0;
             }
         }
 
         private Visibility secondSelectedVisibility = Visibility.Collapsed;
         public Visibility SecondSelectedVisibility
         {
-            get { return secondSelectedVisibility; }
+            get => secondSelectedVisibility;
             set
             {
                 secondSelectedVisibility = value;
@@ -402,7 +388,7 @@ namespace CSharpZapoctak.Models
         private Visibility secondNotSelectedVisibility = Visibility.Visible;
         public Visibility SecondNotSelectedVisibility
         {
-            get { return secondNotSelectedVisibility; }
+            get => secondNotSelectedVisibility;
             set
             {
                 secondNotSelectedVisibility = value;

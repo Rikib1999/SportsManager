@@ -14,7 +14,7 @@ namespace CSharpZapoctak.ViewModels
 
         public void UpdateHeader()
         {
-            Header = char.ToUpper(SportsData.SPORT.name[0]) + SportsData.SPORT.name.Substring(1).Replace('_', '-');
+            Header = char.ToUpper(SportsData.SPORT.Name[0]) + SportsData.SPORT.Name[1..].Replace('_', '-');
 
             if (SportsData.IsCompetitionSet())
             {
@@ -69,7 +69,7 @@ namespace CSharpZapoctak.ViewModels
                     break;
             }
 
-            Dictionary<string, Visibility> buttonsVisibilities = new Dictionary<string, Visibility>() {
+            Dictionary<string, Visibility> buttonsVisibilities = new() {
                 { "Competition", Visibility.Visible },
                 { "Season", Visibility.Visible },
                 { "Standings", Visibility.Visible },
@@ -88,7 +88,7 @@ namespace CSharpZapoctak.ViewModels
                 buttonsVisibilities["Standings"] = Visibility.Collapsed;
                 buttonsVisibilities["Schedule"] = Visibility.Collapsed;
             }
-            if (SportsData.SPORT.name == "tennis")
+            if (SportsData.SPORT.Name == "tennis")
             {
                 buttonsVisibilities["Teams"] = Visibility.Collapsed;
                 buttonsVisibilities["Goalies"] = Visibility.Collapsed;

@@ -22,7 +22,7 @@ namespace CSharpZapoctak.ViewModels
         private string name;
         public string Name
         {
-            get { return name; }
+            get => name;
             set
             {
                 name = value;
@@ -33,7 +33,7 @@ namespace CSharpZapoctak.ViewModels
         private Position position;
         public Position Position
         {
-            get { return position; }
+            get => position;
             set
             {
                 position = value;
@@ -44,7 +44,7 @@ namespace CSharpZapoctak.ViewModels
         private int number;
         public int Number
         {
-            get { return number; }
+            get => number;
             set
             {
                 number = value;
@@ -71,12 +71,11 @@ namespace CSharpZapoctak.ViewModels
             Team t = (Team)teamAndSerie[0];
             int seasonID = (int)teamAndSerie[1];
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
             MySqlTransaction transaction = null;
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM player_matches " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT COUNT(*) FROM player_matches " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
-                                                "WHERE player_id = " + id + " AND team_id = " + t.id + " AND m.season_id = " + seasonID, connection);
+                                                "WHERE player_id = " + id + " AND team_id = " + t.ID + " AND m.season_id = " + seasonID, connection);
             try
             {
                 connection.Open();
@@ -84,11 +83,11 @@ namespace CSharpZapoctak.ViewModels
                 cmd.Transaction = transaction;
                 if ((int)(long)cmd.ExecuteScalar() == 0)
                 {
-                    cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE player_id = " + id + " AND team_id = " + t.id + " AND season_id = " + seasonID, connection);
+                    cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE player_id = " + id + " AND team_id = " + t.ID + " AND season_id = " + seasonID, connection);
                     cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
-                    parent.Remove(this);
+                    _ = parent.Remove(this);
 
                     //if there are no more enlistments for the player delete player from database
                     cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + id, connection);
@@ -97,9 +96,9 @@ namespace CSharpZapoctak.ViewModels
                     {
                         cmd = new MySqlCommand("DELETE FROM player WHERE id = " + id, connection);
                         cmd.Transaction = transaction;
-                        cmd.ExecuteNonQuery();
+                        _ = cmd.ExecuteNonQuery();
 
-                        string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.name + id + ".*");
+                        string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.Name + id + ".*");
                         string previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -115,7 +114,7 @@ namespace CSharpZapoctak.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("Unable to remove player enlistment because the player has played matches already. First remove player from all matches he played in given season for given team.", "Unable to remove player", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _ = MessageBox.Show("Unable to remove player enlistment because the player has played matches already. First remove player from all matches he played in given season for given team.", "Unable to remove player", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 transaction.Commit();
@@ -124,7 +123,7 @@ namespace CSharpZapoctak.ViewModels
             catch (Exception)
             {
                 transaction.Rollback();
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -143,7 +142,7 @@ namespace CSharpZapoctak.ViewModels
         private Tuple<string, PlayerList> season;
         public Tuple<string, PlayerList> Season
         {
-            get { return season; }
+            get => season;
             set
             {
                 season = value;
@@ -159,7 +158,7 @@ namespace CSharpZapoctak.ViewModels
         private SeasonDictionary seasonDictionary;
         public SeasonDictionary SeasonDictionary
         {
-            get { return seasonDictionary; }
+            get => seasonDictionary;
             set
             {
                 seasonDictionary = value;
@@ -170,10 +169,10 @@ namespace CSharpZapoctak.ViewModels
 
     class SeasonDictionary : NotifyPropertyChanged
     {
-        private ObservableCollection<PlayerEnlistmentDictionary> seasons = new ObservableCollection<PlayerEnlistmentDictionary>();
+        private ObservableCollection<PlayerEnlistmentDictionary> seasons = new();
         public ObservableCollection<PlayerEnlistmentDictionary> Seasons
         {
-            get { return seasons; }
+            get => seasons;
             set
             {
                 seasons = value;
@@ -184,7 +183,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility competitionVisibility = Visibility.Collapsed;
         public Visibility CompetitionVisibility
         {
-            get { return competitionVisibility; }
+            get => competitionVisibility;
             set
             {
                 competitionVisibility = value;
@@ -221,10 +220,10 @@ namespace CSharpZapoctak.ViewModels
 
     class PlayerList : NotifyPropertyChanged
     {
-        private ObservableCollection<PlayerEnlistment> players = new ObservableCollection<PlayerEnlistment>();
+        private ObservableCollection<PlayerEnlistment> players = new();
         public ObservableCollection<PlayerEnlistment> Players
         {
-            get { return players; }
+            get => players;
             set
             {
                 players = value;
@@ -236,7 +235,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility seasonVisibility = Visibility.Collapsed;
         public Visibility SeasonVisibility
         {
-            get { return seasonVisibility; }
+            get => seasonVisibility;
             set
             {
                 seasonVisibility = value;
@@ -277,7 +276,7 @@ namespace CSharpZapoctak.ViewModels
         private PlayerEnlistment editedPlayer;
         public PlayerEnlistment EditedPlayer
         {
-            get { return editedPlayer; }
+            get => editedPlayer;
             set
             {
                 if (value != null)
@@ -293,7 +292,7 @@ namespace CSharpZapoctak.ViewModels
         private Player selectedPlayer;
         public Player SelectedPlayer
         {
-            get { return selectedPlayer; }
+            get => selectedPlayer;
             set
             {
                 selectedPlayer = value;
@@ -301,10 +300,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int? selectedNumber = null;
+        private int? selectedNumber;
         public int? SelectedNumber
         {
-            get { return selectedNumber; }
+            get => selectedNumber;
             set
             {
                 selectedNumber = value;
@@ -315,7 +314,7 @@ namespace CSharpZapoctak.ViewModels
         private Position selectedPosition;
         public Position SelectedPosition
         {
-            get { return selectedPosition; }
+            get => selectedPosition;
             set
             {
                 selectedPosition = value;
@@ -323,10 +322,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int? editeddNumber = null;
+        private int? editeddNumber;
         public int? EditedNumber
         {
-            get { return editeddNumber; }
+            get => editeddNumber;
             set
             {
                 editeddNumber = value;
@@ -337,7 +336,7 @@ namespace CSharpZapoctak.ViewModels
         private Position editedPosition;
         public Position EditedPosition
         {
-            get { return editedPosition; }
+            get => editedPosition;
             set
             {
                 editedPosition = value;
@@ -350,7 +349,7 @@ namespace CSharpZapoctak.ViewModels
         private string newFirstName;
         public string NewFirstName
         {
-            get { return newFirstName; }
+            get => newFirstName;
             set
             {
                 newFirstName = value;
@@ -361,7 +360,7 @@ namespace CSharpZapoctak.ViewModels
         private string newLastName;
         public string NewLastName
         {
-            get { return newLastName; }
+            get => newLastName;
             set
             {
                 newLastName = value;
@@ -372,7 +371,7 @@ namespace CSharpZapoctak.ViewModels
         private DateTime? newBirthdate;
         public DateTime? NewBirthdate
         {
-            get { return newBirthdate; }
+            get => newBirthdate;
             set
             {
                 newBirthdate = value;
@@ -383,7 +382,7 @@ namespace CSharpZapoctak.ViewModels
         private string newGender;
         public string NewGender
         {
-            get { return newGender; }
+            get => newGender;
             set
             {
                 newGender = value;
@@ -391,10 +390,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int? newHeight = null;
+        private int? newHeight;
         public int? NewHeight
         {
-            get { return newHeight; }
+            get => newHeight;
             set
             {
                 newHeight = value;
@@ -402,10 +401,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int? newWeight = null;
+        private int? newWeight;
         public int? NewWeight
         {
-            get { return newWeight; }
+            get => newWeight;
             set
             {
                 newWeight = value;
@@ -416,7 +415,7 @@ namespace CSharpZapoctak.ViewModels
         private string newPlaysWith;
         public string NewPlaysWith
         {
-            get { return newPlaysWith; }
+            get => newPlaysWith;
             set
             {
                 newPlaysWith = value;
@@ -427,7 +426,7 @@ namespace CSharpZapoctak.ViewModels
         private Country newCitizenship;
         public Country NewCitizenship
         {
-            get { return newCitizenship; }
+            get => newCitizenship;
             set
             {
                 newCitizenship = value;
@@ -438,7 +437,7 @@ namespace CSharpZapoctak.ViewModels
         private string newBirthplaceCity;
         public string NewBirthplaceCity
         {
-            get { return newBirthplaceCity; }
+            get => newBirthplaceCity;
             set
             {
                 newBirthplaceCity = value;
@@ -449,7 +448,7 @@ namespace CSharpZapoctak.ViewModels
         private Country newBirthplaceCountry;
         public Country NewBirthplaceCountry
         {
-            get { return newBirthplaceCountry; }
+            get => newBirthplaceCountry;
             set
             {
                 newBirthplaceCountry = value;
@@ -460,7 +459,7 @@ namespace CSharpZapoctak.ViewModels
         private string newInfo;
         public string NewInfo
         {
-            get { return newInfo; }
+            get => newInfo;
             set
             {
                 newInfo = value;
@@ -471,7 +470,7 @@ namespace CSharpZapoctak.ViewModels
         private string newStatus = "";
         public string NewStatus
         {
-            get { return newStatus; }
+            get => newStatus;
             set
             {
                 newStatus = value;
@@ -525,41 +524,40 @@ namespace CSharpZapoctak.ViewModels
         private void AddPlayer(object param)
         {
             IList teamAndSeasonID = param as IList;
-            int teamID = ((Team)teamAndSeasonID[0]).id;
+            int teamID = ((Team)teamAndSeasonID[0]).ID;
             int seasonID = (int)teamAndSeasonID[1];
 
             if (SelectedPlayer == null || SelectedPosition == null || SelectedNumber == null)
             {
-                MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            else if (Players.Any(x => x.id == SelectedPlayer.id))
+            else if (Players.Any(x => x.id == SelectedPlayer.ID))
             {
-                MessageBox.Show("Selected player is already enlisted.", "Player already enlisted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Selected player is already enlisted.", "Player already enlisted", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else if (Players.Any(x => x.Number == SelectedNumber))
             {
-                MessageBox.Show("Number " + SelectedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Number " + SelectedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
             {
                 Players.Add(new PlayerEnlistment
                 {
-                    id = SelectedPlayer.id,
+                    id = SelectedPlayer.ID,
                     parent = Players,
                     Name = SelectedPlayer.FullName,
                     Position = SelectedPosition,
                     Number = (int)SelectedNumber
                 });
 
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO player_enlistment(player_id, team_id, season_id, number, position_code) " +
-                                                    "VALUES (" + SelectedPlayer.id + ", " + teamID + ", " + seasonID + ", " + SelectedNumber + ", '" + SelectedPosition.Code + "')", connection);
+                MySqlConnection connection = new(SportsData.ConnectionStringSport);
+                MySqlCommand cmd = new("INSERT INTO player_enlistment(player_id, team_id, season_id, number, position_code) " +
+                                                    "VALUES (" + SelectedPlayer.ID + ", " + teamID + ", " + seasonID + ", " + SelectedNumber + ", '" + SelectedPosition.Code + "')", connection);
 
                 try
                 {
                     connection.Open();
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
                     SelectedNumber = null;
                     SelectedPlayer = null;
@@ -567,7 +565,7 @@ namespace CSharpZapoctak.ViewModels
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -579,27 +577,26 @@ namespace CSharpZapoctak.ViewModels
         private void EditPlayer(object param)
         {
             IList teamAndSeasonID = param as IList;
-            int teamID = ((Team)teamAndSeasonID[0]).id;
+            int teamID = ((Team)teamAndSeasonID[0]).ID;
             int seasonID = (int)teamAndSeasonID[1];
 
             if (EditedPlayer == null || EditedPosition == null || EditedNumber == null)
             {
-                MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else if (EditedNumber != EditedPlayer.Number && Players.Any(x => x.Number == EditedNumber))
             {
-                MessageBox.Show("Number " + EditedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Number " + EditedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
             {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("UPDATE player_enlistment SET number = " + EditedNumber + ", position_code = '" + EditedPosition.Code + "' " +
+                MySqlConnection connection = new(SportsData.ConnectionStringSport);
+                MySqlCommand cmd = new("UPDATE player_enlistment SET number = " + EditedNumber + ", position_code = '" + EditedPosition.Code + "' " +
                                                     "WHERE player_id = " +EditedPlayer.id + " AND team_id = " + teamID + " AND season_id = " + seasonID, connection);
                 try
                 {
                     connection.Open();
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
                     EditedPlayer.Number = (int)EditedNumber;
                     EditedPlayer.Position = EditedPosition;
@@ -608,7 +605,7 @@ namespace CSharpZapoctak.ViewModels
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -620,7 +617,7 @@ namespace CSharpZapoctak.ViewModels
         private void AddNewPlayer(object param)
         {
             IList teamSeasonIDViewModel = param as IList;
-            int teamID = ((Team)teamSeasonIDViewModel[0]).id;
+            int teamID = ((Team)teamSeasonIDViewModel[0]).ID;
             int seasonID = (int)teamSeasonIDViewModel[1];
 
             if (string.IsNullOrWhiteSpace(NewFirstName) || string.IsNullOrWhiteSpace(NewLastName) || NewBirthdate == null
@@ -628,11 +625,11 @@ namespace CSharpZapoctak.ViewModels
                 || NewCitizenship == null || string.IsNullOrWhiteSpace(NewBirthplaceCity) || NewBirthplaceCountry == null
                 || string.IsNullOrWhiteSpace(NewStatus))
             {
-                MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else if (Players.Any(x => x.Number == SelectedNumber))
             {
-                MessageBox.Show("Number " + SelectedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ = MessageBox.Show("Number " + SelectedNumber + " is already taken.", "Number is taken", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
             {
@@ -645,10 +642,9 @@ namespace CSharpZapoctak.ViewModels
                 int newID = -2;
 
                 //insert new player
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
+                MySqlConnection connection = new(SportsData.ConnectionStringSport);
                 //MySqlCommand cmd = new MySqlCommand(s, connection);
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO player(first_name, last_name, birthdate, gender, height, weight, plays_with, citizenship, birthplace_city, birthplace_country, status, info) " +
+                MySqlCommand cmd = new("INSERT INTO player(first_name, last_name, birthdate, gender, height, weight, plays_with, citizenship, birthplace_city, birthplace_country, status, info) " +
                                                     "VALUES ('" + NewFirstName + "', '" + NewLastName + "', '" + ((DateTime)NewBirthdate).ToString("yyyy-MM-dd H:mm:ss") + "', '" + gender + "'," +
                                                     " " + NewHeight + ", " + NewWeight + ", '" + playsWith + "', '" + NewCitizenship.CodeTwo + "', '" + NewBirthplaceCity + "', " +
                                                     "'" + NewBirthplaceCountry.CodeTwo + "'" +
@@ -656,10 +652,10 @@ namespace CSharpZapoctak.ViewModels
                 try
                 {
                     connection.Open();
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
                     newID = (int)cmd.LastInsertedId;
 
-                    ((TeamViewModel)teamSeasonIDViewModel[2]).Players.Add(new Player { id = newID, FirstName = NewFirstName, LastName = NewLastName });
+                    ((TeamViewModel)teamSeasonIDViewModel[2]).Players.Add(new Player { ID = newID, FirstName = NewFirstName, LastName = NewLastName });
 
                     Players.Add(new PlayerEnlistment
                     {
@@ -674,7 +670,7 @@ namespace CSharpZapoctak.ViewModels
                     cmd = new MySqlCommand("INSERT INTO player_enlistment(player_id, team_id, season_id, number, position_code) " +
                                                         "VALUES (" + newID + ", " + teamID + ", " + seasonID + ", " + SelectedNumber + ", '" + SelectedPosition.Code + "')", connection);
 
-                    cmd.ExecuteNonQuery();
+                    _ = cmd.ExecuteNonQuery();
 
                     SelectedNumber = null;
                     SelectedPlayer = null;
@@ -695,7 +691,7 @@ namespace CSharpZapoctak.ViewModels
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -718,7 +714,7 @@ namespace CSharpZapoctak.ViewModels
         private ObservableCollection<CompetitionDictionary> competitionEnlistments;
         public ObservableCollection<CompetitionDictionary> CompetitionEnlistments
         {
-            get { return competitionEnlistments; }
+            get => competitionEnlistments;
             set
             {
                 competitionEnlistments = value;
@@ -743,8 +739,8 @@ namespace CSharpZapoctak.ViewModels
         {
             NavigateEditTeamCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new EditTeamViewModel(navigationStore, CurrentTeam)));
             CurrentTeam = t;
-            CurrentTeam.Country = SportsData.countries.Where(x => x.CodeTwo == CurrentTeam.Country.CodeTwo).First();
-            Countries = SportsData.countries;
+            CurrentTeam.Country = SportsData.Countries.Where(x => x.CodeTwo == CurrentTeam.Country.CodeTwo).First();
+            Countries = SportsData.Countries;
             LoadStatuses();
             LoadGenders();
             LoadPlaysWith();
@@ -778,21 +774,20 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadTeamInfo()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT info FROM team WHERE id = " + CurrentTeam.id, connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT info FROM team WHERE id = " + CurrentTeam.ID, connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 CurrentTeam.Info = dataTable.Rows[0]["info"].ToString();
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -804,20 +799,19 @@ namespace CSharpZapoctak.ViewModels
         {
             CompetitionEnlistments = new ObservableCollection<CompetitionDictionary>();
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT player_id, season_id, number, p.first_name AS player_first_name, p.last_name AS player_last_name, pos.name AS position, s.name AS season_name, c.name AS competition_name " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT player_id, season_id, number, p.first_name AS player_first_name, p.last_name AS player_last_name, pos.name AS position, s.name AS season_name, c.name AS competition_name " +
                                                 "FROM player_enlistment " +
                                                 "INNER JOIN player AS p ON p.id = player_id " +
                                                 "INNER JOIN position AS pos ON pos.code = position_code " +
                                                 "INNER JOIN seasons AS s ON s.id = season_id " +
                                                 "INNER JOIN competitions AS c ON c.id = s.competition_id " +
-                                                "WHERE team_id = " + CurrentTeam.id + " ORDER BY number", connection);
+                                                "WHERE team_id = " + CurrentTeam.ID + " ORDER BY number", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow row in dataTable.Rows)
@@ -848,7 +842,7 @@ namespace CSharpZapoctak.ViewModels
                                                 "FROM team_enlistment " +
                                                 "INNER JOIN seasons AS s ON s.id = season_id " +
                                                 "INNER JOIN competitions AS c ON c.id = s.competition_id " +
-                                                "WHERE team_id = " + CurrentTeam.id, connection);
+                                                "WHERE team_id = " + CurrentTeam.ID, connection);
 
                 dataTable = new DataTable();
                 dataTable.Load(cmd.ExecuteReader());
@@ -870,7 +864,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -880,14 +874,13 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadPositions()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT code, name FROM position", connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT code, name FROM position", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow row in dataTable.Rows)
@@ -897,7 +890,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -907,27 +900,26 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadPlayers()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id, first_name, last_name FROM player", connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT id, first_name, last_name FROM player", connection);
 
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    if (int.Parse(row["id"].ToString()) != SportsData.NO_ID)
+                    if (int.Parse(row["id"].ToString()) != SportsData.NOID)
                     {
-                        Players.Add(new Player { id = int.Parse(row["id"].ToString()), FirstName = row["first_name"].ToString(), LastName = row["last_name"].ToString() });
+                        Players.Add(new Player { ID = int.Parse(row["id"].ToString()), FirstName = row["first_name"].ToString(), LastName = row["last_name"].ToString() });
                     }
                 }
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

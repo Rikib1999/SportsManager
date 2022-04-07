@@ -2,14 +2,14 @@
 
 namespace CSharpZapoctak.Models
 {
-    class Strength : NotifyPropertyChanged
+    public class Strength : NotifyPropertyChanged
     {
-        public int id;
+        public int ID { get; set; }
 
         private string situation = "";
         public string Situation
         {
-            get { return situation; }
+            get => situation;
             set
             {
                 situation = value;
@@ -20,7 +20,7 @@ namespace CSharpZapoctak.Models
         private string advantage;
         public string Advantage
         {
-            get { return advantage; }
+            get => advantage;
             set
             {
                 advantage = value;

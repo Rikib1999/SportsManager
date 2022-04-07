@@ -4,153 +4,15 @@ using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class MatchesSelectionViewModel : NotifyPropertyChanged
+    public class MatchesSelectionViewModel : NotifyPropertyChanged
     {
-        public class MatchStats : NotifyPropertyChanged, IStats
-        {
-            #region Properties
-            private string partOfSeason = "";
-            public string PartOfSeason
-            {
-                get { return partOfSeason; }
-                set
-                {
-                    partOfSeason = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private string score = "";
-            public string Score
-            {
-                get { return score; }
-                set
-                {
-                    score = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int goals = 0;
-            public int Goals
-            {
-                get { return goals; }
-                set
-                {
-                    goals = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int assists = 0;
-            public int Assists
-            {
-                get { return assists; }
-                set
-                {
-                    assists = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private int penalties = 0;
-            public int Penalties
-            {
-                get { return penalties; }
-                set
-                {
-                    penalties = value;
-                    OnPropertyChanged();
-                }
-            }
-            #endregion
-
-            public MatchStats(Match m)
-            {
-                CalculateStats(m.id).Await();
-            }
-
-            public async Task CalculateStats(int matchID)
-            {
-                List<Task> tasks = new List<Task>();
-                tasks.Add(Task.Run(() => CountGoals(matchID)));
-                tasks.Add(Task.Run(() => CountAssists(matchID)));
-                tasks.Add(Task.Run(() => CountPenalties(matchID)));
-                await Task.WhenAll(tasks);
-            }
-            private async Task CountGoals(int matchID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
-                                                    "WHERE match_id = " + matchID, connection);
-                try
-                {
-                    connection.Open();
-                    Goals = (int)(long)await cmd.ExecuteScalarAsync();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            private async Task CountAssists(int matchID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
-                                                    "WHERE assist_player_id <> -1 AND match_id = " + matchID, connection);
-                try
-                {
-                    connection.Open();
-                    Assists = (int)(long)await cmd.ExecuteScalarAsync();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            private async Task CountPenalties(int matchID)
-            {
-                string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-                MySqlConnection connection = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM penalties " +
-                                                    "WHERE match_id = " + matchID, connection);
-                try
-                {
-                    connection.Open();
-                    Penalties = (int)(long)await cmd.ExecuteScalarAsync();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
         #region Commands
         public ICommand NavigateMatchCommand { get; set; }
 
@@ -197,7 +59,7 @@ namespace CSharpZapoctak.ViewModels
         private int? exportTop;
         public int? ExportTop
         {
-            get { return exportTop; }
+            get => exportTop;
             set
             {
                 exportTop = value;
@@ -209,7 +71,7 @@ namespace CSharpZapoctak.ViewModels
         private bool showInfo = true;
         public bool ShowInfo
         {
-            get { return showInfo; }
+            get => showInfo;
             set
             {
                 showInfo = value;
@@ -221,7 +83,7 @@ namespace CSharpZapoctak.ViewModels
         private bool showStats = true;
         public bool ShowStats
         {
-            get { return showStats; }
+            get => showStats;
             set
             {
                 showStats = value;
@@ -233,7 +95,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility infoVisibility = Visibility.Visible;
         public Visibility InfoVisibility
         {
-            get { return infoVisibility; }
+            get => infoVisibility;
             set
             {
                 infoVisibility = value;
@@ -244,7 +106,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility statsVisibility = Visibility.Visible;
         public Visibility StatsVisibility
         {
-            get { return statsVisibility; }
+            get => statsVisibility;
             set
             {
                 statsVisibility = value;
@@ -262,29 +124,21 @@ namespace CSharpZapoctak.ViewModels
             NavigateMatchCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new MatchViewModel(navigationStore, SelectedMatch, new MatchesSelectionViewModel(navigationStore))));
             SelectedMatch = null;
 
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT h.name AS home_name, a.name AS away_name, s.competition_id AS competition_id, s.name AS season_name, c.name AS competition_name, " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT h.name AS home_name, a.name AS away_name, s.competition_id AS competition_id, s.name AS season_name, c.name AS competition_name, " +
                                                 "matches.id, datetime, home_score, away_score, overtime, shootout, forfeit, qualification_id, serie_match_number FROM matches " +
                                                 "INNER JOIN seasons AS s ON s.id = matches.season_id " +
-                                                "INNER JOIN competitions AS c ON c.id = competition_id", connection);
-            if (SportsData.SPORT.name == "tennis")
-            {
-                cmd.CommandText += " INNER JOIN player AS h ON h.id = matches.home_competitor";
-                cmd.CommandText += " INNER JOIN player AS a ON a.id = matches.away_competitor";
-            }
-            else
-            {
-                cmd.CommandText += " INNER JOIN team AS h ON h.id = matches.home_competitor";
-                cmd.CommandText += " INNER JOIN team AS a ON a.id = matches.away_competitor";
-            }
-            cmd.CommandText += " WHERE matches.played = 1";
+                                                "INNER JOIN competitions AS c ON c.id = competition_id " +
+                                                "INNER JOIN team AS h ON h.id = matches.home_competitor " +
+                                                "INNER JOIN team AS a ON a.id = matches.away_competitor " +
+                                                "WHERE matches.played = 1", connection);
+
             if (SportsData.IsCompetitionSet())
             {
-                cmd.CommandText += " AND competition_id = " + SportsData.COMPETITION.id;
+                cmd.CommandText += " AND competition_id = " + SportsData.COMPETITION.ID;
                 if (SportsData.IsSeasonSet())
                 {
-                    cmd.CommandText += " AND season_id = " + SportsData.SEASON.id;
+                    cmd.CommandText += " AND season_id = " + SportsData.SEASON.ID;
                 }
             }
             cmd.CommandText += " ORDER BY matches.datetime DESC";
@@ -292,25 +146,25 @@ namespace CSharpZapoctak.ViewModels
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 Matches = new ObservableCollection<Match>();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Competition c = new Competition();
+                    Competition c = new();
                     c.Name = row["competition_name"].ToString();
-                    Season s = new Season();
+                    Season s = new();
                     s.Name = row["season_name"].ToString();
-                    Team home = new Team();
+                    Team home = new();
                     home.Name = row["home_name"].ToString();
-                    Team away = new Team();
+                    Team away = new();
                     away.Name = row["away_name"].ToString();
 
-                    Match m = new Match
+                    Match m = new()
                     {
-                        id = int.Parse(row["id"].ToString()),
+                        ID = int.Parse(row["id"].ToString()),
                         Competition = c,
                         Season = s,
                         Datetime = DateTime.Parse(row["datetime"].ToString()),
@@ -342,7 +196,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

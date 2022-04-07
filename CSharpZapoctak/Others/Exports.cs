@@ -15,24 +15,24 @@ using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.Others
 {
-    static class Exports
+    public static class Exports
     {
-        public static void ExportTable(System.Windows.Controls.DataGrid dataGrid, string format, int? exportTop)
+        public static void ExportTable(DataGrid dataGrid, string format, int? exportTop)
         {
             //create excel file
-            Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
-            Microsoft.Office.Interop.Excel._Workbook excelWorkbook;
+            Microsoft.Office.Interop.Excel.Application excelApplication = new();
+            _Workbook excelWorkbook;
             excelWorkbook = excelApplication.Workbooks.Add();
-            Microsoft.Office.Interop.Excel.Worksheet table = (Microsoft.Office.Interop.Excel.Worksheet)excelApplication.ActiveSheet;
+            Worksheet table = (Worksheet)excelApplication.ActiveSheet;
 
             //info
-            table.Range["A" + 1].Value = char.ToUpper(SportsData.SPORT.name[0]) + SportsData.SPORT.name.Substring(1).Replace('_', '-');
-            if (SportsData.COMPETITION.id > 0) { table.Range["A" + 1].Value += " - " + SportsData.COMPETITION.Name; }
-            if (SportsData.SEASON.id > 0) { table.Range["A" + 1].Value += " - " + SportsData.SEASON.Name; }
+            table.Range["A" + 1].Value = char.ToUpper(SportsData.SPORT.Name[0]) + SportsData.SPORT.Name[1..].Replace('_', '-');
+            if (SportsData.IsCompetitionSet()) { table.Range["A" + 1].Value += " - " + SportsData.COMPETITION.Name; }
+            if (SportsData.IsSeasonSet()) { table.Range["A" + 1].Value += " - " + SportsData.SEASON.Name; }
 
             //header
-            List<string> propNames = new List<string>();
-            List<DataGridColumn> columns = new List<DataGridColumn>();
+            List<string> propNames = new();
+            List<DataGridColumn> columns = new();
             for (int i = 1; i < dataGrid.Columns.Count; i++)
             {
                 if (dataGrid.Columns[i].Visibility != Visibility.Visible) { continue; }
@@ -42,7 +42,7 @@ namespace CSharpZapoctak.Others
 
             for (int i = 0; i < columns.Count; i++)
             {
-                var binding = (columns[i] as DataGridBoundColumn).Binding as Binding;
+                Binding binding = (columns[i] as DataGridBoundColumn).Binding as Binding;
                 propNames.Add(binding.Path.Path);
                 char col = (char)('A' + i);
                 table.Range[col + "2"].Value = columns[i].Header;
@@ -62,7 +62,7 @@ namespace CSharpZapoctak.Others
             }
 
             //create table
-            var range = table.get_Range("A2:" + (char)('A' + columns.Count - 1) + "" + (rowCount + 2));
+            Microsoft.Office.Interop.Excel.Range range = table.get_Range("A2:" + (char)('A' + columns.Count - 1) + "" + (rowCount + 2));
             table.ListObjects.AddEx(XlListObjectSourceType.xlSrcRange, range, Type.Missing, XlYesNoGuess.xlYes, Type.Missing).Name = "MyTableStyle";
             table.ListObjects.get_Item("MyTableStyle").TableStyle = "TableStyleLight9";
 
@@ -80,12 +80,12 @@ namespace CSharpZapoctak.Others
         public static void ExportStandings(ObservableCollection<Group> groups, string format, string lastRound)
         {
             //load excel file
-            string tempPath = System.IO.Path.GetTempFileName();
-            System.IO.File.WriteAllBytes(tempPath, Properties.Resources.standings);
-            Microsoft.Office.Interop.Excel.Application excelApplication = new Microsoft.Office.Interop.Excel.Application();
-            Microsoft.Office.Interop.Excel._Workbook excelWorkbook;
+            string tempPath = Path.GetTempFileName();
+            File.WriteAllBytes(tempPath, Properties.Resources.standings);
+            Microsoft.Office.Interop.Excel.Application excelApplication = new();
+            _Workbook excelWorkbook;
             excelWorkbook = excelApplication.Workbooks.Open(tempPath);
-            Microsoft.Office.Interop.Excel.Worksheet standings = (Microsoft.Office.Interop.Excel.Worksheet)excelApplication.ActiveSheet;
+            Worksheet standings = (Worksheet)excelApplication.ActiveSheet;
 
             // if group has more than 42 teams, divide it into more pages
 
@@ -110,7 +110,7 @@ namespace CSharpZapoctak.Others
             standings.Range["F5"].Value = "Standings after " + lastRound;
 
             //insert season logo
-            InsertLogo(SportsData.COMPETITION.LogoPath, 240, 200, "A1", standings);
+            InsertLogo(SportsData.COMPETITION.ImagePath, 240, 200, "A1", standings);
 
             foreach (Group g in groups)
             {
@@ -249,9 +249,8 @@ namespace CSharpZapoctak.Others
             if (!File.Exists(logoPath)) { return; }
             object missing = System.Reflection.Missing.Value;
             Microsoft.Office.Interop.Excel.Range picPosition = sheet.get_Range(range);
-            Microsoft.Office.Interop.Excel.Pictures p = sheet.Pictures(missing) as Microsoft.Office.Interop.Excel.Pictures;
-            Microsoft.Office.Interop.Excel.Picture pic = null;
-            pic = p.Insert(logoPath, missing);
+            Pictures p = sheet.Pictures(missing) as Pictures;
+            Picture pic = p.Insert(logoPath, missing);
             //1 unit = 1.33 pixels
             double ratio = 1.0 + (1.0 / 3.0);
             double maxWidth = width / ratio;
@@ -296,23 +295,19 @@ namespace CSharpZapoctak.Others
 
         public static void ExportControlToImage(FrameworkElement chart)
         {
-            RenderTargetBitmap rtb = new RenderTargetBitmap((int)chart.ActualWidth, (int)chart.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            RenderTargetBitmap rtb = new((int)chart.ActualWidth, (int)chart.ActualHeight, 96, 96, PixelFormats.Pbgra32);
             Rect bounds = VisualTreeHelper.GetDescendantBounds(chart);
-            DrawingVisual dv = new DrawingVisual();
+            DrawingVisual dv = new();
             using (DrawingContext ctx = dv.RenderOpen())
             {
-                VisualBrush vb = new VisualBrush(chart);
+                VisualBrush vb = new(chart);
                 ctx.DrawRectangle(vb, null, new Rect(new System.Windows.Point(), bounds.Size));
             }
             rtb.Render(dv);
 
-            PngBitmapEncoder png = new PngBitmapEncoder();
+            PngBitmapEncoder png = new();
             png.Frames.Add(BitmapFrame.Create(rtb));
-
-            //select path
-            string imagePath = "";
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            SaveFileDialog saveFileDialog = new();
             saveFileDialog.Filter = "PNG Files | *.png";
             saveFileDialog.DefaultExt = "png";
             saveFileDialog.FileName = "chart";
@@ -320,11 +315,10 @@ namespace CSharpZapoctak.Others
             bool? result = saveFileDialog.ShowDialog();
             if (result.ToString() != string.Empty)
             {
-                imagePath = saveFileDialog.FileName;
-                using (Stream fileStream = new FileStream(imagePath, FileMode.Create))
-                {
-                    png.Save(fileStream);
-                }
+                //select path
+                string imagePath = saveFileDialog.FileName;
+                using Stream fileStream = new FileStream(imagePath, FileMode.Create);
+                png.Save(fileStream);
             }
         }
 
@@ -332,7 +326,7 @@ namespace CSharpZapoctak.Others
         {
             string tablePath;
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            SaveFileDialog saveFileDialog = new();
             switch (format)
             {
                 case "PDF":

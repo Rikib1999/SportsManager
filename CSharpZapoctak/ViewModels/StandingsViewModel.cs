@@ -20,13 +20,13 @@ using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class TeamTableStats : NotifyPropertyChanged, IStats
+    public class TeamTableStats : NotifyPropertyChanged, IStats
     {
         #region Properties
-        private int gamesPlayed = 0;
+        private int gamesPlayed;
         public int GamesPlayed
         {
-            get { return gamesPlayed; }
+            get => gamesPlayed;
             set
             {
                 gamesPlayed = value;
@@ -34,10 +34,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int wins = 0;
+        private int wins;
         public int Wins
         {
-            get { return wins; }
+            get => wins;
             set
             {
                 wins = value;
@@ -45,10 +45,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int winsOT = 0;
+        private int winsOT;
         public int WinsOT
         {
-            get { return winsOT; }
+            get => winsOT;
             set
             {
                 winsOT = value;
@@ -56,10 +56,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int ties = 0;
+        private int ties;
         public int Ties
         {
-            get { return ties; }
+            get => ties;
             set
             {
                 ties = value;
@@ -67,10 +67,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int lossesOT = 0;
+        private int lossesOT;
         public int LossesOT
         {
-            get { return lossesOT; }
+            get => lossesOT;
             set
             {
                 lossesOT = value;
@@ -78,10 +78,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int losses = 0;
+        private int losses;
         public int Losses
         {
-            get { return losses; }
+            get => losses;
             set
             {
                 losses = value;
@@ -89,10 +89,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int goals = 0;
+        private int goals;
         public int Goals
         {
-            get { return goals; }
+            get => goals;
             set
             {
                 goals = value;
@@ -100,10 +100,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int assists = 0;
+        private int assists;
         public int Assists
         {
-            get { return assists; }
+            get => assists;
             set
             {
                 assists = value;
@@ -111,10 +111,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int goalsAgainst = 0;
+        private int goalsAgainst;
         public int GoalsAgainst
         {
-            get { return goalsAgainst; }
+            get => goalsAgainst;
             set
             {
                 goalsAgainst = value;
@@ -122,10 +122,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int goalDifference = 0;
+        private int goalDifference;
         public int GoalDifference
         {
-            get { return goalDifference; }
+            get => goalDifference;
             set
             {
                 goalDifference = value;
@@ -133,10 +133,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int penaltyMinutes = 0;
+        private int penaltyMinutes;
         public int PenaltyMinutes
         {
-            get { return penaltyMinutes; }
+            get => penaltyMinutes;
             set
             {
                 penaltyMinutes = value;
@@ -144,10 +144,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int penaltyMinutesAgainst = 0;
+        private int penaltyMinutesAgainst;
         public int PenaltyMinutesAgainst
         {
-            get { return penaltyMinutesAgainst; }
+            get => penaltyMinutesAgainst;
             set
             {
                 penaltyMinutesAgainst = value;
@@ -155,10 +155,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private int points = 0;
+        private int points;
         public int Points
         {
-            get { return points; }
+            get => points;
             set
             {
                 points = value;
@@ -171,12 +171,12 @@ namespace CSharpZapoctak.ViewModels
 
         public TeamTableStats(Team t, Round r)
         {
-            CalculateStats(t.id, r.id);
+            CalculateStats(t.ID, r.ID);
         }
 
         public void CalculateStats(int teamID, int roundID)
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             tasks.Add(Task.Run(() => CountMatches(teamID, roundID)));
             tasks.Add(Task.Run(() => CountGoals(teamID, roundID)));
             tasks.Add(Task.Run(() => CountAssists(teamID, roundID)));
@@ -189,18 +189,17 @@ namespace CSharpZapoctak.ViewModels
 
         public async Task CountMatches(int teamID, int roundID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT home_competitor, away_competitor, home_score, away_score, overtime, shootout, round " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT home_competitor, away_competitor, home_score, away_score, overtime, shootout, round " +
                                                 "FROM matches " +
                                                 "WHERE (home_competitor = " + teamID + " OR away_competitor = " + teamID + ") AND played = 1 " +
                                                 "AND qualification_id = -1 AND serie_match_number = -1 AND round <= " + roundID, connection);
-            if (SportsData.SEASON.id > 0) { cmd.CommandText += " AND matches.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.ID > 0) { cmd.CommandText += " AND matches.season_id = " + SportsData.SEASON.ID; }
             try
             {
                 connection.Open();
 
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(await cmd.ExecuteReaderAsync());
 
                 foreach (DataRow row in dataTable.Rows)
@@ -219,12 +218,12 @@ namespace CSharpZapoctak.ViewModels
                         {
                             if (overtime || shootout)
                             {
-                                if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForOTWin; }
+                                if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForOTWin; }
                                 WinsOT++;
                             }
                             else
                             {
-                                if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForWin; }
+                                if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForWin; }
                                 Wins++;
                             }
                         }
@@ -232,18 +231,18 @@ namespace CSharpZapoctak.ViewModels
                         {
                             if (overtime || shootout)
                             {
-                                if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForOTLoss; }
+                                if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForOTLoss; }
                                 LossesOT++;
                             }
                             else
                             {
-                                if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForLoss; }
+                                if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForLoss; }
                                 Losses++;
                             }
                         }
                         else
                         {
-                            if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForTie; }
+                            if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForTie; }
                             Ties++;
                         }
                     }
@@ -253,12 +252,12 @@ namespace CSharpZapoctak.ViewModels
                         {
                             if (overtime || shootout)
                             {
-                                if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForOTLoss; }
+                                if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForOTLoss; }
                                 LossesOT++;
                             }
                             else
                             {
-                                if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForLoss; }
+                                if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForLoss; }
                                 Losses++;
                             }
                         }
@@ -266,18 +265,18 @@ namespace CSharpZapoctak.ViewModels
                         {
                             if (overtime || shootout)
                             {
-                                if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForOTWin; }
+                                if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForOTWin; }
                                 WinsOT++;
                             }
                             else
                             {
-                                if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForWin; }
+                                if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForWin; }
                                 Wins++;
                             }
                         }
                         else
                         {
-                            if (SportsData.SEASON.id > 0) { Points += (int)SportsData.SEASON.PointsForTie; }
+                            if (SportsData.SEASON.ID > 0) { Points += (int)SportsData.SEASON.PointsForTie; }
                             Ties++;
                         }
                     }
@@ -285,7 +284,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -295,12 +294,11 @@ namespace CSharpZapoctak.ViewModels
 
         public async Task CountGoals(int teamID, int roundID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT COUNT(*) FROM goals " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
                                                 "WHERE team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
-            if (SportsData.SEASON.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.ID > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.ID; }
             try
             {
                 connection.Open();
@@ -308,7 +306,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -318,12 +316,11 @@ namespace CSharpZapoctak.ViewModels
 
         private async Task CountAssists(int teamID, int roundID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT COUNT(*) FROM goals " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
                                                 "WHERE assist_player_id <> -1 AND team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
-            if (SportsData.SEASON.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.ID > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.ID; }
             try
             {
                 connection.Open();
@@ -331,7 +328,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -341,12 +338,11 @@ namespace CSharpZapoctak.ViewModels
 
         public async Task CountGoalsAgainst(int teamID, int roundID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM goals " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT COUNT(*) FROM goals " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
                                                 "WHERE opponent_team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
-            if (SportsData.SEASON.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.ID > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.ID; }
             try
             {
                 connection.Open();
@@ -354,7 +350,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -364,13 +360,12 @@ namespace CSharpZapoctak.ViewModels
 
         public async Task CountPenaltyMinutes(int teamID, int roundID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT COALESCE(SUM(p.minutes), 0) FROM penalties " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT COALESCE(SUM(p.minutes), 0) FROM penalties " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
                                                 "INNER JOIN penalty_type AS p ON p.code = penalty_type_id " +
                                                 "WHERE team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
-            if (SportsData.SEASON.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.ID > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.ID; }
             try
             {
                 connection.Open();
@@ -378,7 +373,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -388,13 +383,12 @@ namespace CSharpZapoctak.ViewModels
 
         public async Task CountPenaltyMinutesAgainst(int teamID, int roundID)
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT COALESCE(SUM(p.minutes), 0) FROM penalties " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT COALESCE(SUM(p.minutes), 0) FROM penalties " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
                                                 "INNER JOIN penalty_type AS p ON p.code = penalty_type_id " +
                                                 "WHERE opponent_team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
-            if (SportsData.SEASON.id > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.id; }
+            if (SportsData.SEASON.ID > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.ID; }
             try
             {
                 connection.Open();
@@ -402,7 +396,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -459,13 +453,13 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class StandingsViewModel : NotifyPropertyChanged
+    public class StandingsViewModel : NotifyPropertyChanged
     {
         #region Visibilities
         private Visibility winnerIsSetVisibility = Visibility.Collapsed;
         public Visibility WinnerIsSetVisibility
         {
-            get { return winnerIsSetVisibility; }
+            get => winnerIsSetVisibility;
             set
             {
                 winnerIsSetVisibility = value;
@@ -476,7 +470,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility winnerIsNotSetVisibility = Visibility.Visible;
         public Visibility WinnerIsNotSetVisibility
         {
-            get { return winnerIsNotSetVisibility; }
+            get => winnerIsNotSetVisibility;
             set
             {
                 winnerIsNotSetVisibility = value;
@@ -487,7 +481,7 @@ namespace CSharpZapoctak.ViewModels
         private Visibility roundsVisibility = Visibility.Visible;
         public Visibility RoundsVisibility
         {
-            get { return roundsVisibility; }
+            get => roundsVisibility;
             set
             {
                 roundsVisibility = value;
@@ -577,10 +571,10 @@ namespace CSharpZapoctak.ViewModels
 
         public double PenaltiesXSectionEnd { get; set; }
 
-        private VisualElementsCollection goalsVisuals = new VisualElementsCollection();
+        private VisualElementsCollection goalsVisuals = new();
         public VisualElementsCollection GoalsVisuals
         {
-            get { return goalsVisuals; }
+            get => goalsVisuals;
             set
             {
                 goalsVisuals = value;
@@ -588,10 +582,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private VisualElementsCollection assistsVisuals = new VisualElementsCollection();
+        private VisualElementsCollection assistsVisuals = new();
         public VisualElementsCollection AssistsVisuals
         {
-            get { return assistsVisuals; }
+            get => assistsVisuals;
             set
             {
                 assistsVisuals = value;
@@ -599,10 +593,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private VisualElementsCollection penaltiesVisuals = new VisualElementsCollection();
+        private VisualElementsCollection penaltiesVisuals = new();
         public VisualElementsCollection PenaltiesVisuals
         {
-            get { return penaltiesVisuals; }
+            get => penaltiesVisuals;
             set
             {
                 penaltiesVisuals = value;
@@ -610,10 +604,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private SeriesCollection goalsSeries = new SeriesCollection();
+        private SeriesCollection goalsSeries = new();
         public SeriesCollection GoalsSeries
         {
-            get { return goalsSeries; }
+            get => goalsSeries;
             set
             {
                 goalsSeries = value;
@@ -621,10 +615,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private SeriesCollection goalsAgainstSeries = new SeriesCollection();
+        private SeriesCollection goalsAgainstSeries = new();
         public SeriesCollection GoalsAgainstSeries
         {
-            get { return goalsAgainstSeries; }
+            get => goalsAgainstSeries;
             set
             {
                 goalsAgainstSeries = value;
@@ -632,10 +626,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private SeriesCollection penaltyMinutesSeries = new SeriesCollection();
+        private SeriesCollection penaltyMinutesSeries = new();
         public SeriesCollection PenaltyMinutesSeries
         {
-            get { return penaltyMinutesSeries; }
+            get => penaltyMinutesSeries;
             set
             {
                 penaltyMinutesSeries = value;
@@ -643,10 +637,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private SeriesCollection goalsScatterSeries = new SeriesCollection();
+        private SeriesCollection goalsScatterSeries = new();
         public SeriesCollection GoalsScatterSeries
         {
-            get { return goalsScatterSeries; }
+            get => goalsScatterSeries;
             set
             {
                 goalsScatterSeries = value;
@@ -654,10 +648,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private SeriesCollection assistsScatterSeries = new SeriesCollection();
+        private SeriesCollection assistsScatterSeries = new();
         public SeriesCollection AssistsScatterSeries
         {
-            get { return assistsScatterSeries; }
+            get => assistsScatterSeries;
             set
             {
                 assistsScatterSeries = value;
@@ -665,10 +659,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private SeriesCollection penaltiesScatterSeries = new SeriesCollection();
+        private SeriesCollection penaltiesScatterSeries = new();
         public SeriesCollection PenaltiesScatterSeries
         {
-            get { return penaltiesScatterSeries; }
+            get => penaltiesScatterSeries;
             set
             {
                 penaltiesScatterSeries = value;
@@ -678,10 +672,10 @@ namespace CSharpZapoctak.ViewModels
         #endregion
 
         #region Data
-        private ObservableCollection<Group> groups = new ObservableCollection<Group>();
+        private ObservableCollection<Group> groups = new();
         public ObservableCollection<Group> Groups
         {
-            get { return groups; }
+            get => groups;
             set
             {
                 groups = value;
@@ -689,10 +683,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ObservableCollection<Team> enlistedTeams = new ObservableCollection<Team>();
+        private ObservableCollection<Team> enlistedTeams = new();
         public ObservableCollection<Team> EnlistedTeams
         {
-            get { return enlistedTeams; }
+            get => enlistedTeams;
             set
             {
                 enlistedTeams = value;
@@ -700,10 +694,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private Team winner = new Team();
+        private Team winner = new();
         public Team Winner
         {
-            get { return winner; }
+            get => winner;
             set
             {
                 winner = value;
@@ -711,10 +705,10 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        private ObservableCollection<Round> rounds = new ObservableCollection<Round>();
+        private ObservableCollection<Round> rounds = new();
         public ObservableCollection<Round> Rounds
         {
-            get { return rounds; }
+            get => rounds;
             set
             {
                 rounds = value;
@@ -725,7 +719,7 @@ namespace CSharpZapoctak.ViewModels
         private Round lastRound;
         public Round LastRound
         {
-            get { return lastRound; }
+            get => lastRound;
             set
             {
                 if (lastRound == value) { return; }
@@ -747,7 +741,7 @@ namespace CSharpZapoctak.ViewModels
         {
             this.ns = ns;
 
-            if (SportsData.SEASON.WinnerID != SportsData.NO_ID)
+            if (SportsData.SEASON.WinnerID != SportsData.NOID)
             {
                 Winner.Name = SportsData.SEASON.WinnerName;
                 WinnerIsNotSetVisibility = Visibility.Collapsed;
@@ -760,23 +754,22 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadEnlistedTeams()
         {
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT team_id, t.name AS team_name " +
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT team_id, t.name AS team_name " +
                                                 "FROM team_enlistment " +
                                                 "INNER JOIN team AS t ON t.id = team_id " +
-                                                "WHERE season_id = " + SportsData.SEASON.id, connection);
+                                                "WHERE season_id = " + SportsData.SEASON.ID, connection);
             try
             {
                 connection.Open();
-                DataTable teamTable = new DataTable();
+                DataTable teamTable = new();
                 teamTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow t in teamTable.Rows)
                 {
-                    Team team = new Team
+                    Team team = new()
                     {
-                        id = int.Parse(t["team_id"].ToString()),
+                        ID = int.Parse(t["team_id"].ToString()),
                         Name = t["team_name"].ToString(),
                     };
                     EnlistedTeams.Add(team);
@@ -784,7 +777,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -794,20 +787,19 @@ namespace CSharpZapoctak.ViewModels
 
         private void DeclareWinner()
         {
-            if (Winner.id < 1) { return; }
+            if (Winner.ID < 1) { return; }
 
             //update database
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("UPDATE seasons SET winner_id = " + Winner.id + " WHERE id = " + SportsData.SEASON.id, connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("UPDATE seasons SET winner_id = " + Winner.ID + " WHERE id = " + SportsData.SEASON.ID, connection);
 
             try
             {   //execute querry
                 connection.Open();
-                cmd.ExecuteNonQuery();
+                _ = cmd.ExecuteNonQuery();
 
                 //update sportsdata season winner
-                SportsData.SEASON.WinnerID = Winner.id;
+                SportsData.SEASON.WinnerID = Winner.ID;
                 SportsData.SEASON.WinnerName = Winner.Name;
 
                 //reload view
@@ -815,7 +807,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -826,17 +818,16 @@ namespace CSharpZapoctak.ViewModels
         private void DeleteWinner()
         {
             //update database
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("UPDATE seasons SET winner_id = -1 WHERE id = " + SportsData.SEASON.id, connection);
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("UPDATE seasons SET winner_id = -1 WHERE id = " + SportsData.SEASON.ID, connection);
 
             try
             {   //execute querry
                 connection.Open();
-                cmd.ExecuteNonQuery();
+                _ = cmd.ExecuteNonQuery();
 
                 //update sportsdata season winner
-                SportsData.SEASON.WinnerID = SportsData.NO_ID;
+                SportsData.SEASON.WinnerID = SportsData.NOID;
                 SportsData.SEASON.WinnerName = "";
 
                 //reload view
@@ -844,7 +835,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -864,7 +855,7 @@ namespace CSharpZapoctak.ViewModels
                 SortGroup(g);
 
                 //group teams by points
-                Dictionary<int, ObservableCollection<Team>> pointGroups = new Dictionary<int, ObservableCollection<Team>>();
+                Dictionary<int, ObservableCollection<Team>> pointGroups = new();
 
                 if (g.Teams.Count > 1 && ((TeamTableStats)g.Teams[0].Stats).Points == ((TeamTableStats)g.Teams[1].Stats).Points)
                 {
@@ -891,7 +882,7 @@ namespace CSharpZapoctak.ViewModels
                         ObservableCollection<Team> sortedTeams = MergeSort(pg.Value, false);
                         foreach (Team t in sortedTeams)
                         {
-                            g.Teams.Remove(t);
+                            _ = g.Teams.Remove(t);
                         }
                         for (int i = 0; i <= g.Teams.Count; i++)
                         {
@@ -919,11 +910,10 @@ namespace CSharpZapoctak.ViewModels
 
         private ObservableCollection<Team> MergeSort(ObservableCollection<Team> unsorted, bool onlyPoints)
         {
-            if (unsorted.Count <= 1)
-                return unsorted;
+            if (unsorted.Count <= 1) { return unsorted; }
 
-            ObservableCollection<Team> left = new ObservableCollection<Team>();
-            ObservableCollection<Team> right = new ObservableCollection<Team>();
+            ObservableCollection<Team> left = new();
+            ObservableCollection<Team> right = new();
 
             int middle = unsorted.Count / 2;
             for (int i = 0; i < middle; i++)
@@ -942,7 +932,7 @@ namespace CSharpZapoctak.ViewModels
 
         private ObservableCollection<Team> Merge(ObservableCollection<Team> left, ObservableCollection<Team> right, bool onlyPoints)
         {
-            ObservableCollection<Team> result = new ObservableCollection<Team>();
+            ObservableCollection<Team> result = new();
 
             while (left.Count > 0 || right.Count > 0)
             {
@@ -951,24 +941,24 @@ namespace CSharpZapoctak.ViewModels
                     if (((TeamTableStats)left.First().Stats).CompareTo((TeamTableStats)right.First().Stats, onlyPoints) > 0)
                     {
                         result.Add(left.First());
-                        left.Remove(left.First());
+                        _ = left.Remove(left.First());
                     }
                     else
                     {
                         result.Add(right.First());
-                        right.Remove(right.First());
+                        _ = right.Remove(right.First());
                     }
                 }
                 else if (left.Count > 0)
                 {
                     result.Add(left.First());
-                    left.Remove(left.First());
+                    _ = left.Remove(left.First());
                 }
                 else if (right.Count > 0)
                 {
                     result.Add(right.First());
 
-                    right.Remove(right.First());
+                    _ = right.Remove(right.First());
                 }
             }
             return result;
@@ -977,21 +967,21 @@ namespace CSharpZapoctak.ViewModels
         private void LoadGroups()
         {
             Groups = new ObservableCollection<Group>();
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id, name FROM groups WHERE season_id = " + SportsData.SEASON.id, connection);
+
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT id, name FROM groups WHERE season_id = " + SportsData.SEASON.ID, connection);
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Group g = new Group
+                    Group g = new()
                     {
-                        id = int.Parse(row["id"].ToString()),
-                        SeasonID = SportsData.SEASON.id,
+                        ID = int.Parse(row["id"].ToString()),
+                        SeasonID = SportsData.SEASON.ID,
                         Name = row["name"].ToString(),
                         Teams = new ObservableCollection<Team>()
                     };
@@ -999,23 +989,23 @@ namespace CSharpZapoctak.ViewModels
 
                     cmd = new MySqlCommand("SELECT team_id, t.name AS team_name FROM team_enlistment " +
                                            "INNER JOIN team AS t ON t.id = team_id " +
-                                           "WHERE group_id = " + g.id, connection);
-                    DataTable teamTable = new DataTable();
+                                           "WHERE group_id = " + g.ID, connection);
+                    DataTable teamTable = new();
                     teamTable.Load(cmd.ExecuteReader());
 
                     foreach (DataRow t in teamTable.Rows)
                     {
-                        Team team = new Team
+                        Team team = new()
                         {
-                            id = int.Parse(t["team_id"].ToString()),
+                            ID = int.Parse(t["team_id"].ToString()),
                             Name = t["team_name"].ToString()
                         };
                         team.Stats = new TeamTableStats(team, LastRound);
 
-                        string[] imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.name + team.id + ".*");
+                        string[] imgPath = System.IO.Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.Name + team.ID + ".*");
                         if (imgPath.Length != 0)
                         {
-                            team.LogoPath = imgPath.First();
+                            team.ImagePath = imgPath.First();
                         }
 
                         g.Teams.Add(team);
@@ -1024,7 +1014,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -1035,21 +1025,21 @@ namespace CSharpZapoctak.ViewModels
         private void LoadRounds()
         {
             Rounds = new ObservableCollection<Round>();
-            string connectionString = "SERVER=" + SportsData.server + ";DATABASE=" + SportsData.SPORT.name + ";UID=" + SportsData.UID + ";PASSWORD=" + SportsData.password + ";";
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            MySqlCommand cmd = new MySqlCommand("SELECT id, name FROM rounds WHERE season_id = " + SportsData.SEASON.id, connection);
+
+            MySqlConnection connection = new(SportsData.ConnectionStringSport);
+            MySqlCommand cmd = new("SELECT id, name FROM rounds WHERE season_id = " + SportsData.SEASON.ID, connection);
             try
             {
                 connection.Open();
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Round r = new Round
+                    Round r = new()
                     {
-                        id = int.Parse(row["id"].ToString()),
-                        SeasonID = SportsData.SEASON.id,
+                        ID = int.Parse(row["id"].ToString()),
+                        SeasonID = SportsData.SEASON.ID,
                         Name = row["name"].ToString()
                     };
                     Rounds.Add(r);
@@ -1057,7 +1047,7 @@ namespace CSharpZapoctak.ViewModels
 
                 if (Rounds.Count > 0)
                 {
-                    LastRound = Rounds.OrderBy(x => x.id).Last();
+                    LastRound = Rounds.OrderBy(x => x.ID).Last();
                 }
                 else
                 {
@@ -1066,7 +1056,7 @@ namespace CSharpZapoctak.ViewModels
             }
             catch (Exception)
             {
-                MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -1115,13 +1105,13 @@ namespace CSharpZapoctak.ViewModels
         private void LoadGoalsScatterSeries()
         {
             GoalsScatterSeries = new SeriesCollection();
-            foreach (var gv in GoalsVisuals) { GoalsVisuals.Remove(gv); }
+            foreach (LiveCharts.Definitions.Charts.ICartesianVisualElement gv in GoalsVisuals) { _ = GoalsVisuals.Remove(gv); }
             double maxG = 0.0;
             double maxGA = 0.0;
             double medianG = 0.0;
             double medianGA = 0.0;
-            List<double> goals = new List<double>();
-            List<double> goalsAgainst = new List<double>();
+            List<double> goals = new();
+            List<double> goalsAgainst = new();
 
             foreach (Group g in Groups)
             {
@@ -1150,11 +1140,11 @@ namespace CSharpZapoctak.ViewModels
                     });
 
                     //add logo marker
-                    BitmapImage logo = new BitmapImage();
-                    if (t.LogoPath != "")
+                    BitmapImage logo = new();
+                    if (t.ImagePath != "")
                     {
                         logo.BeginInit();
-                        logo.UriSource = new Uri(t.LogoPath);
+                        logo.UriSource = new Uri(t.ImagePath);
                         logo.EndInit();
                     }
 
@@ -1268,13 +1258,13 @@ namespace CSharpZapoctak.ViewModels
         private void LoadAssistsScatterSeries()
         {
             AssistsScatterSeries = new SeriesCollection();
-            foreach (var av in AssistsVisuals) { AssistsVisuals.Remove(av); }
+            foreach (LiveCharts.Definitions.Charts.ICartesianVisualElement av in AssistsVisuals) { _ = AssistsVisuals.Remove(av); }
             double maxIG = 0.0;
             double maxA = 0.0;
             double medianIG = 0.0;
             double medianA = 0.0;
-            List<double> individualGoals = new List<double>();
-            List<double> assists = new List<double>();
+            List<double> individualGoals = new();
+            List<double> assists = new();
 
             foreach (Group g in Groups)
             {
@@ -1303,11 +1293,11 @@ namespace CSharpZapoctak.ViewModels
                     });
 
                     //add logo marker
-                    BitmapImage logo = new BitmapImage();
-                    if (t.LogoPath != "")
+                    BitmapImage logo = new();
+                    if (t.ImagePath != "")
                     {
                         logo.BeginInit();
-                        logo.UriSource = new Uri(t.LogoPath);
+                        logo.UriSource = new Uri(t.ImagePath);
                         logo.EndInit();
                     }
 
@@ -1421,13 +1411,13 @@ namespace CSharpZapoctak.ViewModels
         private void LoadPenaltiesScatterSeries()
         {
             PenaltiesScatterSeries = new SeriesCollection();
-            foreach (var pv in PenaltiesVisuals) { PenaltiesVisuals.Remove(pv); }
+            foreach (LiveCharts.Definitions.Charts.ICartesianVisualElement pv in PenaltiesVisuals) { _ = PenaltiesVisuals.Remove(pv); }
             double maxP = 0.0;
             double maxPA = 0.0;
             double medianP = 0.0;
             double medianPA = 0.0;
-            List<double> penalties = new List<double>();
-            List<double> penaltiesAgainst = new List<double>();
+            List<double> penalties = new();
+            List<double> penaltiesAgainst = new();
 
             foreach (Group g in Groups)
             {
@@ -1456,11 +1446,11 @@ namespace CSharpZapoctak.ViewModels
                     });
 
                     //add logo marker
-                    BitmapImage logo = new BitmapImage();
-                    if (t.LogoPath != "")
+                    BitmapImage logo = new();
+                    if (t.ImagePath != "")
                     {
                         logo.BeginInit();
-                        logo.UriSource = new Uri(t.LogoPath);
+                        logo.UriSource = new Uri(t.ImagePath);
                         logo.EndInit();
                     }
 

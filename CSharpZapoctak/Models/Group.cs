@@ -3,14 +3,14 @@ using System.Collections.ObjectModel;
 
 namespace CSharpZapoctak.Models
 {
-    class Group : NotifyPropertyChanged
+    public class Group : NotifyPropertyChanged
     {
-        public int id = SportsData.NO_ID;
+        public int ID { get; set; } = SportsData.NOID;
 
         private string name = "";
         public string Name
         {
-            get { return name; }
+            get => name;
             set
             {
                 name = value;
@@ -21,7 +21,7 @@ namespace CSharpZapoctak.Models
         private int seasonID;
         public int SeasonID
         {
-            get { return seasonID; }
+            get => seasonID;
             set
             {
                 seasonID = value;
@@ -32,7 +32,7 @@ namespace CSharpZapoctak.Models
         private ObservableCollection<Team> teams;
         public ObservableCollection<Team> Teams
         {
-            get { return teams; }
+            get => teams;
             set
             {
                 teams = value;
