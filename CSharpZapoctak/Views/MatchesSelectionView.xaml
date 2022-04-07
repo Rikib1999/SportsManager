@@ -37,10 +37,10 @@
         <FrameworkElement Name="infoVisibilityManager" Visibility="{Binding InfoVisibility}" />
         <FrameworkElement Name="statsVisibilityManager" Visibility="{Binding StatsVisibility}" />
 
-        <DataGrid DockPanel.Dock="Top" Name="dataGrid" Margin="0,3,0,0" SelectedItem="{Binding SelectedMatch}" ItemsSource="{Binding Matches}" AutoGenerateColumns="False"
+        <DataGrid DockPanel.Dock="Top" Name="dataGrid" Margin="0,3,0,0" SelectedItem="{Binding SelectedEntity}" ItemsSource="{Binding Entities}" AutoGenerateColumns="False"
                   IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
             <DataGrid.InputBindings>
-                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CheckNavigateMatchCommand}"/>
+                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CheckNavigateEntityCommand}"/>
             </DataGrid.InputBindings>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="{x:Type DataGridColumnHeader}">

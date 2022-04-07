@@ -3,7 +3,7 @@ using System;
 
 namespace CSharpZapoctak.Models
 {
-    public class Match : NotifyPropertyChanged
+    public class Match : NotifyPropertyChanged, IEntity
     {
         public int ID { get; set; } = SportsData.NOID;
 

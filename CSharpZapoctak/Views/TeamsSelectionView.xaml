@@ -13,7 +13,7 @@
             <Button Content="Export PDF" Height="25" Width="100" HorizontalAlignment="Left" Margin="0, 10, 0, 0" Command="{Binding ExportPDFCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
             <Button Content="XLSX" Height="25" Width="50" HorizontalAlignment="Left" Margin="0, 10, 10, 0" Command="{Binding ExportXLSXCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
             <StackPanel Orientation="Horizontal" Margin="0,10,10,0">
-                <TextBlock Text="Photo"/>
+                <TextBlock Text="Logo"/>
                 <CheckBox IsChecked="{Binding ShowPhoto}" VerticalContentAlignment="Top" Margin="5,2,0,0">
                     <CheckBox.LayoutTransform>
                         <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
@@ -46,10 +46,10 @@
         <FrameworkElement Name="infoVisibilityManager" Visibility="{Binding InfoVisibility}" />
         <FrameworkElement Name="statsVisibilityManager" Visibility="{Binding StatsVisibility}" />
 
-        <DataGrid DockPanel.Dock="Top" Name="dataGrid" Margin="0,3,0,0" SelectedItem="{Binding SelectedTeam}" ItemsSource="{Binding Teams}" AutoGenerateColumns="False"
+        <DataGrid DockPanel.Dock="Top" Name="dataGrid" Margin="0,3,0,0" SelectedItem="{Binding SelectedEntity}" ItemsSource="{Binding Entities}" AutoGenerateColumns="False"
                   IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50">
             <DataGrid.InputBindings>
-                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CheckNavigateTeamCommand}"/>
+                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CheckNavigateEntityCommand}"/>
             </DataGrid.InputBindings>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="{x:Type DataGridColumnHeader}">

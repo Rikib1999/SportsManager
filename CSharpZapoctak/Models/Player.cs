@@ -1,11 +1,6 @@
 ﻿using CSharpZapoctak.Others;
 using CSharpZapoctak.ViewModels;
-using MySql.Data.MySqlClient;
 using System;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Linq;
-using System.Windows;
 
 namespace CSharpZapoctak.Models
 {

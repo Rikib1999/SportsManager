@@ -11,35 +11,32 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    public class SeasonsSelectionViewModel : NotifyPropertyChanged
+    public class SeasonsSelectionViewModel : TemplateSelectionDataGridViewModel<Season>
     {
         public ICommand NavigateAddSeasonCommand { get; set; }
 
-        public ICommand NavigateSeasonCommand { get; set; }
-
-        private ICommand checkNavigateSeasonCommand;
-        public ICommand CheckNavigateSeasonCommand
+        private ICommand checkNavigateEntityCommand;
+        public new ICommand CheckNavigateEntityCommand
         {
             get
             {
-                if (checkNavigateSeasonCommand == null)
+                if (checkNavigateEntityCommand == null)
                 {
-                    checkNavigateSeasonCommand = new RelayCommand(param => CheckNavigateSeason());
+                    checkNavigateEntityCommand = new RelayCommand(param => CheckNavigateEntity(SelectedEntity));
                 }
-                return checkNavigateSeasonCommand;
+                return checkNavigateEntityCommand;
             }
         }
-
-        public Season SelectedSeason { get; set; }
-
-        public ObservableCollection<Season> Seasons { get; set; }
 
         public SeasonsSelectionViewModel(NavigationStore navigationStore)
         {
             NavigateAddSeasonCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new AddSeasonViewModel(navigationStore)));
-            NavigateSeasonCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonViewModel(navigationStore)));
-            SelectedSeason = null;
+            NavigateEntityCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonViewModel(navigationStore)));
+            LoadData();
+        }
 
+        protected override void LoadData()
+        {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlCommand cmd = new("SELECT w.name AS winner, winner_id, c.name AS competition_name, seasons.id, competition_id, seasons.name, seasons.info, qualification_count, " +
                                                 "qualification_rounds, group_count, play_off_rounds, play_off_best_of, play_off_started, points_for_W, points_for_OW, points_for_T, points_for_OL, points_for_L " +
@@ -57,7 +54,7 @@ namespace CSharpZapoctak.ViewModels
                 DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
-                Seasons = new ObservableCollection<Season>();
+                Entities = new ObservableCollection<Season>();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
@@ -92,7 +89,7 @@ namespace CSharpZapoctak.ViewModels
                     }
 
                     s.Stats = new SeasonStats(s); ;
-                    Seasons.Add(s);
+                    Entities.Add(s);
                 }
             }
             catch (Exception)
@@ -102,14 +99,6 @@ namespace CSharpZapoctak.ViewModels
             finally
             {
                 connection.Close();
-            }
-        }
-
-        private void CheckNavigateSeason()
-        {
-            if (SelectedSeason != null)
-            {
-                NavigateSeasonCommand.Execute(SelectedSeason);
             }
         }
     }

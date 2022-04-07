@@ -33,9 +33,9 @@ namespace CSharpZapoctak.Others
             //header
             List<string> propNames = new();
             List<DataGridColumn> columns = new();
-            for (int i = 1; i < dataGrid.Columns.Count; i++)
+            for (int i = 0; i < dataGrid.Columns.Count; i++)
             {
-                if (dataGrid.Columns[i].Visibility != Visibility.Visible) { continue; }
+                if (dataGrid.Columns[i].Visibility != Visibility.Visible || dataGrid.Columns[i] is DataGridTemplateColumn) { continue; }
                 columns.Add(dataGrid.Columns[i]);
             }
             columns = columns.OrderBy(x => x.DisplayIndex).ToList();

@@ -1,6 +1,5 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
-using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
@@ -8,146 +7,19 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    public class GoaliesSelectionViewModel : NotifyPropertyChanged
+    public class GoaliesSelectionViewModel : TemplateSelectionDataGridViewModel<Player>
     {
-        #region Commands
-        public ICommand NavigatePlayerCommand { get; set; }
-
-        private ICommand checkNavigatePlayerCommand;
-        public ICommand CheckNavigatePlayerCommand
-        {
-            get
-            {
-                if (checkNavigatePlayerCommand == null)
-                {
-                    checkNavigatePlayerCommand = new RelayCommand(param => CheckNavigatePlayer());
-                }
-                return checkNavigatePlayerCommand;
-            }
-        }
-
-        private ICommand exportPDFCommand;
-        public ICommand ExportPDFCommand
-        {
-            get
-            {
-                if (exportPDFCommand == null)
-                {
-                    exportPDFCommand = new RelayCommand(param => Exports.ExportTable((System.Windows.Controls.DataGrid)param, "PDF", ExportTop));
-                }
-                return exportPDFCommand;
-            }
-        }
-
-        private ICommand exportXLSXCommand;
-        public ICommand ExportXLSXCommand
-        {
-            get
-            {
-                if (exportXLSXCommand == null)
-                {
-                    exportXLSXCommand = new RelayCommand(param => Exports.ExportTable((System.Windows.Controls.DataGrid)param, "XLSX", ExportTop));
-                }
-                return exportXLSXCommand;
-            }
-        }
-        #endregion
-
-        private int? exportTop;
-        public int? ExportTop
-        {
-            get => exportTop;
-            set
-            {
-                exportTop = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #region Visibilities
-        private bool showPhoto = true;
-        public bool ShowPhoto
-        {
-            get => showPhoto;
-            set
-            {
-                showPhoto = value;
-                PhotoVisibility = showPhoto ? Visibility.Visible : Visibility.Collapsed;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool showInfo = true;
-        public bool ShowInfo
-        {
-            get => showInfo;
-            set
-            {
-                showInfo = value;
-                InfoVisibility = showInfo ? Visibility.Visible : Visibility.Collapsed;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool showStats = true;
-        public bool ShowStats
-        {
-            get => showStats;
-            set
-            {
-                showStats = value;
-                StatsVisibility = showStats ? Visibility.Visible : Visibility.Collapsed;
-                OnPropertyChanged();
-            }
-        }
-
-        private Visibility photoVisibility = Visibility.Visible;
-        public Visibility PhotoVisibility
-        {
-            get => photoVisibility;
-            set
-            {
-                photoVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private Visibility infoVisibility = Visibility.Visible;
-        public Visibility InfoVisibility
-        {
-            get => infoVisibility;
-            set
-            {
-                infoVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private Visibility statsVisibility = Visibility.Visible;
-        public Visibility StatsVisibility
-        {
-            get => statsVisibility;
-            set
-            {
-                statsVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        public Player SelectedPlayer { get; set; }
-
-        public ObservableCollection<Player> Players { get; set; }
-
         public GoaliesSelectionViewModel(NavigationStore navigationStore)
         {
-            NavigatePlayerCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayerViewModel(navigationStore, SelectedPlayer)));
-            SelectedPlayer = null;
+            NavigateEntityCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayerViewModel(navigationStore, SelectedEntity)));
+            LoadData();
+        }
 
+        protected override void LoadData()
+        {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlCommand cmd = new("SELECT p.* " +
                                    "FROM goalie_matches " +
@@ -171,7 +43,7 @@ namespace CSharpZapoctak.ViewModels
                 DataTable dataTable = new();
                 dataTable.Load(cmd.ExecuteReader());
 
-                Players = new ObservableCollection<Player>();
+                Entities = new ObservableCollection<Player>();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
@@ -199,7 +71,7 @@ namespace CSharpZapoctak.ViewModels
 
                     p.Stats = new GoalieStats(p, SportsData.SEASON.ID, SportsData.COMPETITION.ID);
 
-                    Players.Add(p);
+                    Entities.Add(p);
                 }
             }
             catch (Exception)
@@ -209,14 +81,6 @@ namespace CSharpZapoctak.ViewModels
             finally
             {
                 connection.Close();
-            }
-        }
-
-        private void CheckNavigatePlayer()
-        {
-            if (SelectedPlayer != null)
-            {
-                NavigatePlayerCommand.Execute(null);
             }
         }
     }
