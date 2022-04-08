@@ -37,6 +37,8 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        public string Format => GetFormat();
+
         private int qualificationRounds;
         public int QualificationRounds
         {
@@ -169,12 +171,12 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public int RoundOf(int rounds)
+        public static int RoundOf(int rounds)
         {
             return (int)Math.Pow(2, rounds - 1);
         }
 
-        public string Format()
+        public string GetFormat()
         {
             string format = "";
 

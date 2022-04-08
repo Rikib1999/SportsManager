@@ -16,17 +16,6 @@ namespace CSharpZapoctak.Models
     public class SeasonStats : NotifyPropertyChanged, IStats
     {
         #region Properties
-        private string format = "";
-        public string Format
-        {
-            get => format;
-            set
-            {
-                format = value;
-                OnPropertyChanged();
-            }
-        }
-
         private int matches;
         public int Matches
         {
@@ -104,24 +93,24 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private int penalties;
-        public int Penalties
+        private int penaltyMinutes;
+        public int PenaltyMinutes
         {
-            get => penalties;
+            get => penaltyMinutes;
             set
             {
-                penalties = value;
+                penaltyMinutes = value;
                 OnPropertyChanged();
             }
         }
 
-        private float penaltiesPerGame;
-        public float PenaltiesPerGame
+        private float penaltyMinutesPerGame;
+        public float PenaltyMinutesPerGame
         {
-            get => penaltiesPerGame;
+            get => penaltyMinutesPerGame;
             set
             {
-                penaltiesPerGame = value;
+                penaltyMinutesPerGame = value;
                 OnPropertyChanged();
             }
         }
@@ -129,8 +118,23 @@ namespace CSharpZapoctak.Models
 
         public SeasonStats(Season s)
         {
-            Format = s.Format();
             CalculateStats(s.ID).Await();
+        }
+
+        public SeasonStats(int matches, int teams, int players, int goals, int assists, int penaltyMinutes)
+        {
+            Matches = matches;
+            Teams = teams;
+            Players = players;
+            Goals = goals;
+            Assists = assists;
+            PenaltyMinutes = penaltyMinutes;
+            if (Matches > 0)
+            {
+                GoalsPerGame = (float)Math.Round(Goals / (float)Matches, 2);
+                AssistsPerGame = (float)Math.Round(Assists / (float)Matches, 2);
+                PenaltyMinutesPerGame = (float)Math.Round(PenaltyMinutes / (float)Matches, 2);
+            }
         }
 
         public async Task CalculateStats(int seasonID)
@@ -256,8 +260,8 @@ namespace CSharpZapoctak.Models
             try
             {
                 connection.Open();
-                Penalties = (int)(long)await cmd.ExecuteScalarAsync();
-                if (Matches != 0) { PenaltiesPerGame = (float)Math.Round(Penalties / (float)Matches, 2); }
+                PenaltyMinutes = (int)(long)await cmd.ExecuteScalarAsync();
+                if (Matches != 0) { PenaltyMinutesPerGame = (float)Math.Round(PenaltyMinutes / (float)Matches, 2); }
             }
             catch (Exception)
             {

@@ -90,7 +90,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Format" Binding="{Binding Stats.Format}">
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Format" Binding="{Binding Format}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -164,7 +164,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Penalties" Binding="{Binding Stats.Penalties}">
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Penalty&#10;minutes" Binding="{Binding Stats.PenaltyMinutes}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -172,7 +172,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Penalties&#10;per game" Binding="{Binding Stats.PenaltiesPerGame}">
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Penalty minutes&#10;per game" Binding="{Binding Stats.PenaltyMinutesPerGame}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
