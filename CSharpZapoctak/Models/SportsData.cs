@@ -19,6 +19,8 @@ namespace CSharpZapoctak
         public Brush Color { get; set; }
 
         public string Image => SportsData.ResourcesPath + "/" + Name + ".png";
+
+        public string DatabaseTables { get; set; }
     }
 
     public interface IEntity
@@ -62,10 +64,10 @@ namespace CSharpZapoctak
         /// </summary>
         public static readonly List<Sport> SportsList = new()
         {
-            //new() { Name = "football", Color = Brushes.LightGreen },
-            new() { Name = "ice_hockey", Color = Brushes.AliceBlue },
-            //new() { Name = "tennis", Color = Brushes.Coral },
-            new() { Name = "floorball", Color = Brushes.CornflowerBlue }
+            //new() { Name = "football", Color = Brushes.LightGreen, DatabaseTables = Properties.Resources.football_tables },
+            new() { Name = "ice_hockey", Color = Brushes.AliceBlue, DatabaseTables = Properties.Resources.ice_hockey_tables },
+            //new() { Name = "tennis", Color = Brushes.Coral, DatabaseTables = Properties.Resources.tennis_tables },
+            new() { Name = "floorball", Color = Brushes.CornflowerBlue, DatabaseTables = Properties.Resources.floorball_tables }
         };
 
         /// <summary>

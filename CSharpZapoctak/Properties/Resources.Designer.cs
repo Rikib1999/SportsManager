@@ -61,6 +61,31 @@ namespace CSharpZapoctak.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SET SQL_MODE = &quot;NO_AUTO_VALUE_ON_ZERO&quot;;
+        ///START TRANSACTION;
+        ///SET time_zone = &quot;+00:00&quot;;
+        ///
+        ////*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+        ////*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+        ////*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+        ////*!40101 SET NAMES utf8mb4 */;
+        ///
+        ///
+        ///CREATE TABLE IF NOT EXISTS `brackets` (
+        ///  `id` int(11) NOT NULL,
+        ///  `season_id` int(11) NOT NULL,
+        ///  `name` tinytext NOT NULL
+        ///) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ///
+        ///CREATE TABL [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string floorball_tables {
+            get {
+                return ResourceManager.GetString("floorball_tables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] gamesheet {
@@ -81,12 +106,62 @@ namespace CSharpZapoctak.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SET SQL_MODE = &quot;NO_AUTO_VALUE_ON_ZERO&quot;;
+        ///START TRANSACTION;
+        ///SET time_zone = &quot;+00:00&quot;;
+        ///
+        ////*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+        ////*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+        ////*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+        ////*!40101 SET NAMES utf8mb4 */;
+        ///
+        ///
+        ///CREATE TABLE IF NOT EXISTS `brackets` (
+        ///  `id` int(11) NOT NULL,
+        ///  `season_id` int(11) NOT NULL,
+        ///  `name` tinytext NOT NULL
+        ///) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ///
+        ///CREATE TABL [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ice_hockey_tables {
+            get {
+                return ResourceManager.GetString("ice_hockey_tables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] match_summary {
             get {
                 object obj = ResourceManager.GetObject("match_summary", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SET SQL_MODE = &quot;NO_AUTO_VALUE_ON_ZERO&quot;;
+        ///START TRANSACTION;
+        ///SET time_zone = &quot;+00:00&quot;;
+        ///
+        ////*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+        ////*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+        ////*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+        ////*!40101 SET NAMES utf8mb4 */;
+        ///
+        ///
+        ///CREATE TABLE IF NOT EXISTS `country` (
+        ///  `code_three` char(3) NOT NULL,
+        ///  `name` varchar(200) NOT NULL,
+        ///  `code_two` char(2) NOT NULL
+        ///) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        ///
+        ///ALTE [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string sports_manager_tables {
+            get {
+                return ResourceManager.GetString("sports_manager_tables", resourceCulture);
             }
         }
         

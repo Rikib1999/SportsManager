@@ -47,8 +47,10 @@ namespace CSharpZapoctak
                 f.Dispose();
             }
 
-            //check if databases exists and if not create them
+            //check if all databases exists and if not create them
             DatabaseHandler.EnsureDatabases();
+            //check if all tables exists and if not create them
+            DatabaseHandler.EnsureTables();
 
             _ = Task.Run(() => SportsData.LoadCountries());
 

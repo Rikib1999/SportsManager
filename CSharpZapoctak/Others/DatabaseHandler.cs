@@ -34,11 +34,57 @@ namespace CSharpZapoctak.Others
             return query;
         }
 
+        /// <summary>
+        /// Checks if required tables exists and if not creates them.
+        /// </summary>
         public static void EnsureTables()
         {
+            //check common tables
+            MySqlConnection connection = new(SportsData.ConnectionStringCommon);
+            MySqlCommand cmd = new(Properties.Resources.sports_manager_tables, connection);
 
+            try
+            {
+                connection.Open();
+                _ = cmd.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            //check tables for each sport
+            foreach (Sport s in SportsData.SportsList)
+            {
+                SportsData.Set(s);
+                connection = new(SportsData.ConnectionStringSport);
+                cmd = new(s.DatabaseTables, connection);
+
+                try
+                {
+                    connection.Open();
+                    _ = cmd.ExecuteNonQuery();
+                }
+                catch (Exception)
+                {
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            SportsData.Set(new Sport { Name = "" });
         }
 
+        /// <summary>
+        /// Checks if required databases exists and if not creates them.
+        /// </summary>
         public static void EnsureDatabases()
         {
             string command = "CREATE DATABASE IF NOT EXISTS `" + SportsData.commonDatabaseName + "`;";
