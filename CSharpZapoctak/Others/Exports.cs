@@ -224,6 +224,7 @@ namespace CSharpZapoctak.Others
             SaveExcelSheet(format, excelWorkbook, "standings");
 
             excelWorkbook.Close(false);
+            File.Delete(tempPath);
         }
 
         public static object GetPropertyValue(object obj, string propertyName)

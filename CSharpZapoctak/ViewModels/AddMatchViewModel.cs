@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -2324,8 +2325,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (loadGamesheetCommand == null)
                 {
-                    gamesheetLoadingThread = new Thread(() => { LoadGamesheet(); });
-                    loadGamesheetCommand = new RelayCommand(param => gamesheetLoadingThread.Start());
+                    loadGamesheetCommand = new RelayCommand(param => StartGameSheetLoading());
                 }
                 return loadGamesheetCommand;
             }
@@ -3414,14 +3414,19 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        private void StartGameSheetLoading()
+        {
+            gamesheetLoadingThread = new Thread(() => { LoadGamesheet(); });
+            gamesheetLoadingThread.Start();
+        }
+
         private void CancelGamesheetLoading()
         {
             gamesheetLoadingThread.Interrupt();
             gamesheetLoadingThread.Join();
-            gamesheetLoadingThread = new Thread(() => { LoadGamesheet(); });
         }
 
-        bool ProcessPeriodCell(string cellValue, out int period, out bool overtime)
+        private bool ProcessPeriodCell(string cellValue, out int period, out bool overtime)
         {
             period = 0;
             overtime = false;
@@ -4209,12 +4214,12 @@ namespace CSharpZapoctak.ViewModels
                     break;
             }
             saveFileDialog.FileName = "gamesheet_" + MatchDateTime.ToString("yyyy_MM_dd_HH_mm") + "_" + HomeTeam.Name + "_vs_" + AwayTeam.Name;
-            
+
             bool? result = saveFileDialog.ShowDialog();
             if (result.ToString() != string.Empty)
             {
                 gamesheetPath = saveFileDialog.FileName;
-            
+
                 switch (format)
                 {
                     case "PDF":
@@ -4232,8 +4237,9 @@ namespace CSharpZapoctak.ViewModels
                         break;
                 }
             }
-            
+
             excelWorkbook.Close(false);
+            File.Delete(tempPath);
         }
 
         private void NotPlayedSave()

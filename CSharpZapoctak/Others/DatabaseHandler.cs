@@ -34,23 +34,21 @@ namespace CSharpZapoctak.Others
             return query;
         }
 
-        public static void CreateDatabase(string command)
+        public static void EnsureTables()
         {
 
-        }
-
-        public static bool CheckDatabase(string databaseName)
-        {
-            return false;
         }
 
         public static void EnsureDatabases()
         {
+            string command = "CREATE DATABASE IF NOT EXISTS `" + SportsData.commonDatabaseName + "`;";
+            foreach (Sport s in SportsData.SportsList)
+            {
+                command += "CREATE DATABASE IF NOT EXISTS `" + s.Name + "`;";
+            }
+
             MySqlConnection connection = new(SportsData.ConnectionStringNoDatabase);
-            MySqlCommand cmd = new("CREATE DATABASE IF NOT EXISTS `sports_manager`;" +
-                                   "CREATE DATABASE IF NOT EXISTS `floorball`;" +
-                                   "CREATE DATABASE IF NOT EXISTS `ice_hockey`;"
-                                   , connection);
+            MySqlCommand cmd = new(command, connection);
 
             try
             {

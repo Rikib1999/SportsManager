@@ -35,9 +35,10 @@ namespace CSharpZapoctak
         public static readonly string server = "localhost";
         public static readonly string UID = "root";
         public static readonly string password = "";
+        public static readonly string commonDatabaseName = "sports_manager";
         public static string ConnectionStringNoDatabase => "SERVER=" + server + ";UID=" + UID + ";PASSWORD=" + password + ";";
         public static string ConnectionStringSport => "SERVER=" + server + ";DATABASE=" + SPORT.Name + ";UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
-        public static string ConnectionStringCommon => "SERVER=" + server + ";DATABASE=sports_manager;UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
+        public static string ConnectionStringCommon => "SERVER=" + server + ";DATABASE=" + commonDatabaseName + ";UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
         #endregion
 
         #region Application folder and file paths
