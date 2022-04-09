@@ -1,4 +1,8 @@
-﻿namespace CSharpZapoctak.Others
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Windows;
+
+namespace CSharpZapoctak.Others
 {
     public static class DatabaseHandler
     {
@@ -28,6 +32,39 @@
             if (SportsData.IsCompetitionSet()) { query += " " + competitionID + " = " + SportsData.COMPETITION.ID; }
 
             return query;
+        }
+
+        public static void CreateDatabase(string command)
+        {
+
+        }
+
+        public static bool CheckDatabase(string databaseName)
+        {
+            return false;
+        }
+
+        public static void EnsureDatabases()
+        {
+            MySqlConnection connection = new(SportsData.ConnectionStringNoDatabase);
+            MySqlCommand cmd = new("CREATE DATABASE IF NOT EXISTS `sports_manager`;" +
+                                   "CREATE DATABASE IF NOT EXISTS `floorball`;" +
+                                   "CREATE DATABASE IF NOT EXISTS `ice_hockey`;"
+                                   , connection);
+
+            try
+            {
+                connection.Open();
+                _ = cmd.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
     }
 }

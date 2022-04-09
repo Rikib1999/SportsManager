@@ -1,16 +1,24 @@
 ﻿using CSharpZapoctak.Models;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 
 namespace CSharpZapoctak
 {
     public struct Sport
     {
         public string Name { get; set; }
+
+        public string FormattedName => char.ToUpper(Name[0]) + Name[1..].Replace('_', '-');
+
+        public Brush Color { get; set; }
+
+        public string Image => SportsData.ResourcesPath + "/" + Name + ".png";
     }
 
     public interface IEntity
@@ -27,6 +35,7 @@ namespace CSharpZapoctak
         public static readonly string server = "localhost";
         public static readonly string UID = "root";
         public static readonly string password = "";
+        public static string ConnectionStringNoDatabase => "SERVER=" + server + ";UID=" + UID + ";PASSWORD=" + password + ";";
         public static string ConnectionStringSport => "SERVER=" + server + ";DATABASE=" + SPORT.Name + ";UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
         public static string ConnectionStringCommon => "SERVER=" + server + ";DATABASE=sports_manager;UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
         #endregion
@@ -46,6 +55,17 @@ namespace CSharpZapoctak
         /// Constant for not missing ID.
         /// </summary>
         public static readonly int NOID = -1;
+
+        /// <summary>
+        /// List of available sports.
+        /// </summary>
+        public static readonly List<Sport> SportsList = new()
+        {
+            //new() { Name = "football", Color = Brushes.LightGreen },
+            new() { Name = "ice_hockey", Color = Brushes.AliceBlue },
+            //new() { Name = "tennis", Color = Brushes.Coral },
+            new() { Name = "floorball", Color = Brushes.CornflowerBlue }
+        };
 
         /// <summary>
         /// Currently selected sport.

@@ -14,7 +14,7 @@ namespace CSharpZapoctak.ViewModels
 
         public void UpdateHeader()
         {
-            Header = char.ToUpper(SportsData.SPORT.Name[0]) + SportsData.SPORT.Name[1..].Replace('_', '-');
+            Header = SportsData.SPORT.FormattedName;
 
             if (SportsData.IsCompetitionSet())
             {

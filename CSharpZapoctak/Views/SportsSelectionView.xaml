@@ -17,40 +17,26 @@
         <TextBlock Grid.Row="0" Margin="10" Text="Sports selection" FontSize="35" TextAlignment="Center"/>
         <Border Grid.Row="1" Background="Black" Width="auto" Margin="10,0" />
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <WrapPanel RenderOptions.EdgeMode="Aliased" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <!--<Border BorderBrush="Black" BorderThickness="1" Margin="10">
-                    <Button Command="{Binding NavigateSportCommand}" CommandParameter="{Binding Football}" Background="LightGreen">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="Football" TextAlignment="Center"/>
-                            <Image Source="/Resources/football.png" Width="200"/>
-                        </StackPanel>
-                    </Button>
-                </Border>-->
-                <Border BorderBrush="Black" BorderThickness="1" Margin="10">
-                    <Button Command="{Binding NavigateSportCommand}" CommandParameter="{Binding IceHockey}" Background="AliceBlue">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="Ice-Hockey" TextAlignment="Center"/>
-                            <Image Source="/Resources/ice-hockey.png" Width="200"/>
-                        </StackPanel>
-                    </Button>
-                </Border>
-                <!--<Border BorderBrush="Black" BorderThickness="1" Margin="10">
-                    <Button Command="{Binding NavigateSportCommand}" CommandParameter="{Binding Tennis}" Background="Coral">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="Tennis" TextAlignment="Center"/>
-                            <Image Source="/Resources/tennis.png" Width="200"/>
-                        </StackPanel>
-                    </Button>
-                </Border> -->
-                <Border BorderBrush="Black" BorderThickness="1" Margin="10">
-                    <Button Command="{Binding NavigateSportCommand}" CommandParameter="{Binding Floorball}" Background="CornflowerBlue">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="Floorball" TextAlignment="Center"/>
-                            <Image Source="/Resources/floorball.png" Width="200"/>
-                        </StackPanel>
-                    </Button>
-                </Border>
-            </WrapPanel>
+
+            <ItemsControl ItemsSource="{Binding Sports}" Name="sports">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel RenderOptions.EdgeMode="Aliased" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="10">
+                            <Button Command="{Binding Path=DataContext.NavigateSportCommand, ElementName=sports}" CommandParameter="{Binding}" Background="{Binding Color}">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding FormattedName}" TextAlignment="Center"/>
+                                    <Image Source="{Binding Image}" Width="200"/>
+                                </StackPanel>
+                            </Button>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </ScrollViewer>
     </Grid>
 </UserControl>

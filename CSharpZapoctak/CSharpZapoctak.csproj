@@ -76,7 +76,7 @@
     <Resource Include="Resources\football.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\ice-hockey.png">
+    <Resource Include="Resources\ice_hockey.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\female.png">

@@ -1,4 +1,5 @@
-﻿using CSharpZapoctak.Stores;
+﻿using CSharpZapoctak.Others;
+using CSharpZapoctak.Stores;
 using CSharpZapoctak.ViewModels;
 using System.IO;
 using System.Threading.Tasks;
@@ -45,6 +46,9 @@ namespace CSharpZapoctak
                 f.Close();
                 f.Dispose();
             }
+
+            //check if databases exists and if not create them
+            DatabaseHandler.EnsureDatabases();
 
             _ = Task.Run(() => SportsData.LoadCountries());
 

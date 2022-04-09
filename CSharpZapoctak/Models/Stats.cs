@@ -510,6 +510,7 @@ namespace CSharpZapoctak.Models
             tasks.Add(Task.Run(() => CountPenalties(matchID)));
             await Task.WhenAll(tasks);
         }
+        
         private async Task CountGoals(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);

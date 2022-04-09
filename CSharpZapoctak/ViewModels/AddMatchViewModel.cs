@@ -18,7 +18,7 @@ using System.Windows.Input;
 namespace CSharpZapoctak.ViewModels
 {
     #region Classes
-    class PlayerInRoster : NotifyPropertyChanged
+    public class PlayerInRoster : NotifyPropertyChanged
     {
         public int id;
 
@@ -156,7 +156,7 @@ namespace CSharpZapoctak.ViewModels
         public AddMatchViewModel vm;
     }
 
-    class GoalieInMatch
+    public class GoalieInMatch
     {
         public int id;
         public string side;
@@ -164,7 +164,7 @@ namespace CSharpZapoctak.ViewModels
         public int relieved;
     }
 
-    class Period : NotifyPropertyChanged
+    public class Period : NotifyPropertyChanged
     {
         private static readonly object _lock = new();
 
@@ -747,7 +747,7 @@ namespace CSharpZapoctak.ViewModels
         #endregion
     }
 
-    class Event : NotifyPropertyChanged, IComparable
+    public class Event : NotifyPropertyChanged, IComparable
     {
         public int index;
 
@@ -818,7 +818,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class SwapEvent : NotifyPropertyChanged
+    public class SwapEvent : NotifyPropertyChanged
     {
         public SwapEvent(Event inPenalty)
         {
@@ -893,7 +893,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PenaltyEndCollision : NotifyPropertyChanged
+    public class PenaltyEndCollision : NotifyPropertyChanged
     {
         public PenaltyEndCollision(State inPenalty, State outPenalty, Penalty penalty)
         {
@@ -946,9 +946,9 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class Stat : NotifyPropertyChanged { }
+    public class Stat : NotifyPropertyChanged { }
 
-    class BasicStat : Stat, IComparable
+    public class BasicStat : Stat, IComparable
     {
         private int minute;
         public int Minute
@@ -1057,9 +1057,9 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PeriodEnd : BasicStat { }
+    public class PeriodEnd : BasicStat { }
 
-    class Goal : BasicStat
+    public class Goal : BasicStat
     {
         public bool gameLosingOwnGoal;
         public bool gameWinningGoal;
@@ -1149,7 +1149,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class Penalty : BasicStat
+    public class Penalty : BasicStat
     {
         public int startTime;
         public int endTime;
@@ -1198,7 +1198,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PenaltyShot : BasicStat
+    public class PenaltyShot : BasicStat
     {
         public PlayerInRoster goalie;
 
@@ -1236,7 +1236,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class GoalieShift : Stat, IComparable
+    public class GoalieShift : Stat, IComparable
     {
         private int startMinute;
         public int StartMinute
@@ -1355,7 +1355,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class GoalieChange : BasicStat
+    public class GoalieChange : BasicStat
     {
         public GoalieChange(GoalieShift gs, bool entered)
         {
@@ -1409,7 +1409,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class TimeOut : BasicStat
+    public class TimeOut : BasicStat
     {
         public override string Text
         {
@@ -1420,7 +1420,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class ShootoutShot : Stat
+    public class ShootoutShot : Stat
     {
         public ShootoutShot(int number, string side, ObservableCollection<PlayerInRoster> playerRoster, ObservableCollection<PlayerInRoster> goalieRoster)
         {
@@ -1544,7 +1544,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class Shutout
+    public class Shutout
     {
         public Shutout(PlayerInRoster goalie, string side)
         {
@@ -1557,7 +1557,7 @@ namespace CSharpZapoctak.ViewModels
         public string side;
     }
 
-    class State
+    public class State
     {
         public State(Period p, int startTime, int endTime, int hStrength, int aStrength, bool hGoalieIn, bool aGoalieIn, int hGoals, int aGoals)
         {
@@ -1619,7 +1619,7 @@ namespace CSharpZapoctak.ViewModels
     }
     #endregion
 
-    class AddMatchViewModel : NotifyPropertyChanged
+    public class AddMatchViewModel : NotifyPropertyChanged
     {
         #region Properties
 

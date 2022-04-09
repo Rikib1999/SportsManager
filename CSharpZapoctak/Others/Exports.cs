@@ -26,7 +26,7 @@ namespace CSharpZapoctak.Others
             Worksheet table = (Worksheet)excelApplication.ActiveSheet;
 
             //info
-            table.Range["A" + 1].Value = char.ToUpper(SportsData.SPORT.Name[0]) + SportsData.SPORT.Name[1..].Replace('_', '-');
+            table.Range["A" + 1].Value = SportsData.SPORT.FormattedName;
             if (SportsData.IsCompetitionSet()) { table.Range["A" + 1].Value += " - " + SportsData.COMPETITION.Name; }
             if (SportsData.IsSeasonSet()) { table.Range["A" + 1].Value += " - " + SportsData.SEASON.Name; }
 
