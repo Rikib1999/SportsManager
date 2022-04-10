@@ -440,17 +440,6 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private string score = "";
-        public string Score
-        {
-            get => score;
-            set
-            {
-                score = value;
-                OnPropertyChanged();
-            }
-        }
-
         private int goals;
         public int Goals
         {
@@ -473,17 +462,25 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private int penalties;
-        public int Penalties
+        private int penaltyMinutes;
+        public int PenaltyMinutes
         {
-            get => penalties;
+            get => penaltyMinutes;
             set
             {
-                penalties = value;
+                penaltyMinutes = value;
                 OnPropertyChanged();
             }
         }
         #endregion
+
+        public MatchStats(int goals, int assists, int penaltyMinutes, string partOfSeason)
+        {
+            Goals = goals;
+            Assists = assists;
+            PenaltyMinutes = penaltyMinutes;
+            PartOfSeason = partOfSeason;
+        }
 
         public MatchStats(Match m)
         {
@@ -542,12 +539,13 @@ namespace CSharpZapoctak.Models
         private async Task CountPenalties(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
-            MySqlCommand cmd = new("SELECT COUNT(*) FROM penalties " +
-                                                "WHERE match_id = " + matchID, connection);
+            MySqlCommand cmd = new("SELECT COALESCE(SUM(penalty_type.minutes), 0) FROM penalties " +
+                                         "INNER JOIN penalty_type ON penalty_type.code = penalty_type_id " +
+                                         "WHERE match_id = " + matchID, connection);
             try
             {
                 connection.Open();
-                Penalties = (int)(long)await cmd.ExecuteScalarAsync();
+                PenaltyMinutes = (int)(decimal)await cmd.ExecuteScalarAsync();
             }
             catch (Exception)
             {

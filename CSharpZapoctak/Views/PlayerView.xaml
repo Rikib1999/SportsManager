@@ -327,7 +327,7 @@
                                                                     </Style>
                                                                 </DataGridTextColumn.ElementStyle>
                                                             </DataGridTextColumn>
-                                                            <DataGridTextColumn Header="Score" Binding="{Binding Stats.Score}">
+                                                            <DataGridTextColumn Header="Score" Binding="{Binding Score}">
                                                                 <DataGridTextColumn.ElementStyle>
                                                                     <Style TargetType="TextBlock">
                                                                         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -359,7 +359,7 @@
                                                                     </Style>
                                                                 </DataGridTextColumn.ElementStyle>
                                                             </DataGridTextColumn>
-                                                            <DataGridTextColumn Header="Penalties" Binding="{Binding Stats.Penalties}">
+                                                            <DataGridTextColumn Header="Penalty&#10;minutes" Binding="{Binding Stats.PenaltyMinutes}">
                                                                 <DataGridTextColumn.ElementStyle>
                                                                     <Style TargetType="TextBlock">
                                                                         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -702,7 +702,7 @@
                                                                     </Style>
                                                                 </DataGridTextColumn.ElementStyle>
                                                             </DataGridTextColumn>
-                                                            <DataGridTextColumn Header="Score" Binding="{Binding Stats.Score}">
+                                                            <DataGridTextColumn Header="Score" Binding="{Binding Score}">
                                                                 <DataGridTextColumn.ElementStyle>
                                                                     <Style TargetType="TextBlock">
                                                                         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -734,7 +734,7 @@
                                                                     </Style>
                                                                 </DataGridTextColumn.ElementStyle>
                                                             </DataGridTextColumn>
-                                                            <DataGridTextColumn Header="Penalties" Binding="{Binding Stats.Penalties}">
+                                                            <DataGridTextColumn Header="Penalty&#10;minutes" Binding="{Binding Stats.PenaltyMinutes}">
                                                                 <DataGridTextColumn.ElementStyle>
                                                                     <Style TargetType="TextBlock">
                                                                         <Setter Property="VerticalAlignment" Value="Center"/>

@@ -375,7 +375,6 @@ namespace CSharpZapoctak.ViewModels
 
                             m.Stats = new MatchStats(m);
                             ((MatchStats)m.Stats).PartOfSeason = partOfSeason;
-                            ((MatchStats)m.Stats).Score = m.Score();
 
                             sr.Matches.Add(m);
                         }
@@ -492,7 +491,6 @@ namespace CSharpZapoctak.ViewModels
 
                             m.Stats = new MatchStats(m);
                             ((MatchStats)m.Stats).PartOfSeason = partOfSeason;
-                            ((MatchStats)m.Stats).Score = m.Score();
 
                             sr.Matches.Add(m);
                         }

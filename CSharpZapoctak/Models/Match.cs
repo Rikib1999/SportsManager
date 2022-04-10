@@ -165,18 +165,21 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        public string Score()
+        public string Score
         {
-            string score = HomeScore + " : " + AwayScore;
-            if (Overtime) { score += " ot"; }
-            if (Shootout) { score += " so"; }
-            if (Forfeit) { score += " ff"; }
-            return score;
+            get
+            {
+                string score = HomeScore + " : " + AwayScore;
+                if (Overtime) { score += " ot"; }
+                if (Shootout) { score += " so"; }
+                if (Forfeit) { score += " ff"; }
+                return score;
+            }
         }
 
         public string Overview()
         {
-            return Datetime.ToString("g") + " " + HomeTeam.Name + " " + Score() + " " + AwayTeam.Name;
+            return Datetime.ToString("g") + " " + HomeTeam.Name + " " + Score + " " + AwayTeam.Name;
         }
 
         public string ResultType()
