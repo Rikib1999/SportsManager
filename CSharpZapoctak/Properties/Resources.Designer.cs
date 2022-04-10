@@ -61,6 +61,36 @@ namespace CSharpZapoctak.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] add_icon {
+            get {
+                object obj = ResourceManager.GetObject("add_icon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] female {
+            get {
+                object obj = ResourceManager.GetObject("female", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] floorball {
+            get {
+                object obj = ResourceManager.GetObject("floorball", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SET SQL_MODE = &quot;NO_AUTO_VALUE_ON_ZERO&quot;;
         ///START TRANSACTION;
         ///SET time_zone = &quot;+00:00&quot;;
@@ -88,6 +118,16 @@ namespace CSharpZapoctak.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] football {
+            get {
+                object obj = ResourceManager.GetObject("football", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] gamesheet {
             get {
                 object obj = ResourceManager.GetObject("gamesheet", resourceCulture);
@@ -101,6 +141,16 @@ namespace CSharpZapoctak.Properties {
         internal static byte[] GamesheetOCR {
             get {
                 object obj = ResourceManager.GetObject("GamesheetOCR", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ice_hockey {
+            get {
+                object obj = ResourceManager.GetObject("ice_hockey", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -133,9 +183,39 @@ namespace CSharpZapoctak.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] loading {
+            get {
+                object obj = ResourceManager.GetObject("loading", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] male {
+            get {
+                object obj = ResourceManager.GetObject("male", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] match_summary {
             get {
                 object obj = ResourceManager.GetObject("match_summary", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SportManager_logo_32x32 {
+            get {
+                object obj = ResourceManager.GetObject("SportManager_logo_32x32", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -171,6 +251,16 @@ namespace CSharpZapoctak.Properties {
         internal static byte[] standings {
             get {
                 object obj = ResourceManager.GetObject("standings", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] tennis {
+            get {
+                object obj = ResourceManager.GetObject("tennis", resourceCulture);
                 return ((byte[])(obj));
             }
         }
