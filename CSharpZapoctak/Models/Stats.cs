@@ -498,7 +498,7 @@ namespace CSharpZapoctak.Models
             tasks.Add(Task.Run(() => CountPenalties(matchID)));
             await Task.WhenAll(tasks);
         }
-        
+
         private async Task CountGoals(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -596,16 +596,7 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private int points;
-        public int Points
-        {
-            get => points;
-            set
-            {
-                points = value;
-                OnPropertyChanged();
-            }
-        }
+        public int Points => Goals + Assists;
 
         private int penaltyMinutes;
         public int PenaltyMinutes
@@ -621,11 +612,10 @@ namespace CSharpZapoctak.Models
 
         public PlayerStats(int gamesPlayed, int goals, int assists, int penaltyMinutes)
         {
-            this.gamesPlayed = gamesPlayed;
-            this.goals = goals;
-            this.assists = assists;
-            this.penaltyMinutes = penaltyMinutes;
-            points = goals + assists;
+            GamesPlayed = gamesPlayed;
+            Goals = goals;
+            Assists = assists;
+            PenaltyMinutes = penaltyMinutes;
         }
 
         public PlayerStats(Player player, int seasonID, int competitionID)
@@ -641,7 +631,6 @@ namespace CSharpZapoctak.Models
             tasks.Add(Task.Run(() => CountAssists(playerID, seasonID, competitionID)));
             tasks.Add(Task.Run(() => CountPenaltyMinutes(playerID, seasonID, competitionID)));
             await Task.WhenAll(tasks);
-            Points = Goals + Assists;
         }
 
         public async Task CountGamesPlayed(int playerID, int seasonID, int competitionID)
@@ -782,27 +771,9 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private string timeInGameText = "0:00";
-        public string TimeInGameText
-        {
-            get => timeInGameText;
-            set
-            {
-                timeInGameText = value;
-                OnPropertyChanged();
-            }
-        }
+        public string TimeInGameText => (TimeInGame / 60) + ":" + (TimeInGame % 60).ToString("00");
 
-        private string timeInGamePerGame = "0:00";
-        public string TimeInGamePerGame
-        {
-            get => timeInGamePerGame;
-            set
-            {
-                timeInGamePerGame = value;
-                OnPropertyChanged();
-            }
-        }
+        public string TimeInGamePerGame => GamesPlayed != 0 ? (TimeInGame / GamesPlayed / 60) + ":" + (TimeInGame / GamesPlayed % 60).ToString("00") : "0:00";
 
         private int goalsAgainst;
         public int GoalsAgainst
@@ -815,27 +786,9 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private float goalsAgainstPerGame;
-        public float GoalsAgainstPerGame
-        {
-            get => goalsAgainstPerGame;
-            set
-            {
-                goalsAgainstPerGame = value;
-                OnPropertyChanged();
-            }
-        }
+        public float GoalsAgainstPerGame => GamesPlayed != 0 ? (float)Math.Round(GoalsAgainst / (float)GamesPlayed, 2) : 0;
 
-        private string timeInGamePerGoalAgainst = "0:00";
-        public string TimeInGamePerGoalAgainst
-        {
-            get => timeInGamePerGoalAgainst;
-            set
-            {
-                timeInGamePerGoalAgainst = value;
-                OnPropertyChanged();
-            }
-        }
+        public string TimeInGamePerGoalAgainst => GoalsAgainst != 0 ? (TimeInGame / GoalsAgainst / 60) + ":" + (TimeInGame / GoalsAgainst % 60).ToString("00") : "no goal against";
 
         private int penaltyShotsAgainst;
         public int PenaltyShotsAgainst
@@ -859,16 +812,7 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private float penaltyShotsPercentage;
-        public float PenaltyShotsPercentage
-        {
-            get => penaltyShotsPercentage;
-            set
-            {
-                penaltyShotsPercentage = value;
-                OnPropertyChanged();
-            }
-        }
+        public float PenaltyShotsPercentage => PenaltyShotsAgainst != 0 ? (float)Math.Round((PenaltyShotsAgainst - PenaltyShotGoalsAgainst) / (float)PenaltyShotsAgainst * 100, 2) : float.NaN;
 
         private int shootoutShotsAgainst;
         public int ShootoutShotsAgainst
@@ -892,17 +836,20 @@ namespace CSharpZapoctak.Models
             }
         }
 
-        private float shootoutShotsPercentage;
-        public float ShootoutShotsPercentage
-        {
-            get => shootoutShotsPercentage;
-            set
-            {
-                shootoutShotsPercentage = value;
-                OnPropertyChanged();
-            }
-        }
+        public float ShootoutShotsPercentage => ShootoutShotsAgainst != 0 ? (float)Math.Round((ShootoutShotsAgainst - ShootoutShotGoalsAgainst) / (float)ShootoutShotsAgainst * 100, 2) : float.NaN;
         #endregion
+
+        public GoalieStats(int gamesPlayed, int goalsAgainst, int shutouts, int timeInGame, int penaltyShots, int penaltyShotGoalsAgainst, int shootoutShots, int shootoutShotGoalsAgainst)
+        {
+            GamesPlayed = gamesPlayed;
+            GoalsAgainst = goalsAgainst;
+            Shutouts = shutouts;
+            TimeInGame = timeInGame;
+            PenaltyShotsAgainst = penaltyShots;
+            PenaltyShotGoalsAgainst = penaltyShotGoalsAgainst;
+            ShootoutShotsAgainst = shootoutShots;
+            ShootoutShotGoalsAgainst = shootoutShotGoalsAgainst;
+        }
 
         public GoalieStats(Player player, int seasonID, int competitionID)
         {
@@ -921,15 +868,6 @@ namespace CSharpZapoctak.Models
             tasks.Add(Task.Run(() => CountShootoutShots(playerID, seasonID, competitionID)));
             tasks.Add(Task.Run(() => CountShootoutShotGoalsAgainst(playerID, seasonID, competitionID)));
             await Task.WhenAll(tasks);
-            TimeInGameText = (TimeInGame / 60) + ":" + (TimeInGame % 60).ToString("00");
-            if (GamesPlayed != 0)
-            {
-                TimeInGamePerGame = (TimeInGame / GamesPlayed / 60) + ":" + (TimeInGame / GamesPlayed % 60).ToString("00");
-                GoalsAgainstPerGame = (float)Math.Round(GoalsAgainst / (float)GamesPlayed, 2);
-            }
-            TimeInGamePerGoalAgainst = GoalsAgainst != 0 ? (TimeInGame / GoalsAgainst / 60) + ":" + (TimeInGame / GoalsAgainst % 60).ToString("00") : "no goal against";
-            PenaltyShotsPercentage = PenaltyShotsAgainst != 0 ? (float)Math.Round((PenaltyShotsAgainst - PenaltyShotGoalsAgainst) / (float)PenaltyShotsAgainst * 100, 2) : float.NaN;
-            ShootoutShotsPercentage = ShootoutShotsAgainst != 0 ? (float)Math.Round((ShootoutShotsAgainst - ShootoutShotGoalsAgainst) / (float)ShootoutShotsAgainst * 100, 2) : float.NaN;
         }
 
         public async Task CountGamesPlayed(int playerID, int seasonID, int competitionID)
