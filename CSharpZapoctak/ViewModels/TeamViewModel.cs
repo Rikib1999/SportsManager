@@ -9,15 +9,16 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class PlayerEnlistment : NotifyPropertyChanged
+    public class PlayerEnlistment : NotifyPropertyChanged
     {
-        public int id;
+        public int ID { get; set; }
 
-        public ObservableCollection<PlayerEnlistment> parent;
+        public ObservableCollection<PlayerEnlistment> Parent { get; set; }
 
         private string name;
         public string Name
@@ -75,7 +76,7 @@ namespace CSharpZapoctak.ViewModels
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlCommand cmd = new("SELECT COUNT(*) FROM player_matches " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
-                                                "WHERE player_id = " + id + " AND team_id = " + t.ID + " AND m.season_id = " + seasonID, connection);
+                                                "WHERE player_id = " + ID + " AND team_id = " + t.ID + " AND m.season_id = " + seasonID, connection);
             try
             {
                 connection.Open();
@@ -83,28 +84,28 @@ namespace CSharpZapoctak.ViewModels
                 cmd.Transaction = transaction;
                 if ((int)(long)cmd.ExecuteScalar() == 0)
                 {
-                    cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE player_id = " + id + " AND team_id = " + t.ID + " AND season_id = " + seasonID, connection)
+                    cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE player_id = " + ID + " AND team_id = " + t.ID + " AND season_id = " + seasonID, connection)
                     {
                         Transaction = transaction
                     };
                     _ = cmd.ExecuteNonQuery();
 
-                    _ = parent.Remove(this);
+                    _ = Parent.Remove(this);
 
                     //if there are no more enlistments for the player delete player from database
-                    cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + id, connection)
+                    cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + ID, connection)
                     {
                         Transaction = transaction
                     };
                     if ((int)(long)cmd.ExecuteScalar() == 0)
                     {
-                        cmd = new MySqlCommand("DELETE FROM player WHERE id = " + id, connection)
+                        cmd = new MySqlCommand("DELETE FROM player WHERE id = " + ID, connection)
                         {
                             Transaction = transaction
                         };
                         _ = cmd.ExecuteNonQuery();
 
-                        string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.Name + id + ".*");
+                        string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.Name + ID + ".*");
                         string previousFilePath = "";
                         //if it exists
                         if (previousImgPath.Length != 0)
@@ -141,42 +142,14 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PlayerEnlistmentDictionary : NotifyPropertyChanged
+    public class CompetitionRecord : NotifyPropertyChanged
     {
-        public int SeasonID { get; set; }
+        public int CompetitionID { get; set; }
 
-        private Tuple<string, PlayerList> season;
-        public Tuple<string, PlayerList> Season
-        {
-            get => season;
-            set
-            {
-                season = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    class CompetitionDictionary : NotifyPropertyChanged
-    {
         public string CompetitionName { get; set; }
 
-        private SeasonDictionary seasonDictionary;
-        public SeasonDictionary SeasonDictionary
-        {
-            get => seasonDictionary;
-            set
-            {
-                seasonDictionary = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    class SeasonDictionary : NotifyPropertyChanged
-    {
-        private ObservableCollection<PlayerEnlistmentDictionary> seasons = new();
-        public ObservableCollection<PlayerEnlistmentDictionary> Seasons
+        private ObservableCollection<SeasonRecord> seasons = new();
+        public ObservableCollection<SeasonRecord> Seasons
         {
             get => seasons;
             set
@@ -197,7 +170,6 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-
         private ICommand setCompetitionVisibilityCommand;
         public ICommand SetCompetitionVisibilityCommand
         {
@@ -213,19 +185,16 @@ namespace CSharpZapoctak.ViewModels
 
         private void SetCompetitionVisibility()
         {
-            if (CompetitionVisibility == Visibility.Visible)
-            {
-                CompetitionVisibility = Visibility.Collapsed;
-            }
-            else
-            {
-                CompetitionVisibility = Visibility.Visible;
-            }
+            CompetitionVisibility = CompetitionVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
-    class PlayerList : NotifyPropertyChanged
+    public class SeasonRecord : NotifyPropertyChanged
     {
+        public int SeasonID { get; set; }
+
+        public string SeasonName { get; set; }
+
         private ObservableCollection<PlayerEnlistment> players = new();
         public ObservableCollection<PlayerEnlistment> Players
         {
@@ -237,7 +206,6 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        #region Visibilities
         private Visibility seasonVisibility = Visibility.Collapsed;
         public Visibility SeasonVisibility
         {
@@ -248,7 +216,6 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
-
 
         private ICommand setSeasonVisibilityCommand;
         public ICommand SetSeasonVisibilityCommand
@@ -265,16 +232,8 @@ namespace CSharpZapoctak.ViewModels
 
         private void SetSeasonVisibility()
         {
-            if (SeasonVisibility == Visibility.Visible)
-            {
-                SeasonVisibility = Visibility.Collapsed;
-            }
-            else
-            {
-                SeasonVisibility = Visibility.Visible;
-            }
+            SeasonVisibility = SeasonVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
-        #endregion
 
         #region Player enlistment
 
@@ -537,7 +496,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 _ = MessageBox.Show("Please fill in all the fields", "Empty fields", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            else if (Players.Any(x => x.id == SelectedPlayer.ID))
+            else if (Players.Any(x => x.ID == SelectedPlayer.ID))
             {
                 _ = MessageBox.Show("Selected player is already enlisted.", "Player already enlisted", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
@@ -549,8 +508,8 @@ namespace CSharpZapoctak.ViewModels
             {
                 Players.Add(new PlayerEnlistment
                 {
-                    id = SelectedPlayer.ID,
-                    parent = Players,
+                    ID = SelectedPlayer.ID,
+                    Parent = Players,
                     Name = SelectedPlayer.FullName,
                     Position = SelectedPosition,
                     Number = (int)SelectedNumber
@@ -582,9 +541,10 @@ namespace CSharpZapoctak.ViewModels
 
         private void EditPlayer(object param)
         {
-            IList teamAndSeasonID = param as IList;
-            int teamID = ((Team)teamAndSeasonID[0]).ID;
-            int seasonID = (int)teamAndSeasonID[1];
+            IList teamIDSeasonIDcomboBox = param as IList;
+            int teamID = ((Team)teamIDSeasonIDcomboBox[0]).ID;
+            int seasonID = (int)teamIDSeasonIDcomboBox[1];
+            ComboBox comboBox = (ComboBox)teamIDSeasonIDcomboBox[2];
 
             if (EditedPlayer == null || EditedPosition == null || EditedNumber == null)
             {
@@ -598,7 +558,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 MySqlConnection connection = new(SportsData.ConnectionStringSport);
                 MySqlCommand cmd = new("UPDATE player_enlistment SET number = " + EditedNumber + ", position_code = '" + EditedPosition.Code + "' " +
-                                                    "WHERE player_id = " +EditedPlayer.id + " AND team_id = " + teamID + " AND season_id = " + seasonID, connection);
+                                                    "WHERE player_id = " + EditedPlayer.ID + " AND team_id = " + teamID + " AND season_id = " + seasonID, connection);
                 try
                 {
                     connection.Open();
@@ -608,6 +568,7 @@ namespace CSharpZapoctak.ViewModels
                     EditedPlayer.Position = EditedPosition;
 
                     EditedPlayer = new PlayerEnlistment();
+                    comboBox.SelectedIndex = -1;
                 }
                 catch (Exception)
                 {
@@ -665,8 +626,8 @@ namespace CSharpZapoctak.ViewModels
 
                     Players.Add(new PlayerEnlistment
                     {
-                        id = newID,
-                        parent = Players,
+                        ID = newID,
+                        Parent = Players,
                         Name = NewFirstName + " " + NewLastName,
                         Position = SelectedPosition,
                         Number = (int)SelectedNumber
@@ -710,15 +671,15 @@ namespace CSharpZapoctak.ViewModels
         #endregion
     }
 
-    class TeamViewModel : NotifyPropertyChanged
+    public class TeamViewModel : NotifyPropertyChanged
     {
         public ICommand NavigateEditTeamCommand { get; }
 
         #region Data
         public Team CurrentTeam { get; set; }
 
-        private ObservableCollection<CompetitionDictionary> competitionEnlistments;
-        public ObservableCollection<CompetitionDictionary> CompetitionEnlistments
+        private ObservableCollection<CompetitionRecord> competitionEnlistments;
+        public ObservableCollection<CompetitionRecord> CompetitionEnlistments
         {
             get => competitionEnlistments;
             set
@@ -809,10 +770,10 @@ namespace CSharpZapoctak.ViewModels
 
         private void LoadEnlistments()
         {
-            CompetitionEnlistments = new ObservableCollection<CompetitionDictionary>();
+            CompetitionEnlistments = new ObservableCollection<CompetitionRecord>();
 
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
-            MySqlCommand cmd = new("SELECT player_id, season_id, number, p.first_name AS player_first_name, p.last_name AS player_last_name, pos.name AS position, s.name AS season_name, c.name AS competition_name " +
+            MySqlCommand cmd = new("SELECT player_id, season_id, number, p.first_name AS player_first_name, p.last_name AS player_last_name, pos.name AS position, s.name AS season_name, c.name AS competition_name, c.id AS competition_id " +
                                                 "FROM player_enlistment " +
                                                 "INNER JOIN player AS p ON p.id = player_id " +
                                                 "INNER JOIN position AS pos ON pos.code = position_code " +
@@ -828,21 +789,27 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    string competition = row["competition_name"].ToString();
+                    int competitionID = int.Parse(row["competition_id"].ToString());
+                    string competitionName = row["competition_name"].ToString();
                     int seasonID = int.Parse(row["season_id"].ToString());
+                    string seasonName = row["season_name"].ToString();
 
-                    if (!CompetitionEnlistments.Any(x => x.CompetitionName == competition))
+                    if (!CompetitionEnlistments.Any(x => x.CompetitionID == competitionID))
                     {
-                        CompetitionEnlistments.Add(new CompetitionDictionary { CompetitionName = competition, SeasonDictionary = new SeasonDictionary() });
+                        CompetitionEnlistments.Add(new CompetitionRecord { CompetitionID = competitionID, CompetitionName = competitionName, Seasons = new() });
                     }
-                    if (!CompetitionEnlistments.Where(x => x.CompetitionName == competition).First().SeasonDictionary.Seasons.Any(x => x.SeasonID == seasonID))
+                    CompetitionRecord competitionRecord = CompetitionEnlistments.First(x => x.CompetitionID == competitionID);
+
+                    if (!competitionRecord.Seasons.Any(x => x.SeasonID == seasonID))
                     {
-                        CompetitionEnlistments.Where(x => x.CompetitionName == competition).First().SeasonDictionary.Seasons.Add(new PlayerEnlistmentDictionary { SeasonID = seasonID, Season = Tuple.Create(row["season_name"].ToString(), new PlayerList()) });
+                        competitionRecord.Seasons.Add(new SeasonRecord { SeasonID = seasonID, SeasonName = seasonName, Players = new() });
                     }
-                    CompetitionEnlistments.Where(x => x.CompetitionName == competition).First().SeasonDictionary.Seasons.Where(x => x.SeasonID == seasonID).First().Season.Item2.Players.Add(new PlayerEnlistment
+                    SeasonRecord seasonRecord = competitionRecord.Seasons.First(x => x.SeasonID == seasonID);
+
+                    seasonRecord.Players.Add(new PlayerEnlistment
                     {
-                        id = int.Parse(row["player_id"].ToString()),
-                        parent = CompetitionEnlistments.Where(x => x.CompetitionName == competition).First().SeasonDictionary.Seasons.Where(x => x.SeasonID == seasonID).First().Season.Item2.Players,
+                        ID = int.Parse(row["player_id"].ToString()),
+                        Parent = seasonRecord.Players,
                         Name = row["player_first_name"].ToString() + " " + row["player_last_name"].ToString(),
                         Number = int.Parse(row["number"].ToString()),
                         Position = Positions.First(x => x.Name == row["position"].ToString())
@@ -850,7 +817,7 @@ namespace CSharpZapoctak.ViewModels
                 }
 
                 //load seasons where no players are enlisted
-                cmd = new MySqlCommand("SELECT season_id, s.name AS season_name, c.name AS competition_name " +
+                cmd = new MySqlCommand("SELECT season_id, s.name AS season_name, c.name AS competition_name, c.id AS competition_id " +
                                                 "FROM team_enlistment " +
                                                 "INNER JOIN seasons AS s ON s.id = season_id " +
                                                 "INNER JOIN competitions AS c ON c.id = s.competition_id " +
@@ -861,22 +828,26 @@ namespace CSharpZapoctak.ViewModels
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    string competition = row["competition_name"].ToString();
+                    int competitionID = int.Parse(row["competition_id"].ToString());
+                    string competitionName = row["competition_name"].ToString();
                     int seasonID = int.Parse(row["season_id"].ToString());
+                    string seasonName = row["season_name"].ToString();
 
-                    if (!CompetitionEnlistments.Any(x => x.CompetitionName == competition))
+                    if (!CompetitionEnlistments.Any(x => x.CompetitionID == competitionID))
                     {
-                        CompetitionEnlistments.Add(new CompetitionDictionary { CompetitionName = competition, SeasonDictionary = new SeasonDictionary() });
+                        CompetitionEnlistments.Add(new CompetitionRecord { CompetitionID = competitionID, CompetitionName = competitionName, Seasons = new() });
                     }
-                    if (!CompetitionEnlistments.Where(x => x.CompetitionName == competition).First().SeasonDictionary.Seasons.Any(x => x.SeasonID == seasonID))
+                    CompetitionRecord competitionRecord = CompetitionEnlistments.First(x => x.CompetitionID == competitionID);
+
+                    if (!competitionRecord.Seasons.Any(x => x.SeasonID == seasonID))
                     {
-                        CompetitionEnlistments.Where(x => x.CompetitionName == competition).First().SeasonDictionary.Seasons.Add(new PlayerEnlistmentDictionary { SeasonID = seasonID, Season = Tuple.Create(row["season_name"].ToString(), new PlayerList()) });
+                        competitionRecord.Seasons.Add(new SeasonRecord { SeasonID = seasonID, SeasonName = seasonName, Players = new() });
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse."+e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

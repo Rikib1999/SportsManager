@@ -55,10 +55,10 @@
                             <Border Background="CornflowerBlue" BorderBrush="Black" BorderThickness="2" Margin="20,10,20,0">
                                 <UniformGrid Rows="1">
                                     <TextBlock Text="{Binding CompetitionName}" FontWeight="Bold" Padding="5"/>
-                                    <Button FontWeight="Bold" Command="{Binding SeasonDictionary.SetCompetitionVisibilityCommand}" Content="-" Width="45" HorizontalAlignment="Right" BorderThickness="2,0,0,0" BorderBrush="Black"/>
+                                    <Button FontWeight="Bold" Command="{Binding SetCompetitionVisibilityCommand}" Content="-" Width="45" HorizontalAlignment="Right" BorderThickness="2,0,0,0" BorderBrush="Black"/>
                                 </UniformGrid>
                             </Border>
-                            <ItemsControl Visibility="{Binding SeasonDictionary.CompetitionVisibility}" ItemsSource="{Binding SeasonDictionary.Seasons}" Name="seasonSource">
+                            <ItemsControl Visibility="{Binding CompetitionVisibility}" ItemsSource="{Binding Seasons}" Name="seasonSource">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"/>
@@ -71,15 +71,15 @@
                                         <StackPanel Orientation="Vertical">
                                             <Border Background="LightBlue" BorderBrush="Black" BorderThickness="2,0,2,2" Margin="20,0,20,0">
                                                 <UniformGrid Rows="1">
-                                                    <TextBlock FontWeight="Bold" Text="{Binding Season.Item1}" Padding="5"/>
-                                                    <Button FontWeight="Bold" Command="{Binding Season.Item2.SetSeasonVisibilityCommand}" Content="-" Width="45" HorizontalAlignment="Right" BorderThickness="2,0,0,0" BorderBrush="Black"/>
+                                                    <TextBlock FontWeight="Bold" Text="{Binding SeasonName}" Padding="5"/>
+                                                    <Button FontWeight="Bold" Command="{Binding SetSeasonVisibilityCommand}" Content="-" Width="45" HorizontalAlignment="Right" BorderThickness="2,0,0,0" BorderBrush="Black"/>
                                                 </UniformGrid>
                                             </Border>
-                                            <Border Visibility="{Binding Season.Item2.SeasonVisibility}" BorderBrush="Black" BorderThickness="2,0,2,2" Margin="20,0">
+                                            <Border Visibility="{Binding SeasonVisibility}" BorderBrush="Black" BorderThickness="2,0,2,2" Margin="20,0">
                                                 <StackPanel Orientation="Vertical">
 
             <!--................PLAYERS..................-->
-                                                    <DataGrid ItemsSource="{Binding Season.Item2.Players}" AutoGenerateColumns="False"
+                                                    <DataGrid ItemsSource="{Binding Players}" AutoGenerateColumns="False"
                                                     IsReadOnly="True" AlternatingRowBackground="GhostWhite" RowHeight="50" FontSize="20" Name="playersGridSource">
                                                         <DataGrid.ColumnHeaderStyle>
                                                             <Style TargetType="{x:Type DataGridColumnHeader}">
@@ -144,7 +144,7 @@
                                                             <RowDefinition Height="40"/>
                                                             <RowDefinition Height="40"/>
                                                         </Grid.RowDefinitions>
-                                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Season.Item2.EditedNumber}" x:Name="EditNumberTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
+                                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding EditedNumber}" x:Name="EditNumberTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Number (1-99)" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -157,7 +157,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Positions, ElementName=competitionSource}" DisplayMemberPath="Name" SelectedItem="{Binding Season.Item2.EditedPosition}"
+                                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Positions, ElementName=competitionSource}" DisplayMemberPath="Name" SelectedItem="{Binding EditedPosition}"
                                                                    x:Name="EditPositionComboBox" IsEditable="True" IsReadOnly="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Position" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
@@ -171,7 +171,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <ComboBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Season.Item2.Players}" x:Name="EditPlayerComboBox" DisplayMemberPath="Name" SelectedItem="{Binding Season.Item2.EditedPlayer}" IsEditable="True" Padding="10,0,0,0"/>
+                                                        <ComboBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Players}" x:Name="EditPlayerComboBox" DisplayMemberPath="Name" SelectedItem="{Binding EditedPlayer}" IsEditable="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Select player" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -184,11 +184,12 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <Button Grid.Row="1" Grid.Column="1" Content="Edit player" Command="{Binding Season.Item2.EditPlayerCommand}">
+                                                        <Button Grid.Row="1" Grid.Column="1" Content="Edit player" Command="{Binding EditPlayerCommand}">
                                                             <Button.CommandParameter>
                                                                 <MultiBinding Converter="{StaticResource ObjectsConverter}">
                                                                     <Binding Path="DataContext.CurrentTeam" ElementName="competitionSource"/>
                                                                     <Binding Path="SeasonID"/>
+                                                                    <Binding ElementName="EditPlayerComboBox"/>
                                                                 </MultiBinding>
                                                             </Button.CommandParameter>
                                                         </Button>
@@ -204,7 +205,7 @@
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="40"/>
                                                         </Grid.RowDefinitions>
-                                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Season.Item2.SelectedNumber}" x:Name="NumberTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
+                                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding SelectedNumber}" x:Name="NumberTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Number (1-99)" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -217,7 +218,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Positions, ElementName=competitionSource}" DisplayMemberPath="Name" SelectedItem="{Binding Season.Item2.SelectedPosition}"
+                                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Positions, ElementName=competitionSource}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedPosition}"
                                                                    x:Name="PositionComboBox" IsEditable="True" IsReadOnly="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Position" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
@@ -243,7 +244,7 @@
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="40"/>
                                                         </Grid.RowDefinitions>
-                                                        <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Path=DataContext.Players, ElementName=competitionSource}" x:Name="SelectedPlayerComboBox" DisplayMemberPath="FullName" SelectedItem="{Binding Season.Item2.SelectedPlayer}" IsEditable="True" Padding="10,0,0,0"/>
+                                                        <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Path=DataContext.Players, ElementName=competitionSource}" x:Name="SelectedPlayerComboBox" DisplayMemberPath="FullName" SelectedItem="{Binding SelectedPlayer}" IsEditable="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Select player" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -256,7 +257,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <Button Grid.Row="0" Grid.Column="1" Content="Add player" Command="{Binding Season.Item2.AddPlayerCommand}">
+                                                        <Button Grid.Row="0" Grid.Column="1" Content="Add player" Command="{Binding AddPlayerCommand}">
                                                             <Button.CommandParameter>
                                                                 <MultiBinding Converter="{StaticResource ObjectsConverter}">
                                                                     <Binding Path="DataContext.CurrentTeam" ElementName="competitionSource"/>
@@ -288,7 +289,7 @@
                                                             <RowDefinition Height="40"/>
                                                         </Grid.RowDefinitions>
                                                         
-                                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Season.Item2.NewFirstName}" x:Name="FirstNameTextBox" Padding="10,0,0,0"/>
+                                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding NewFirstName}" x:Name="FirstNameTextBox" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="First Name" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -301,7 +302,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Season.Item2.NewLastName}" x:Name="LastNameTextBox" Padding="10,0,0,0"/>
+                                                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewLastName}" x:Name="LastNameTextBox" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Last Name" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -315,7 +316,7 @@
                                                             </TextBlock.Style>
                                                         </TextBlock>
 
-                                                        <DatePicker Grid.Row="1" Grid.Column="0" SelectedDate="{Binding Season.Item2.NewBirthdate}" x:Name="BirthdateDatePicker" Padding="10,0,0,0"/>
+                                                        <DatePicker Grid.Row="1" Grid.Column="0" SelectedDate="{Binding NewBirthdate}" x:Name="BirthdateDatePicker" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Birthdate" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -328,7 +329,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Genders, ElementName=competitionSource}" SelectedValue="{Binding Season.Item2.NewGender}" x:Name="GenderComboBox" IsEditable="True" IsReadOnly="True" Padding="10,0,0,0"/>
+                                                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Genders, ElementName=competitionSource}" SelectedValue="{Binding NewGender}" x:Name="GenderComboBox" IsEditable="True" IsReadOnly="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Gender" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -342,7 +343,7 @@
                                                             </TextBlock.Style>
                                                         </TextBlock>
 
-                                                        <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding Season.Item2.NewHeight}" x:Name="HeightTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
+                                                        <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding NewHeight}" x:Name="HeightTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Height (cm)" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -355,7 +356,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Season.Item2.NewWeight}" x:Name="WeightTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
+                                                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewWeight}" x:Name="WeightTextBox" PreviewTextInput="ValidationTextBox" TextChanged="TextBox_TextChanged" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Weight (kg)" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -369,7 +370,7 @@
                                                             </TextBlock.Style>
                                                         </TextBlock>
 
-                                                        <ComboBox Grid.Row="3" Grid.Column="0" ItemsSource="{Binding Path=DataContext.PlaysWith, ElementName=competitionSource}" SelectedValue="{Binding Season.Item2.NewPlaysWith}" x:Name="PlaysWithComboBox" IsEditable="True" IsReadOnly="True" Padding="10,0,0,0"/>
+                                                        <ComboBox Grid.Row="3" Grid.Column="0" ItemsSource="{Binding Path=DataContext.PlaysWith, ElementName=competitionSource}" SelectedValue="{Binding NewPlaysWith}" x:Name="PlaysWithComboBox" IsEditable="True" IsReadOnly="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Plays with" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -382,7 +383,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Countries, ElementName=competitionSource}" DisplayMemberPath="Name" x:Name="CitizenshipComboBox" SelectedItem="{Binding Season.Item2.NewCitizenship}" IsEditable="True" Padding="10,0,0,0"/>
+                                                        <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding Path=DataContext.Countries, ElementName=competitionSource}" DisplayMemberPath="Name" x:Name="CitizenshipComboBox" SelectedItem="{Binding NewCitizenship}" IsEditable="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Citizenship" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -396,7 +397,7 @@
                                                             </TextBlock.Style>
                                                         </TextBlock>
 
-                                                        <TextBox Grid.Row="4" Grid.Column="0" Text="{Binding Season.Item2.NewBirthplaceCity}" x:Name="BirthplaceCityTextBox" Padding="10,0,0,0"/>
+                                                        <TextBox Grid.Row="4" Grid.Column="0" Text="{Binding NewBirthplaceCity}" x:Name="BirthplaceCityTextBox" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Birthplace City" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -409,7 +410,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="BirthplaceCountryComboBox" ItemsSource="{Binding  Path=DataContext.Countries, ElementName=competitionSource}" DisplayMemberPath="Name" SelectedItem="{Binding Season.Item2.NewBirthplaceCountry}" IsEditable="True" Padding="10,0,0,0"/>
+                                                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="BirthplaceCountryComboBox" ItemsSource="{Binding  Path=DataContext.Countries, ElementName=competitionSource}" DisplayMemberPath="Name" SelectedItem="{Binding NewBirthplaceCountry}" IsEditable="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Birthplace country" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -423,7 +424,7 @@
                                                             </TextBlock.Style>
                                                         </TextBlock>
 
-                                                        <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Season.Item2.NewInfo}" x:Name="InfoTextBox" TextWrapping="Wrap" AcceptsReturn="True" Padding="10,0,0,0"/>
+                                                        <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding NewInfo}" x:Name="InfoTextBox" TextWrapping="Wrap" AcceptsReturn="True" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Info" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -437,7 +438,7 @@
                                                             </TextBlock.Style>
                                                         </TextBlock>
 
-                                                        <ComboBox Grid.Row="6" Grid.Column="0" ItemsSource="{Binding Path=DataContext.Statuses, ElementName=competitionSource}" SelectedValue="{Binding Season.Item2.NewStatus}" IsEditable="True" IsReadOnly="True" x:Name="StatusComboBox" Padding="10,0,0,0"/>
+                                                        <ComboBox Grid.Row="6" Grid.Column="0" ItemsSource="{Binding Path=DataContext.Statuses, ElementName=competitionSource}" SelectedValue="{Binding NewStatus}" IsEditable="True" IsReadOnly="True" x:Name="StatusComboBox" Padding="10,0,0,0"/>
                                                         <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="Status" Margin="10,0,0,0" Foreground="DarkGray">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
@@ -450,7 +451,7 @@
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                        <Button Grid.Row="6" Grid.Column="1" Content="Add player" Command="{Binding Season.Item2.AddNewPlayerCommand}">
+                                                        <Button Grid.Row="6" Grid.Column="1" Content="Add player" Command="{Binding AddNewPlayerCommand}">
                                                             <Button.CommandParameter>
                                                                 <MultiBinding Converter="{StaticResource ObjectsConverter}">
                                                                     <Binding Path="DataContext.CurrentTeam" ElementName="competitionSource"/>

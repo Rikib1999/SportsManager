@@ -125,7 +125,6 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-
         private ICommand setSeasonVisibilityCommand;
         public ICommand SetSeasonVisibilityCommand
         {
@@ -147,6 +146,7 @@ namespace CSharpZapoctak.ViewModels
 
     public class PlayerViewModel : NotifyPropertyChanged
     {
+        #region Data
         private Player player;
         public Player Player
         {
@@ -157,6 +157,8 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public Match SelectedMatch { get; set; }
 
         private ObservableCollection<CompetitionRecord<PlayerStats>> competitions = new();
         public ObservableCollection<CompetitionRecord<PlayerStats>> Competitions
@@ -190,7 +192,9 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
+        #endregion
 
+        #region Charting
         public Func<double, string> AxisFormatterScatter { get; set; } = value => value.ToString("N2");
 
         public string[] DatetimeXLabels { get; set; }
@@ -227,7 +231,9 @@ namespace CSharpZapoctak.ViewModels
                 OnPropertyChanged();
             }
         }
+        #endregion
 
+        #region Commands
         private ICommand exportChartCommand;
         public ICommand ExportChartCommand
         {
@@ -256,9 +262,8 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-        public Match SelectedMatch { get; set; }
-
         public ICommand NavigateEditCommand { get; }
+        #endregion
 
         public PlayerViewModel(NavigationStore ns, Player p)
         {
