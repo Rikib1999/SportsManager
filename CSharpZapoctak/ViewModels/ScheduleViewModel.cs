@@ -5,7 +5,7 @@ namespace CSharpZapoctak.ViewModels
 {
     class ScheduleViewModel : NotifyPropertyChanged
     {
-        private NavigationStore ns;
+        private readonly NavigationStore ns;
 
         public NotifyPropertyChanged CurrentViewModel { get; set; }
 

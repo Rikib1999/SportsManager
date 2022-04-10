@@ -228,20 +228,17 @@ namespace CSharpZapoctak.ViewModels
                         t.ImagePath = imgPath.First();
                     }
 
-                    string status = "inactive";
-                    if (t.Status) { status = "active"; }
-
-                    //t.Stats = new TeamStats(t, status);
-                    t.Stats = new TeamStats(status, int.Parse(row["match_count"].ToString()),
-                                                    int.Parse(row["goal_count"].ToString()),
-                                                    int.Parse(row["goals_against_count"].ToString()),
-                                                    int.Parse(row["assist_count"].ToString()),
-                                                    int.Parse(row["penalty_minutes"].ToString()),
-                                                    int.Parse(row["wins"].ToString()),
-                                                    int.Parse(row["ot_wins"].ToString()),
-                                                    int.Parse(row["ties"].ToString()),
-                                                    int.Parse(row["ot_losses"].ToString()),
-                                                    int.Parse(row["losses"].ToString()));
+                    //t.Stats = new TeamStats(t);
+                    t.Stats = new TeamStats(int.Parse(row["match_count"].ToString()),
+                                            int.Parse(row["goal_count"].ToString()),
+                                            int.Parse(row["goals_against_count"].ToString()),
+                                            int.Parse(row["assist_count"].ToString()),
+                                            int.Parse(row["penalty_minutes"].ToString()),
+                                            int.Parse(row["wins"].ToString()),
+                                            int.Parse(row["ot_wins"].ToString()),
+                                            int.Parse(row["ties"].ToString()),
+                                            int.Parse(row["ot_losses"].ToString()),
+                                            int.Parse(row["losses"].ToString()));
 
                     Entities.Add(t);
                 }

@@ -26,6 +26,8 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        public string StatusText => Status ? "active" : "inactive";
+
         private Country country;
         public Country Country
         {

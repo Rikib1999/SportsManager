@@ -96,8 +96,10 @@ namespace CSharpZapoctak.ViewModels
                     {
                         cmd = new MySqlCommand("DELETE " + db + ".* FROM " + db + " " +
                                                "INNER JOIN matches AS m ON m.id = match_id " +
-                                               "WHERE m.season_id = " + CurrentSeason.ID, connection);
-                        cmd.Transaction = transaction;
+                                               "WHERE m.season_id = " + CurrentSeason.ID, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
                     }
 
@@ -105,19 +107,25 @@ namespace CSharpZapoctak.ViewModels
                     databases = new List<string> { "rounds", "groups", "brackets" };
                     foreach (string db in databases)
                     {
-                        cmd = new MySqlCommand("DELETE FROM " + db + " WHERE season_id = " + CurrentSeason.ID, connection);
-                        cmd.Transaction = transaction;
+                        cmd = new MySqlCommand("DELETE FROM " + db + " WHERE season_id = " + CurrentSeason.ID, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
                     }
 
                     //delete matches
-                    cmd = new MySqlCommand("DELETE FROM matches WHERE season_id = " + CurrentSeason.ID, connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand("DELETE FROM matches WHERE season_id = " + CurrentSeason.ID, connection)
+                    {
+                        Transaction = transaction
+                    };
                     _ = cmd.ExecuteNonQuery();
 
                     //get all team ids
-                    cmd = new MySqlCommand("SELECT team_id FROM team_enlistment WHERE season_id = " + CurrentSeason.ID, connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand("SELECT team_id FROM team_enlistment WHERE season_id = " + CurrentSeason.ID, connection)
+                    {
+                        Transaction = transaction
+                    };
                     DataTable dataTable = new();
                     dataTable.Load(cmd.ExecuteReader());
 
@@ -130,21 +138,27 @@ namespace CSharpZapoctak.ViewModels
                     if (teams.Count > 0)
                     {
                         //delete team enlistments
-                        cmd = new MySqlCommand("DELETE FROM team_enlistment WHERE season_id = " + CurrentSeason.ID, connection);
-                        cmd.Transaction = transaction;
+                        cmd = new MySqlCommand("DELETE FROM team_enlistment WHERE season_id = " + CurrentSeason.ID, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
 
                         for (int i = teams.Count - 1; i >= 0; i--)
                         {
                             //count if there is any team enlistment
-                            cmd = new MySqlCommand("SELECT COUNT(*) FROM team_enlistment WHERE team_id = " + teams[i], connection);
-                            cmd.Transaction = transaction;
+                            cmd = new MySqlCommand("SELECT COUNT(*) FROM team_enlistment WHERE team_id = " + teams[i], connection)
+                            {
+                                Transaction = transaction
+                            };
 
                             if ((int)(long)cmd.ExecuteScalar() == 0)
                             {
                                 //delete team
-                                cmd = new MySqlCommand("DELETE FROM team WHERE id = " + teams[i], connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand("DELETE FROM team WHERE id = " + teams[i], connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                             else
@@ -155,8 +169,10 @@ namespace CSharpZapoctak.ViewModels
                     }
 
                     //get all player ids
-                    cmd = new MySqlCommand("SELECT player_id FROM player_enlistment WHERE season_id = " + CurrentSeason.ID + " GROUP BY player_id", connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand("SELECT player_id FROM player_enlistment WHERE season_id = " + CurrentSeason.ID + " GROUP BY player_id", connection)
+                    {
+                        Transaction = transaction
+                    };
                     dataTable = new DataTable();
                     dataTable.Load(cmd.ExecuteReader());
 
@@ -169,21 +185,27 @@ namespace CSharpZapoctak.ViewModels
                     if (players.Count > 0)
                     {
                         //delete player enlistments
-                        cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE season_id = " + CurrentSeason.ID, connection);
-                        cmd.Transaction = transaction;
+                        cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE season_id = " + CurrentSeason.ID, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
 
                         for (int i = players.Count - 1; i >= 0; i--)
                         {
                             //count if there is any player enlistment
-                            cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + players[i], connection);
-                            cmd.Transaction = transaction;
+                            cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + players[i], connection)
+                            {
+                                Transaction = transaction
+                            };
 
                             if ((int)(long)cmd.ExecuteScalar() == 0)
                             {
                                 //delete player
-                                cmd = new MySqlCommand("DELETE FROM player WHERE id = " + players[i], connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand("DELETE FROM player WHERE id = " + players[i], connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                             else

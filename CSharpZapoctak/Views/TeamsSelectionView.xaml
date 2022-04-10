@@ -75,7 +75,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Status" Binding="{Binding Stats.Status}">
+                <DataGridTextColumn Visibility="{Binding DataContext.InfoVisibility, Source={x:Reference infoVisibilityManager}}" Header="Status" Binding="{Binding StatusText}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>

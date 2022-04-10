@@ -22,11 +22,11 @@ namespace CSharpZapoctak.ViewModels
         #region Properties
 
         #region Variables
-        private NavigationStore ns;
+        private readonly NavigationStore ns;
 
         private int groupLetterCounter;
 
-        private Random r = new();
+        private readonly Random r = new();
 
         public ObservableCollection<Competition> Competitions { get; set; }
 
@@ -520,7 +520,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         for (int i = 0; i > dif; i--)
                         {
-                            foreach (List<Serie> r in QualificationBrackets[QualificationBrackets.Count - 1].Series)
+                            foreach (List<Serie> r in QualificationBrackets[^1].Series)
                             {
                                 foreach (Serie s in r)
                                 {
@@ -740,7 +740,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         for (int i = 0; i > dif; i--)
                         {
-                            foreach (Team team in Groups[Groups.Count - 1].Teams)
+                            foreach (Team team in Groups[^1].Teams)
                             {
                                 NotSelectedTeams.Add(team);
                             }
@@ -1613,8 +1613,10 @@ namespace CSharpZapoctak.ViewModels
                 transaction = connection.BeginTransaction();
 
                 //season insertion
-                cmd = new MySqlCommand(seasonInsertQuerry, connection);
-                cmd.Transaction = transaction;
+                cmd = new MySqlCommand(seasonInsertQuerry, connection)
+                {
+                    Transaction = transaction
+                };
                 _ = cmd.ExecuteNonQuery();
                 currentSeason.ID = (int)cmd.LastInsertedId;
 
@@ -1630,8 +1632,10 @@ namespace CSharpZapoctak.ViewModels
                 {
                     string teamInsertQuerry = "INSERT INTO team(name, info, status, country, date_of_creation) " +
                                               "VALUES ('" + t.Name + "', '" + t.Info + "', " + Convert.ToInt32(t.Status) + ", '" + t.Country.CodeTwo + "', '" + t.DateOfCreation.ToString("yyyy-MM-dd H:mm:ss") + "')";
-                    cmd = new MySqlCommand(teamInsertQuerry, connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand(teamInsertQuerry, connection)
+                    {
+                        Transaction = transaction
+                    };
                     _ = cmd.ExecuteNonQuery();
                     t.ID = (int)cmd.LastInsertedId;
 
@@ -1647,8 +1651,10 @@ namespace CSharpZapoctak.ViewModels
                 {
                     string qualificationInsertQuerry = "INSERT INTO brackets(season_id, name) " +
                                               "VALUES (" + CurrentSeason.ID + ", '" + b.Name + "')";
-                    cmd = new MySqlCommand(qualificationInsertQuerry, connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand(qualificationInsertQuerry, connection)
+                    {
+                        Transaction = transaction
+                    };
                     _ = cmd.ExecuteNonQuery();
                     b.ID = (int)cmd.LastInsertedId;
 
@@ -1664,8 +1670,10 @@ namespace CSharpZapoctak.ViewModels
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
                                               "VALUES (" + firstID + ", " + CurrentSeason.ID + ", " + -1 + ")";
-                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                             if (Teams.Contains(b.Series[i][j].SecondTeam))
@@ -1674,8 +1682,10 @@ namespace CSharpZapoctak.ViewModels
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
                                               "VALUES (" + secondID + ", " + CurrentSeason.ID + ", " + -1 + ")";
-                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                             if (firstID != SportsData.NOID || secondID != SportsData.NOID)
@@ -1683,8 +1693,10 @@ namespace CSharpZapoctak.ViewModels
                                 //match insertion
                                 string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
                                               "VALUES (" + CurrentSeason.ID + ", 0, " + b.ID + ", " + j + ", " + i + ", -1, " + firstID + ", " + secondID + ", " + firstID + ")";
-                                cmd = new MySqlCommand(macthInsertQuerry, connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand(macthInsertQuerry, connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                         }
@@ -1696,8 +1708,10 @@ namespace CSharpZapoctak.ViewModels
                 {
                     string groupInsertQuerry = "INSERT INTO groups(season_id, name) " +
                                               "VALUES (" + CurrentSeason.ID + ", '" + g.Name + "')";
-                    cmd = new MySqlCommand(groupInsertQuerry, connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand(groupInsertQuerry, connection)
+                    {
+                        Transaction = transaction
+                    };
                     _ = cmd.ExecuteNonQuery();
                     g.ID = (int)cmd.LastInsertedId;
 
@@ -1706,8 +1720,10 @@ namespace CSharpZapoctak.ViewModels
                     {
                         string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
                                               "VALUES (" + t.ID + ", " + CurrentSeason.ID + ", " + g.ID + ")";
-                        cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
-                        cmd.Transaction = transaction;
+                        cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
                     }
                 }
@@ -1727,8 +1743,10 @@ namespace CSharpZapoctak.ViewModels
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
                                               "VALUES (" + firstID + ", " + CurrentSeason.ID + ", " + -1 + ")";
-                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                             if (Teams.Contains(PlayOff.Series[i][j].SecondTeam))
@@ -1737,8 +1755,10 @@ namespace CSharpZapoctak.ViewModels
                                 //team enlistment
                                 string teamEnlistmentInsertQuerry = "INSERT INTO team_enlistment(team_id, season_id, group_id) " +
                                               "VALUES (" + secondID + ", " + CurrentSeason.ID + ", " + -1 + ")";
-                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand(teamEnlistmentInsertQuerry, connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                             if (firstID != SportsData.NOID || secondID != SportsData.NOID)
@@ -1746,8 +1766,10 @@ namespace CSharpZapoctak.ViewModels
                                 //match insertion
                                 string macthInsertQuerry = "INSERT INTO matches(season_id, played, qualification_id, bracket_index, round, serie_match_number, home_competitor, away_competitor, bracket_first_team) " +
                                               "VALUES (" + CurrentSeason.ID + ", 0, -1, " + j + ", " + i + ", -1, " + firstID + ", " + secondID + ", " + firstID + ")";
-                                cmd = new MySqlCommand(macthInsertQuerry, connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand(macthInsertQuerry, connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                         }

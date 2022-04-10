@@ -212,14 +212,18 @@ namespace CSharpZapoctak.ViewModels
                     connection.Open();
                     transaction = connection.BeginTransaction();
 
-                    MySqlCommand cmd = new MySqlCommand(roundDeletionQuerry, connection);
-                    cmd.Transaction = transaction;
+                    MySqlCommand cmd = new(roundDeletionQuerry, connection)
+                    {
+                        Transaction = transaction
+                    };
                     _ = cmd.ExecuteNonQuery();
 
                     //get all match ids of round r
                     string querry = "SELECT id FROM matches WHERE serie_match_number < 1 AND round = " + r.ID;
-                    cmd = new MySqlCommand(querry, connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand(querry, connection)
+                    {
+                        Transaction = transaction
+                    };
                     DataTable dataTable = new();
                     dataTable.Load(cmd.ExecuteReader());
 
@@ -234,8 +238,10 @@ namespace CSharpZapoctak.ViewModels
                     {
                         //delete matches from DB
                         querry = "DELETE FROM matches WHERE bracket_index < 1 AND round = " + r.ID;
-                        cmd = new MySqlCommand(querry, connection);
-                        cmd.Transaction = transaction;
+                        cmd = new MySqlCommand(querry, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
 
                         //delete all player/goalie match enlistments and all stats from all matches
@@ -243,8 +249,10 @@ namespace CSharpZapoctak.ViewModels
                         foreach (string db in databases)
                         {
                             querry = "DELETE FROM " + db + " WHERE match_id IN (" + sb + ")";
-                            cmd = new MySqlCommand(querry, connection);
-                            cmd.Transaction = transaction;
+                            cmd = new MySqlCommand(querry, connection)
+                            {
+                                Transaction = transaction
+                            };
                             _ = cmd.ExecuteNonQuery();
                         }
                     }
@@ -254,8 +262,10 @@ namespace CSharpZapoctak.ViewModels
                     for (int i = Rounds.IndexOf(r) + 1; i < Rounds.Count; i++)
                     {
                         querry = "UPDATE rounds SET name = 'Round " + roundNumber  + "' WHERE id = " + Rounds[i].ID;
-                        cmd = new MySqlCommand(querry, connection);
-                        cmd.Transaction = transaction;
+                        cmd = new MySqlCommand(querry, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
 
                         Rounds[i].Name = "Round " + roundNumber;

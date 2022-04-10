@@ -97,8 +97,10 @@ namespace CSharpZapoctak.ViewModels
                         cmd = new MySqlCommand("DELETE " + db + ".* FROM " + db + " " +
                                                "INNER JOIN matches AS m ON m.id = match_id " +
                                                "INNER JOIN seasons AS s ON s.id = m.season_id " +
-                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection);
-                        cmd.Transaction = transaction;
+                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
                     }
 
@@ -108,23 +110,29 @@ namespace CSharpZapoctak.ViewModels
                     {
                         cmd = new MySqlCommand("DELETE " + db + ".* FROM " + db + " " +
                                                "INNER JOIN seasons AS s ON s.id = season_id " +
-                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection);
-                        cmd.Transaction = transaction;
+                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
                     }
 
                     //delete matches
                     cmd = new MySqlCommand("DELETE matches.* FROM matches " +
                                            "INNER JOIN seasons AS s ON s.id = season_id " +
-                                           "WHERE s.competition_id = " + CurrentCompetition.ID, connection);
-                    cmd.Transaction = transaction;
+                                           "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                    {
+                        Transaction = transaction
+                    };
                     _ = cmd.ExecuteNonQuery();
 
                     //get all team ids
                     cmd = new MySqlCommand("SELECT team_id FROM team_enlistment " +
                                            "INNER JOIN seasons AS s ON s.id = season_id " +
-                                           "WHERE s.competition_id = " + CurrentCompetition.ID, connection);
-                    cmd.Transaction = transaction;
+                                           "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                    {
+                        Transaction = transaction
+                    };
                     DataTable dataTable = new();
                     dataTable.Load(cmd.ExecuteReader());
 
@@ -139,21 +147,27 @@ namespace CSharpZapoctak.ViewModels
                         //delete team enlistments
                         cmd = new MySqlCommand("DELETE team_enlistment.* FROM team_enlistment " +
                                                "INNER JOIN seasons AS s ON s.id = season_id " +
-                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection);
-                        cmd.Transaction = transaction;
+                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
 
                         foreach (int teamID in teams)
                         {
                             //count if there is any team enlistment
-                            cmd = new MySqlCommand("SELECT COUNT(*) FROM team_enlistment WHERE team_id = " + teamID, connection);
-                            cmd.Transaction = transaction;
+                            cmd = new MySqlCommand("SELECT COUNT(*) FROM team_enlistment WHERE team_id = " + teamID, connection)
+                            {
+                                Transaction = transaction
+                            };
 
                             if ((int)(long)cmd.ExecuteScalar() == 0)
                             {
                                 //delete team
-                                cmd = new MySqlCommand("DELETE FROM team WHERE id = " + teamID, connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand("DELETE FROM team WHERE id = " + teamID, connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                         }
@@ -162,8 +176,10 @@ namespace CSharpZapoctak.ViewModels
                     //get all player ids
                     cmd = new MySqlCommand("SELECT player_id FROM player_enlistment " +
                                            "INNER JOIN seasons AS s ON s.id = season_id " +
-                                           "WHERE s.competition_id = " + CurrentCompetition.ID + " GROUP BY player_id", connection);
-                    cmd.Transaction = transaction;
+                                           "WHERE s.competition_id = " + CurrentCompetition.ID + " GROUP BY player_id", connection)
+                    {
+                        Transaction = transaction
+                    };
                     dataTable = new DataTable();
                     dataTable.Load(cmd.ExecuteReader());
 
@@ -178,21 +194,27 @@ namespace CSharpZapoctak.ViewModels
                         //delete player enlistments
                         cmd = new MySqlCommand("DELETE player_enlistment.* FROM player_enlistment " +
                                                "INNER JOIN seasons AS s ON s.id = season_id " +
-                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection);
-                        cmd.Transaction = transaction;
+                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
 
                         foreach (int playerID in players)
                         {
                             //count if there is any player enlistment
-                            cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + playerID, connection);
-                            cmd.Transaction = transaction;
+                            cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + playerID, connection)
+                            {
+                                Transaction = transaction
+                            };
 
                             if ((int)(long)cmd.ExecuteScalar() == 0)
                             {
                                 //delete player
-                                cmd = new MySqlCommand("DELETE FROM player WHERE id = " + playerID, connection);
-                                cmd.Transaction = transaction;
+                                cmd = new MySqlCommand("DELETE FROM player WHERE id = " + playerID, connection)
+                                {
+                                    Transaction = transaction
+                                };
                                 _ = cmd.ExecuteNonQuery();
                             }
                         }
@@ -200,8 +222,10 @@ namespace CSharpZapoctak.ViewModels
 
                     //get all season ids
                     cmd = new MySqlCommand("SELECT id FROM seasons " +
-                                           "WHERE competition_id = " + CurrentCompetition.ID, connection);
-                    cmd.Transaction = transaction;
+                                           "WHERE competition_id = " + CurrentCompetition.ID, connection)
+                    {
+                        Transaction = transaction
+                    };
                     dataTable = new DataTable();
                     dataTable.Load(cmd.ExecuteReader());
 
@@ -213,8 +237,10 @@ namespace CSharpZapoctak.ViewModels
 
                     //delete seasons
                     cmd = new MySqlCommand("DELETE FROM seasons " +
-                                           "WHERE competition_id = " + CurrentCompetition.ID, connection);
-                    cmd.Transaction = transaction;
+                                           "WHERE competition_id = " + CurrentCompetition.ID, connection)
+                    {
+                        Transaction = transaction
+                    };
                     _ = cmd.ExecuteNonQuery();
 
                     //DELETE COMPETITION LOGO

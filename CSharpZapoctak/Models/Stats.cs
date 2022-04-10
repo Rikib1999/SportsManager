@@ -277,17 +277,6 @@ namespace CSharpZapoctak.Models
     public class TeamStats : NotifyPropertyChanged, IStats
     {
         #region Properties
-        private string status;
-        public string Status
-        {
-            get => status;
-            set
-            {
-                status = value;
-                OnPropertyChanged();
-            }
-        }
-
         private int gamesPlayed;
         public int GamesPlayed
         {
@@ -421,9 +410,8 @@ namespace CSharpZapoctak.Models
         }
         #endregion
 
-        public TeamStats(string status, int gamesPlayed, int goals, int goalsAgainst, int assists, int penaltyMinutes, int wins, int winsOT, int ties, int lossesOT, int losses)
+        public TeamStats(int gamesPlayed, int goals, int goalsAgainst, int assists, int penaltyMinutes, int wins, int winsOT, int ties, int lossesOT, int losses)
         {
-            Status = status;
             GamesPlayed = gamesPlayed;
             Goals = goals;
             GoalsAgainst = goalsAgainst;

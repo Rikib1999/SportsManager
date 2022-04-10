@@ -1267,8 +1267,10 @@ namespace CSharpZapoctak.ViewModels
                         connection.Open();
                         transaction = connection.BeginTransaction();
 
-                        cmd = new MySqlCommand(querry, connection);
-                        cmd.Transaction = transaction;
+                        cmd = new MySqlCommand(querry, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
 
                         //shift serie match numbers
@@ -1276,8 +1278,10 @@ namespace CSharpZapoctak.ViewModels
                         {
                             querry = "UPDATE matches SET serie_match_number = serie_match_number - 1 " +
                                      "WHERE serie_match_number > " + Match.SerieNumber + " AND qualification_id = " + qualificationID + " AND round = " + round + " AND bracket_index = " + bracketIndex;
-                            cmd = new MySqlCommand(querry, connection);
-                            cmd.Transaction = transaction;
+                            cmd = new MySqlCommand(querry, connection)
+                            {
+                                Transaction = transaction
+                            };
                             _ = cmd.ExecuteNonQuery();
                         }
 
@@ -1286,8 +1290,10 @@ namespace CSharpZapoctak.ViewModels
                         foreach (string db in databases)
                         {
                             querry = "DELETE FROM " + db + " WHERE match_id = " + Match.ID;
-                            cmd = new MySqlCommand(querry, connection);
-                            cmd.Transaction = transaction;
+                            cmd = new MySqlCommand(querry, connection)
+                            {
+                                Transaction = transaction
+                            };
                             _ = cmd.ExecuteNonQuery();
                         }
 

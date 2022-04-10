@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class CompetitionRecord<T> : NotifyPropertyChanged where T : IStats
+    public class CompetitionRecord<T> : NotifyPropertyChanged where T : IStats
     {
         private Competition competition;
         public Competition Competition
@@ -60,7 +60,6 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
-
         private ICommand setCompetitionVisibilityCommand;
         public ICommand SetCompetitionVisibilityCommand
         {
@@ -76,18 +75,11 @@ namespace CSharpZapoctak.ViewModels
 
         private void SetCompetitionVisibility()
         {
-            if (CompetitionVisibility == Visibility.Visible)
-            {
-                CompetitionVisibility = Visibility.Collapsed;
-            }
-            else
-            {
-                CompetitionVisibility = Visibility.Visible;
-            }
+            CompetitionVisibility = CompetitionVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
-    class SeasonRecord<T> : NotifyPropertyChanged where T : IStats
+    public class SeasonRecord<T> : NotifyPropertyChanged where T : IStats
     {
         private Season season;
         public Season Season
@@ -149,18 +141,11 @@ namespace CSharpZapoctak.ViewModels
 
         private void SetSeasonVisibility()
         {
-            if (SeasonVisibility == Visibility.Visible)
-            {
-                SeasonVisibility = Visibility.Collapsed;
-            }
-            else
-            {
-                SeasonVisibility = Visibility.Visible;
-            }
+            SeasonVisibility = SeasonVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
-    class PlayerViewModel : NotifyPropertyChanged
+    public class PlayerViewModel : NotifyPropertyChanged
     {
         private Player player;
         public Player Player

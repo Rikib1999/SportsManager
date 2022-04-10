@@ -83,19 +83,25 @@ namespace CSharpZapoctak.ViewModels
                 cmd.Transaction = transaction;
                 if ((int)(long)cmd.ExecuteScalar() == 0)
                 {
-                    cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE player_id = " + id + " AND team_id = " + t.ID + " AND season_id = " + seasonID, connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE player_id = " + id + " AND team_id = " + t.ID + " AND season_id = " + seasonID, connection)
+                    {
+                        Transaction = transaction
+                    };
                     _ = cmd.ExecuteNonQuery();
 
                     _ = parent.Remove(this);
 
                     //if there are no more enlistments for the player delete player from database
-                    cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + id, connection);
-                    cmd.Transaction = transaction;
+                    cmd = new MySqlCommand("SELECT COUNT(*) FROM player_enlistment WHERE player_id = " + id, connection)
+                    {
+                        Transaction = transaction
+                    };
                     if ((int)(long)cmd.ExecuteScalar() == 0)
                     {
-                        cmd = new MySqlCommand("DELETE FROM player WHERE id = " + id, connection);
-                        cmd.Transaction = transaction;
+                        cmd = new MySqlCommand("DELETE FROM player WHERE id = " + id, connection)
+                        {
+                            Transaction = transaction
+                        };
                         _ = cmd.ExecuteNonQuery();
 
                         string[] previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.Name + id + ".*");
@@ -739,7 +745,7 @@ namespace CSharpZapoctak.ViewModels
         {
             NavigateEditTeamCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new EditTeamViewModel(navigationStore, CurrentTeam)));
             CurrentTeam = t;
-            CurrentTeam.Country = SportsData.Countries.Where(x => x.CodeTwo == CurrentTeam.Country.CodeTwo).First();
+            CurrentTeam.Country = SportsData.Countries.First(x => x.CodeTwo == CurrentTeam.Country.CodeTwo);
             Countries = SportsData.Countries;
             LoadStatuses();
             LoadGenders();
@@ -753,23 +759,29 @@ namespace CSharpZapoctak.ViewModels
         #region Loading
         private void LoadStatuses()
         {
-            Statuses = new ObservableCollection<string>();
-            Statuses.Add("Active");
-            Statuses.Add("Inactive");
+            Statuses = new ObservableCollection<string>
+            {
+                "Active",
+                "Inactive"
+            };
         }
 
         private void LoadGenders()
         {
-            Genders = new ObservableCollection<string>();
-            Genders.Add("Male");
-            Genders.Add("Female");
+            Genders = new ObservableCollection<string>
+            {
+                "Male",
+                "Female"
+            };
         }
 
         private void LoadPlaysWith()
         {
-            PlaysWith = new ObservableCollection<string>();
-            PlaysWith.Add("Right");
-            PlaysWith.Add("Left");
+            PlaysWith = new ObservableCollection<string>
+            {
+                "Right",
+                "Left"
+            };
         }
 
         private void LoadTeamInfo()

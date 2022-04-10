@@ -135,7 +135,6 @@ namespace CSharpZapoctak.Models
 
         public string StatusText => Status ? "active" : "inactive";
 
-
         private string info;
         public string Info
         {
