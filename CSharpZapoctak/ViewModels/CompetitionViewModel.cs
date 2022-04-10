@@ -1,5 +1,6 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
@@ -8,71 +9,30 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class CompetitionViewModel : NotifyPropertyChanged
+    public class CompetitionViewModel : TemplateEntityViewModel
     {
-        private BitmapImage bitmap;
-        public BitmapImage Bitmap
-        {
-            get => bitmap;
-            set
-            {
-                bitmap = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private ICommand deleteCommand;
-        public ICommand DeleteCommand
-        {
-            get
-            {
-                if (deleteCommand == null)
-                {
-                    deleteCommand = new RelayCommand(param => Delete());
-                }
-                return deleteCommand;
-            }
-        }
-
-        public NavigationStore ns;
-
-        public Competition CurrentCompetition { get; set; }
-
-        public ICommand NavigateAddEditCompetitionCommand { get; }
+        public Competition Competition { get; set; }
 
         public CompetitionViewModel(NavigationStore navigationStore)
         {
-            NavigateAddEditCompetitionCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new AddEditCompetitionViewModel(navigationStore)));
+            Competition = SportsData.COMPETITION;
+            NavigateEditCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new AddEditCompetitionViewModel(navigationStore)));
+            NavigateBackCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionsSelectionViewModel(navigationStore)));
 
-            ns = navigationStore;
-            CurrentCompetition = SportsData.COMPETITION;
-
-            if (!string.IsNullOrWhiteSpace(CurrentCompetition.ImagePath) && CurrentCompetition.ImagePath != SportsData.ResourcesPath + "/add_icon.png")
+            if (!string.IsNullOrWhiteSpace(Competition.ImagePath) && Competition.ImagePath != SportsData.ResourcesPath + "/add_icon.png")
             {
-                MemoryStream ms = new();
-                byte[] arrbytFileContent = File.ReadAllBytes(CurrentCompetition.ImagePath);
-                ms.Write(arrbytFileContent, 0, arrbytFileContent.Length);
-                ms.Position = 0;
-
-                bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = ms;
-                bitmap.EndInit();
-                Bitmap = bitmap;
-                GC.Collect();
+                Bitmap = ImageHandler.ImageToBitmap(Competition.ImagePath);
             }
             else
             {
-                CurrentCompetition.ImagePath = "";
+                Competition.ImagePath = "";
             }
         }
 
-        private void Delete()
+        protected override void Delete()
         {
             MessageBoxResult msgResult = MessageBox.Show("Do you really want to delete this competition? All seasons and matches will be deleted.", "Delete competition", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
@@ -81,7 +41,7 @@ namespace CSharpZapoctak.ViewModels
                 //delete competition from DB
                 MySqlConnection connection = new(SportsData.ConnectionStringSport);
                 MySqlTransaction transaction = null;
-                MySqlCommand cmd = new("DELETE FROM competitions WHERE id = " + CurrentCompetition.ID, connection);
+                MySqlCommand cmd = new("DELETE FROM competitions WHERE id = " + Competition.ID, connection);
 
                 try
                 {
@@ -97,7 +57,7 @@ namespace CSharpZapoctak.ViewModels
                         cmd = new MySqlCommand("DELETE " + db + ".* FROM " + db + " " +
                                                "INNER JOIN matches AS m ON m.id = match_id " +
                                                "INNER JOIN seasons AS s ON s.id = m.season_id " +
-                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                                               "WHERE s.competition_id = " + Competition.ID, connection)
                         {
                             Transaction = transaction
                         };
@@ -110,7 +70,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         cmd = new MySqlCommand("DELETE " + db + ".* FROM " + db + " " +
                                                "INNER JOIN seasons AS s ON s.id = season_id " +
-                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                                               "WHERE s.competition_id = " + Competition.ID, connection)
                         {
                             Transaction = transaction
                         };
@@ -120,7 +80,7 @@ namespace CSharpZapoctak.ViewModels
                     //delete matches
                     cmd = new MySqlCommand("DELETE matches.* FROM matches " +
                                            "INNER JOIN seasons AS s ON s.id = season_id " +
-                                           "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                                           "WHERE s.competition_id = " + Competition.ID, connection)
                     {
                         Transaction = transaction
                     };
@@ -129,7 +89,7 @@ namespace CSharpZapoctak.ViewModels
                     //get all team ids
                     cmd = new MySqlCommand("SELECT team_id FROM team_enlistment " +
                                            "INNER JOIN seasons AS s ON s.id = season_id " +
-                                           "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                                           "WHERE s.competition_id = " + Competition.ID, connection)
                     {
                         Transaction = transaction
                     };
@@ -147,7 +107,7 @@ namespace CSharpZapoctak.ViewModels
                         //delete team enlistments
                         cmd = new MySqlCommand("DELETE team_enlistment.* FROM team_enlistment " +
                                                "INNER JOIN seasons AS s ON s.id = season_id " +
-                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                                               "WHERE s.competition_id = " + Competition.ID, connection)
                         {
                             Transaction = transaction
                         };
@@ -176,7 +136,7 @@ namespace CSharpZapoctak.ViewModels
                     //get all player ids
                     cmd = new MySqlCommand("SELECT player_id FROM player_enlistment " +
                                            "INNER JOIN seasons AS s ON s.id = season_id " +
-                                           "WHERE s.competition_id = " + CurrentCompetition.ID + " GROUP BY player_id", connection)
+                                           "WHERE s.competition_id = " + Competition.ID + " GROUP BY player_id", connection)
                     {
                         Transaction = transaction
                     };
@@ -194,7 +154,7 @@ namespace CSharpZapoctak.ViewModels
                         //delete player enlistments
                         cmd = new MySqlCommand("DELETE player_enlistment.* FROM player_enlistment " +
                                                "INNER JOIN seasons AS s ON s.id = season_id " +
-                                               "WHERE s.competition_id = " + CurrentCompetition.ID, connection)
+                                               "WHERE s.competition_id = " + Competition.ID, connection)
                         {
                             Transaction = transaction
                         };
@@ -222,7 +182,7 @@ namespace CSharpZapoctak.ViewModels
 
                     //get all season ids
                     cmd = new MySqlCommand("SELECT id FROM seasons " +
-                                           "WHERE competition_id = " + CurrentCompetition.ID, connection)
+                                           "WHERE competition_id = " + Competition.ID, connection)
                     {
                         Transaction = transaction
                     };
@@ -237,7 +197,7 @@ namespace CSharpZapoctak.ViewModels
 
                     //delete seasons
                     cmd = new MySqlCommand("DELETE FROM seasons " +
-                                           "WHERE competition_id = " + CurrentCompetition.ID, connection)
+                                           "WHERE competition_id = " + Competition.ID, connection)
                     {
                         Transaction = transaction
                     };
@@ -246,7 +206,7 @@ namespace CSharpZapoctak.ViewModels
                     //DELETE COMPETITION LOGO
                     //if there is logo in the database then delete it
                     //get previous logo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.Name + CurrentCompetition.ID + ".*");
+                    string[] previousImgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.Name + Competition.ID + ".*");
                     string previousFilePath = "";
                     //if it exists
                     if (previousImgPath.Length != 0)
@@ -321,7 +281,7 @@ namespace CSharpZapoctak.ViewModels
                     connection.Close();
 
                     //switch view
-                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new CompetitionsSelectionViewModel(ns))).Execute(new Competition());
+                    NavigateBackCommand.Execute(new Competition());
                 }
                 catch (Exception e)
                 {

@@ -1,5 +1,6 @@
 ﻿using CSharpZapoctak.Commands;
 using CSharpZapoctak.Models;
+using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
 using MySql.Data.MySqlClient;
 using System;
@@ -8,71 +9,30 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class SeasonViewModel : NotifyPropertyChanged
+    public class SeasonViewModel : TemplateEntityViewModel
     {
-        private BitmapImage bitmap;
-        public BitmapImage Bitmap
-        {
-            get => bitmap;
-            set
-            {
-                bitmap = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private ICommand deleteCommand;
-        public ICommand DeleteCommand
-        {
-            get
-            {
-                if (deleteCommand == null)
-                {
-                    deleteCommand = new RelayCommand(param => Delete());
-                }
-                return deleteCommand;
-            }
-        }
-
-        public Season CurrentSeason { get; set; }
-
-        public ICommand NavigateEditSeasonCommand { get; }
-
-        public NavigationStore ns;
+        public Season Season { get; set; }
 
         public SeasonViewModel(NavigationStore navigationStore)
         {
-            ns = navigationStore;
-            NavigateEditSeasonCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new EditSeasonViewModel(navigationStore)));
+            Season = SportsData.SEASON;
+            NavigateEditCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new EditSeasonViewModel(navigationStore)));
+            NavigateBackCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new SeasonsSelectionViewModel(navigationStore)));
 
-            CurrentSeason = SportsData.SEASON;
-
-            if (!string.IsNullOrWhiteSpace(CurrentSeason.ImagePath))
+            if (!string.IsNullOrWhiteSpace(Season.ImagePath))
             {
-                MemoryStream ms = new();
-                byte[] arrbytFileContent = File.ReadAllBytes(CurrentSeason.ImagePath);
-                ms.Write(arrbytFileContent, 0, arrbytFileContent.Length);
-                ms.Position = 0;
-
-                bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = ms;
-                bitmap.EndInit();
-                Bitmap = bitmap;
-                GC.Collect();
+                Bitmap = ImageHandler.ImageToBitmap(Season.ImagePath);
             }
             else
             {
-                CurrentSeason.ImagePath = "";
+                Season.ImagePath = "";
             }
         }
 
-        private void Delete()
+        protected override void Delete()
         {
             MessageBoxResult msgResult = MessageBox.Show("Do you really want to delete this season? All matches will be deleted.", "Delete season", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
@@ -81,7 +41,7 @@ namespace CSharpZapoctak.ViewModels
                 //delete season from DB
                 MySqlConnection connection = new(SportsData.ConnectionStringSport);
                 MySqlTransaction transaction = null;
-                MySqlCommand cmd = new("DELETE FROM seasons WHERE id = " + CurrentSeason.ID, connection);
+                MySqlCommand cmd = new("DELETE FROM seasons WHERE id = " + Season.ID, connection);
 
                 try
                 {
@@ -96,7 +56,7 @@ namespace CSharpZapoctak.ViewModels
                     {
                         cmd = new MySqlCommand("DELETE " + db + ".* FROM " + db + " " +
                                                "INNER JOIN matches AS m ON m.id = match_id " +
-                                               "WHERE m.season_id = " + CurrentSeason.ID, connection)
+                                               "WHERE m.season_id = " + Season.ID, connection)
                         {
                             Transaction = transaction
                         };
@@ -107,7 +67,7 @@ namespace CSharpZapoctak.ViewModels
                     databases = new List<string> { "rounds", "groups", "brackets" };
                     foreach (string db in databases)
                     {
-                        cmd = new MySqlCommand("DELETE FROM " + db + " WHERE season_id = " + CurrentSeason.ID, connection)
+                        cmd = new MySqlCommand("DELETE FROM " + db + " WHERE season_id = " + Season.ID, connection)
                         {
                             Transaction = transaction
                         };
@@ -115,14 +75,14 @@ namespace CSharpZapoctak.ViewModels
                     }
 
                     //delete matches
-                    cmd = new MySqlCommand("DELETE FROM matches WHERE season_id = " + CurrentSeason.ID, connection)
+                    cmd = new MySqlCommand("DELETE FROM matches WHERE season_id = " + Season.ID, connection)
                     {
                         Transaction = transaction
                     };
                     _ = cmd.ExecuteNonQuery();
 
                     //get all team ids
-                    cmd = new MySqlCommand("SELECT team_id FROM team_enlistment WHERE season_id = " + CurrentSeason.ID, connection)
+                    cmd = new MySqlCommand("SELECT team_id FROM team_enlistment WHERE season_id = " + Season.ID, connection)
                     {
                         Transaction = transaction
                     };
@@ -138,7 +98,7 @@ namespace CSharpZapoctak.ViewModels
                     if (teams.Count > 0)
                     {
                         //delete team enlistments
-                        cmd = new MySqlCommand("DELETE FROM team_enlistment WHERE season_id = " + CurrentSeason.ID, connection)
+                        cmd = new MySqlCommand("DELETE FROM team_enlistment WHERE season_id = " + Season.ID, connection)
                         {
                             Transaction = transaction
                         };
@@ -169,7 +129,7 @@ namespace CSharpZapoctak.ViewModels
                     }
 
                     //get all player ids
-                    cmd = new MySqlCommand("SELECT player_id FROM player_enlistment WHERE season_id = " + CurrentSeason.ID + " GROUP BY player_id", connection)
+                    cmd = new MySqlCommand("SELECT player_id FROM player_enlistment WHERE season_id = " + Season.ID + " GROUP BY player_id", connection)
                     {
                         Transaction = transaction
                     };
@@ -185,7 +145,7 @@ namespace CSharpZapoctak.ViewModels
                     if (players.Count > 0)
                     {
                         //delete player enlistments
-                        cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE season_id = " + CurrentSeason.ID, connection)
+                        cmd = new MySqlCommand("DELETE FROM player_enlistment WHERE season_id = " + Season.ID, connection)
                         {
                             Transaction = transaction
                         };
@@ -218,7 +178,7 @@ namespace CSharpZapoctak.ViewModels
                     //DELETE SEASON LOGO
                     //if there is logo in the database then delete it
                     //get previous logo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.Name + CurrentSeason.ID + ".*");
+                    string[] previousImgPath = Directory.GetFiles(SportsData.SeasonLogosPath, SportsData.SPORT.Name + Season.ID + ".*");
                     string previousFilePath = "";
                     //if it exists
                     if (previousImgPath.Length != 0)
@@ -274,7 +234,7 @@ namespace CSharpZapoctak.ViewModels
                     connection.Close();
 
                     //switch view
-                    new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new SeasonsSelectionViewModel(ns))).Execute(new Season());
+                    NavigateBackCommand.Execute(new Season());
                 }
                 catch (Exception)
                 {

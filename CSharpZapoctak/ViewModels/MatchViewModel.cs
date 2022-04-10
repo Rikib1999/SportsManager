@@ -2,7 +2,6 @@
 using CSharpZapoctak.Models;
 using CSharpZapoctak.Others;
 using CSharpZapoctak.Stores;
-using LiveCharts;
 using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
@@ -16,7 +15,7 @@ using System.Windows.Input;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class MatchEvent : NotifyPropertyChanged, IComparable
+    public class MatchEvent : NotifyPropertyChanged, IComparable
     {
         private int period;
         public int Period
@@ -42,10 +41,7 @@ namespace CSharpZapoctak.ViewModels
 
         public int orderInMatch;
 
-        public string Time
-        {
-            get { return (timeInSeconds / 60) + ":" + (timeInSeconds % 60).ToString("00"); }
-        }
+        public string Time => (timeInSeconds / 60) + ":" + (timeInSeconds % 60).ToString("00");
 
         private string homeEvent = "";
         public string HomeEvent
@@ -87,7 +83,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class ShootoutEvent : NotifyPropertyChanged, IComparable
+    public class ShootoutEvent : NotifyPropertyChanged, IComparable
     {
         public int number;
 
@@ -142,7 +138,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class PeriodEvents : NotifyPropertyChanged
+    public class PeriodEvents : NotifyPropertyChanged
     {
         private int period;
         public int Period
@@ -178,7 +174,7 @@ namespace CSharpZapoctak.ViewModels
         }
     }
 
-    class MatchViewModel : NotifyPropertyChanged
+    public class MatchViewModel : NotifyPropertyChanged
     {
         #region Data
         private Match match;

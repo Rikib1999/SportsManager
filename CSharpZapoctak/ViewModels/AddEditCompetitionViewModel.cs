@@ -24,17 +24,16 @@ namespace CSharpZapoctak.ViewModels
 
         public AddEditCompetitionViewModel(NavigationStore navigationStore)
         {
+            Competition = SportsData.COMPETITION;
             NavigateBackCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionViewModel(navigationStore)));
             GetImageFolderPath();
 
             if (!SportsData.IsCompetitionSet())
             {
-                Competition = SportsData.COMPETITION;
                 HeaderVisibility = Visibility.Visible;
             }
             else
             {
-                Competition = SportsData.COMPETITION;
                 HeaderVisibility = Visibility.Collapsed;
 
                 if (!string.IsNullOrWhiteSpace(Competition.ImagePath))
