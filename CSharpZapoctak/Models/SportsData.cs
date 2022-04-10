@@ -51,7 +51,7 @@ namespace CSharpZapoctak
         public static readonly string SeasonLogosPath = AppDataPath + "/Images/Season_Logos";
         public static readonly string TeamLogosPath = AppDataPath + "/Images/Team_Logos";
         public static readonly string PlayerPhotosPath = AppDataPath + "/Images/Player_Photos";
-        public static readonly string PythonOCRPath = AppDataPath + "/GamesheetOCR.py";
+        public static readonly string PythonOCRPath = AppDataPath + "/GamesheetOCR.exe";
         #endregion
 
         /// <summary>

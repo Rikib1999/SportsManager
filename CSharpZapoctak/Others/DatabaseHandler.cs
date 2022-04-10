@@ -1,6 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Windows;
 
 namespace CSharpZapoctak.Others
 {
@@ -48,10 +47,7 @@ namespace CSharpZapoctak.Others
                 connection.Open();
                 _ = cmd.ExecuteNonQuery();
             }
-            catch (Exception)
-            {
-                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception) { }
             finally
             {
                 connection.Close();
@@ -69,10 +65,7 @@ namespace CSharpZapoctak.Others
                     connection.Open();
                     _ = cmd.ExecuteNonQuery();
                 }
-                catch (Exception)
-                {
-                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                catch (Exception) { }
                 finally
                 {
                     connection.Close();
@@ -101,10 +94,7 @@ namespace CSharpZapoctak.Others
                 connection.Open();
                 _ = cmd.ExecuteNonQuery();
             }
-            catch (Exception)
-            {
-                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception) { }
             finally
             {
                 connection.Close();

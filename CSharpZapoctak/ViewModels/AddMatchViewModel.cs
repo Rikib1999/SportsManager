@@ -2194,6 +2194,7 @@ namespace CSharpZapoctak.ViewModels
         public Match match;
         public bool edit;
         public Thread gamesheetLoadingThread;
+        private Process pythonProcess;
 
         private ObservableCollection<string> sides;
         public ObservableCollection<string> Sides
@@ -3020,32 +3021,49 @@ namespace CSharpZapoctak.ViewModels
                 {
                     gamesheetPath = openFileDialog.FileName;
                 }
+                if (!File.Exists(gamesheetPath))
+                {
+                    return;
+                }
 
                 //show loading screen
                 PageVisibility = Visibility.Collapsed;
                 LoadingVisibility = Visibility.Visible;
 
                 //run python script on it
-                Process cmd = new();
-                cmd.StartInfo.FileName = "cmd.exe";
-                cmd.StartInfo.RedirectStandardInput = true;
-                cmd.StartInfo.RedirectStandardOutput = true;
-                cmd.StartInfo.CreateNoWindow = true;
-                cmd.StartInfo.UseShellExecute = false;
-                _ = cmd.Start();
+                //***_via cmd and .py script_***
+                //Process cmd = new();
+                //cmd.StartInfo.FileName = "cmd.exe";
+                //cmd.StartInfo.RedirectStandardInput = true;
+                //cmd.StartInfo.RedirectStandardOutput = true;
+                //cmd.StartInfo.CreateNoWindow = true;
+                //cmd.StartInfo.UseShellExecute = false;
+                //_ = cmd.Start();
+                //
+                //cmd.StandardInput.WriteLine("py " + SportsData.PythonOCRPath + " " + gamesheetPath + " " + HomePlayers.Count + " " + AwayPlayers.Count);
+                //cmd.StandardInput.Flush();
+                //cmd.StandardInput.Close();
+                //cmd.WaitForExit();
+                //string output = cmd.StandardOutput.ReadToEnd();
 
-                cmd.StandardInput.WriteLine("py " + SportsData.PythonOCRPath + " " + gamesheetPath + " " + HomePlayers.Count + " " + AwayPlayers.Count);
-                cmd.StandardInput.Flush();
-                cmd.StandardInput.Close();
-                cmd.WaitForExit();
-                string output = cmd.StandardOutput.ReadToEnd();
+                //via executable (no need for python and libraries installed)
+                pythonProcess = new();
+                pythonProcess.StartInfo.FileName = SportsData.PythonOCRPath;
+                pythonProcess.StartInfo.Arguments = gamesheetPath + " " + HomePlayers.Count + " " + AwayPlayers.Count;
+                pythonProcess.StartInfo.RedirectStandardOutput = true;
+                pythonProcess.StartInfo.CreateNoWindow = true;
+                pythonProcess.StartInfo.UseShellExecute = false;
+                pythonProcess.Start();
+                
+                pythonProcess.WaitForExit();
+                string output = pythonProcess.StandardOutput.ReadToEnd();
 
                 //retrieve results
                 output = output.Replace("[", string.Empty);
                 output = output.Replace("'", string.Empty);
                 output = output.Replace("]", string.Empty);
 
-                string[] data = output.Split("END", StringSplitOptions.RemoveEmptyEntries).Skip(1).ToArray();
+                string[] data = output.Split("END", StringSplitOptions.RemoveEmptyEntries)./*Skip(1). (for cmd calling .py, first row is Microsoft...)*/ToArray();
                 Array.Resize(ref data, data.Length - 1);
 
                 List<string> errorList = new();
@@ -3422,6 +3440,7 @@ namespace CSharpZapoctak.ViewModels
 
         private void CancelGamesheetLoading()
         {
+            pythonProcess.Kill();
             gamesheetLoadingThread.Interrupt();
             gamesheetLoadingThread.Join();
         }
