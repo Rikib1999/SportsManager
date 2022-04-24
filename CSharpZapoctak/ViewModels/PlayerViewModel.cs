@@ -241,7 +241,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportChartCommand == null)
                 {
-                    exportChartCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param));
+                    exportChartCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param, "player_chart"));
                 }
                 return exportChartCommand;
             }
@@ -273,7 +273,8 @@ namespace CSharpZapoctak.ViewModels
             if (string.IsNullOrEmpty(p.ImagePath)) { p.ImagePath = p.Gender == "M" ? SportsData.ResourcesPath + "\\male.png" : SportsData.ResourcesPath + "\\female.png"; }
             LoadCompetitions();
             LoadCompetitionsAsGoalie();
-            PlayerInMatchStatsLoader.LoadPlayerInMatchStats(PlayerInMatchStats, DatetimeXLabels, player);
+            PlayerInMatchStatsLoader.LoadPlayerInMatchStats(PlayerInMatchStats, out string[] datetimeXLabels, player);
+            DatetimeXLabels = datetimeXLabels;
             LoadPlayerInMatchStatsSeries();
             LoadPlayerInMatchStatsSumSeries();
             LoadPlayerInMatchStatsAverageSeries();

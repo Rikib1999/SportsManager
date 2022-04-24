@@ -294,14 +294,14 @@ namespace CSharpZapoctak.Others
             pic.Placement = XlPlacement.xlMove;
         }
 
-        public static void ExportControlToImage(FrameworkElement chart)
+        public static void ExportControlToImage(FrameworkElement control, string name)
         {
-            RenderTargetBitmap rtb = new((int)chart.ActualWidth, (int)chart.ActualHeight, 96, 96, PixelFormats.Pbgra32);
-            Rect bounds = VisualTreeHelper.GetDescendantBounds(chart);
+            RenderTargetBitmap rtb = new((int)control.ActualWidth, (int)control.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            Rect bounds = VisualTreeHelper.GetDescendantBounds(control);
             DrawingVisual dv = new();
             using (DrawingContext ctx = dv.RenderOpen())
             {
-                VisualBrush vb = new(chart);
+                VisualBrush vb = new(control);
                 ctx.DrawRectangle(vb, null, new Rect(new System.Windows.Point(), bounds.Size));
             }
             rtb.Render(dv);
@@ -311,7 +311,7 @@ namespace CSharpZapoctak.Others
             SaveFileDialog saveFileDialog = new();
             saveFileDialog.Filter = "PNG Files | *.png";
             saveFileDialog.DefaultExt = "png";
-            saveFileDialog.FileName = "chart";
+            saveFileDialog.FileName = name;
 
             bool? result = saveFileDialog.ShowDialog();
             if (result.ToString() != string.Empty)

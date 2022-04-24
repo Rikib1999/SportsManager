@@ -1134,8 +1134,9 @@ namespace CSharpZapoctak.Models
 
     public static class PlayerInMatchStatsLoader
     {
-        public static void LoadPlayerInMatchStats(ObservableCollection<PlayerInMatchStats> stats, string[] datetimeXLabels, Player player)
+        public static void LoadPlayerInMatchStats(ObservableCollection<PlayerInMatchStats> stats, out string[] datetimeXLabels, Player player)
         {
+            datetimeXLabels = null;
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlCommand cmd = new("SELECT m.match_id, matches.datetime AS datetime, IFNULL(g_count, 0) AS goal_count, IFNULL(a_count, 0) AS assist_count, IFNULL(p_count, 0) AS penalty_count " +
                                                 "FROM player_matches AS m " +

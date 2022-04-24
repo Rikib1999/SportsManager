@@ -2381,6 +2381,9 @@ namespace CSharpZapoctak.ViewModels
             }
         }
 
+        /// <summary>
+        /// Game states of the match in chronological order.
+        /// </summary>
         List<State> timeSpans;
         #endregion
 
@@ -2978,9 +2981,9 @@ namespace CSharpZapoctak.ViewModels
 
                 connection.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _ = MessageBox.Show("Unable to connect to databse." + e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -3794,7 +3797,7 @@ namespace CSharpZapoctak.ViewModels
             }
             ConflictEvents = new();
 
-            //delete PeriodEnds if some exist
+            //delete PeriodEnds if some exist from previous check (if data was checked but changed after that)
             for (int i = 0; i < Events.Count; i++)
             {
                 if (Events[i].Stat.GetType() == typeof(PeriodEnd))

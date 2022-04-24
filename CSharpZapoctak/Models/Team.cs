@@ -50,6 +50,8 @@ namespace CSharpZapoctak.Models
             }
         }
 
+        public bool SavedInDatabase { get; set; } = true;
+
         public Team()
         {
             ID = SportsData.NOID;

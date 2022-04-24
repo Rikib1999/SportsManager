@@ -102,6 +102,10 @@ namespace CSharpZapoctak.ViewModels
                         teams.Add(int.Parse(row["team_id"].ToString()));
                     }
 
+                    string[] previousImgPath;
+                    string previousFilePath;
+                    GC.Collect();
+
                     if (teams.Count > 0)
                     {
                         //delete team enlistments
@@ -129,6 +133,21 @@ namespace CSharpZapoctak.ViewModels
                                     Transaction = transaction
                                 };
                                 _ = cmd.ExecuteNonQuery();
+
+                                //if there is logo in the database then delete it
+                                //get previous logo
+                                previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.Name + teamID + ".*");
+                                previousFilePath = "";
+                                //if it exists
+                                if (previousImgPath.Length != 0)
+                                {
+                                    previousFilePath = previousImgPath.First();
+                                }
+                                //delete logo
+                                if (previousFilePath != "")
+                                {
+                                    File.Delete(previousFilePath);
+                                }
                             }
                         }
                     }
@@ -177,6 +196,19 @@ namespace CSharpZapoctak.ViewModels
                                 };
                                 _ = cmd.ExecuteNonQuery();
                             }
+
+                            previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.Name + playerID + ".*");
+                            previousFilePath = "";
+                            //if it exists
+                            if (previousImgPath.Length != 0)
+                            {
+                                previousFilePath = previousImgPath.First();
+                            }
+                            //delete photo
+                            if (previousFilePath != "")
+                            {
+                                File.Delete(previousFilePath);
+                            }
                         }
                     }
 
@@ -206,8 +238,8 @@ namespace CSharpZapoctak.ViewModels
                     //DELETE COMPETITION LOGO
                     //if there is logo in the database then delete it
                     //get previous logo
-                    string[] previousImgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.Name + Competition.ID + ".*");
-                    string previousFilePath = "";
+                    previousImgPath = Directory.GetFiles(SportsData.CompetitionLogosPath, SportsData.SPORT.Name + Competition.ID + ".*");
+                    previousFilePath = "";
                     //if it exists
                     if (previousImgPath.Length != 0)
                     {
@@ -216,6 +248,7 @@ namespace CSharpZapoctak.ViewModels
                     //delete photo
                     if (previousFilePath != "")
                     {
+                        if (Bitmap.StreamSource != null) { Bitmap.StreamSource.Dispose(); }
                         GC.Collect();
                         File.Delete(previousFilePath);
                     }
@@ -239,54 +272,16 @@ namespace CSharpZapoctak.ViewModels
                         }
                     }
 
-                    //DELETE TEAM LOGOS
-                    foreach (int teamID in teams)
-                    {
-                        //if there is logo in the database then delete it
-                        //get previous logo
-                        previousImgPath = Directory.GetFiles(SportsData.TeamLogosPath, SportsData.SPORT.Name + teamID + ".*");
-                        previousFilePath = "";
-                        //if it exists
-                        if (previousImgPath.Length != 0)
-                        {
-                            previousFilePath = previousImgPath.First();
-                        }
-                        //delete logo
-                        if (previousFilePath != "")
-                        {
-                            File.Delete(previousFilePath);
-                        }
-                    }
-
-                    //DELETE PLAYER PHOTOS
-                    //if there is photo in the database then delete it
-                    //get previous photo
-                    foreach (int playerID in players)
-                    {
-                        previousImgPath = Directory.GetFiles(SportsData.PlayerPhotosPath, SportsData.SPORT.Name + playerID + ".*");
-                        previousFilePath = "";
-                        //if it exists
-                        if (previousImgPath.Length != 0)
-                        {
-                            previousFilePath = previousImgPath.First();
-                        }
-                        //delete photo
-                        if (previousFilePath != "")
-                        {
-                            File.Delete(previousFilePath);
-                        }
-                    }
-
                     transaction.Commit();
                     connection.Close();
 
                     //switch view
                     NavigateBackCommand.Execute(new Competition());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     transaction.Rollback();
-                    _ = MessageBox.Show("Unable to connect to databse." + e.Message + e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {

@@ -671,9 +671,9 @@ namespace CSharpZapoctak.ViewModels
                     AwayRoster = roster;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _ = MessageBox.Show("Unable to connect to databse." + e.Message + e.StackTrace, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

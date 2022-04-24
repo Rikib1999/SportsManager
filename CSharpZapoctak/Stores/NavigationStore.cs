@@ -8,7 +8,6 @@ namespace CSharpZapoctak.Stores
         public event Action CurrentViewModelChanged;
 
         private NotifyPropertyChanged currentViewModel;
-
         public NotifyPropertyChanged CurrentViewModel
         {
             get => currentViewModel;

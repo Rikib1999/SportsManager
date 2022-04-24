@@ -36,6 +36,7 @@ namespace CSharpZapoctak.ViewModels
         {
             Team = t;
             NavigateBackCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new TeamViewModel(navigationStore, Team)));
+            GetImageFolderPath();
             Countries = SportsData.Countries;
 
             if (!string.IsNullOrWhiteSpace(Team.ImagePath))

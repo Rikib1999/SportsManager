@@ -845,9 +845,9 @@ namespace CSharpZapoctak.ViewModels
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _ = MessageBox.Show("Unable to connect to databse."+e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

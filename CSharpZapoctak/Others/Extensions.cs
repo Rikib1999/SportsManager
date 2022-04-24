@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CSharpZapoctak.Others
 {
-    static class Extensions
+    public static class Extensions
     {
         /// <summary>
         /// Extension method for sorting ObservableCollection<T>
@@ -15,7 +15,7 @@ namespace CSharpZapoctak.Others
         public static void Sort<T>(this ObservableCollection<T> collection) where T : IComparable
         {
             List<T> sorted = collection.OrderBy(x => x).ToList();
-            for (int i = 0; i < sorted.Count(); i++)
+            for (int i = 0; i < sorted.Count; i++)
             {
                 collection.Move(collection.IndexOf(sorted[i]), i);
             }

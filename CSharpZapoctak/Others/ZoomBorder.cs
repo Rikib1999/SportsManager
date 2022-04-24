@@ -6,6 +6,11 @@ using System.Windows.Media;
 
 namespace CSharpZapoctak.Others
 {
+    /// <summary>
+    /// Author: Wiesław Šoltés
+    /// Date: 2021
+    /// Availability: https://stackoverflow.com/a/6782715/16441573
+    /// </summary>
     public class ZoomBorder : Border
     {
         private UIElement child;

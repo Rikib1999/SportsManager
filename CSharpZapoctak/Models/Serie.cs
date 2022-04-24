@@ -45,7 +45,7 @@ namespace CSharpZapoctak.Models
             set
             {
                 firstTeam = value;
-                if (value.ID != SportsData.NOID)
+                if (value.ID != SportsData.NOID || !value.SavedInDatabase)
                 {
                     FirstSelectedVisibility = Visibility.Visible;
                     FirstNotSelectedVisibility = Visibility.Collapsed;
@@ -66,7 +66,7 @@ namespace CSharpZapoctak.Models
             set
             {
                 secondTeam = value;
-                if (value.ID != SportsData.NOID)
+                if (value.ID != SportsData.NOID || !value.SavedInDatabase)
                 {
                     SecondSelectedVisibility = Visibility.Visible;
                     SecondNotSelectedVisibility = Visibility.Collapsed;

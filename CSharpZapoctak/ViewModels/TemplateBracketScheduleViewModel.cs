@@ -27,7 +27,7 @@ namespace CSharpZapoctak.ViewModels
             {
                 if (exportBracketCommand == null)
                 {
-                    exportBracketCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param));
+                    exportBracketCommand = new RelayCommand(param => Exports.ExportControlToImage((FrameworkElement)param, "bracket"));
                 }
                 return exportBracketCommand;
             }

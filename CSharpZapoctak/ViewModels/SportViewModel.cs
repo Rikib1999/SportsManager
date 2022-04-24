@@ -88,11 +88,6 @@ namespace CSharpZapoctak.ViewModels
                 buttonsVisibilities["Standings"] = Visibility.Collapsed;
                 buttonsVisibilities["Schedule"] = Visibility.Collapsed;
             }
-            if (SportsData.SPORT.Name == "tennis")
-            {
-                buttonsVisibilities["Teams"] = Visibility.Collapsed;
-                buttonsVisibilities["Goalies"] = Visibility.Collapsed;
-            }
 
             NavBarViewModel = new NavigationBarViewModel(navigationStore, checkedButton, buttonsVisibilities);
         }

@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 
 namespace CSharpZapoctak.ViewModels
 {
-    class AddSeasonViewModel : NotifyPropertyChanged
+    public class AddSeasonViewModel : NotifyPropertyChanged
     {
         #region Properties
 
@@ -1038,9 +1038,11 @@ namespace CSharpZapoctak.ViewModels
                 return;
             }
             Team t = new(NewTeam);
+            t.SavedInDatabase = false;
             Teams.Add(t);
             NotSelectedTeams.Add(t);
             NewTeam = new Team();
+            if (BitmapTeam.StreamSource != null) { BitmapTeam.StreamSource.Dispose(); }
             BitmapTeam = new BitmapImage();
         }
 
@@ -1784,6 +1786,8 @@ namespace CSharpZapoctak.ViewModels
                 CurrentSeason.QualificationRounds = QualificationRoundsCount;
                 CurrentSeason.WinnerID = SportsData.NOID;
                 CurrentSeason.WinnerName = "";
+                if (BitmapSeason.StreamSource != null) { BitmapSeason.StreamSource.Dispose(); }
+                if (BitmapTeam.StreamSource != null) { BitmapTeam.StreamSource.Dispose(); }
 
                 transaction.Commit();
                 connection.Close();
