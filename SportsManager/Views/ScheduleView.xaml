@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="SportsManager.Views.ScheduleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:SportsManager.ViewModels"
+             xmlns:views="clr-namespace:SportsManager.Views"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ScheduleViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Margin="0,0,0,0" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Visibility="{Binding QualificationVisibility}" Orientation="Horizontal" Margin="0,0,30,0">
+                <TextBlock Text="Qualification:" Margin="0,10,0,0" TextAlignment="Left"/>
+                <Viewbox Height="30" Margin="5,5,0,0">
+                    <RadioButton GroupName="format" IsChecked="{Binding QualificationSet}" VerticalContentAlignment="Center"/>
+                </Viewbox>
+            </StackPanel>
+            <StackPanel Visibility="{Binding GroupsVisibility}" Orientation="Horizontal" Margin="0,0,30,0">
+                <TextBlock Text="Groups:" Margin="0,10,0,0" TextAlignment="Left"/>
+                <Viewbox Height="30" Margin="5,5,0,0">
+                    <RadioButton GroupName="format" IsChecked="{Binding GroupsSet}" VerticalContentAlignment="Center"/>
+                </Viewbox>
+            </StackPanel>
+            <StackPanel Visibility="{Binding PlayOffVisibility}" Orientation="Horizontal">
+                <TextBlock Text="Play-off:" Margin="0,10,0,0" TextAlignment="Left"/>
+                <Viewbox Height="30" Margin="5,5,0,0">
+                    <RadioButton GroupName="format" IsChecked="{Binding PlayOffSet}" VerticalContentAlignment="Center"/>
+                </Viewbox>
+            </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="5" Width="auto" Height="5" />
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ContentControl Content="{Binding CurrentViewModel}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type viewmodels:GroupsScheduleViewModel}">
+                        <views:GroupsScheduleView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewmodels:QualificationScheduleViewModel}">
+                        <views:QualificationScheduleView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type viewmodels:PlayOffScheduleViewModel}">
+                        <views:PlayOffScheduleView/>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
