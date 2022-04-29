@@ -131,15 +131,17 @@ namespace SportsManager.ViewModels
             string goalCountQuery = "SELECT team_id, COUNT(*) AS goal_count " +
                                 "FROM goals " +
                                 "INNER JOIN matches ON matches.id = match_id " +
-                                "INNER JOIN seasons ON seasons.id = matches.season_id";
-            goalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(true, "matches.season_id", "seasons.competition_id");
+                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                "WHERE own_goal = 0";
+            goalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
             goalCountQuery += " GROUP BY team_id";
 
             string goalsAgainstCountQuery = "SELECT opponent_team_id, COUNT(*) AS goals_against_count " +
                                 "FROM goals " +
                                 "INNER JOIN matches ON matches.id = match_id " +
-                                "INNER JOIN seasons ON seasons.id = matches.season_id";
-            goalsAgainstCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(true, "matches.season_id", "seasons.competition_id");
+                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                "WHERE own_goal = 0";
+            goalsAgainstCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
             goalsAgainstCountQuery += " GROUP BY opponent_team_id";
 
             string assistCountQuery = "SELECT team_id, COUNT(*) AS assist_count " +

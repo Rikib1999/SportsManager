@@ -34,8 +34,9 @@ namespace SportsManager.ViewModels
             string goalCountQuery = "SELECT player_id, COUNT(*) AS goal_count " +
                                 "FROM goals " +
                                 "INNER JOIN matches ON matches.id = match_id " +
-                                "INNER JOIN seasons ON seasons.id = matches.season_id";
-            goalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(true, "matches.season_id", "seasons.competition_id");
+                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                "WHERE own_goal = 0";
+            goalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
             goalCountQuery += " GROUP BY player_id";
 
             string assistCountQuery = "SELECT assist_player_id, COUNT(*) AS assist_count " +
@@ -50,7 +51,7 @@ namespace SportsManager.ViewModels
                     "INNER JOIN matches ON matches.id = match_id " +
                     "INNER JOIN seasons ON seasons.id = matches.season_id " +
                     "INNER JOIN strength ON strength.id = strength_id " +
-                    "WHERE STRCMP(strength.advantage, 'PP') = 0";
+                    "WHERE STRCMP(strength.advantage, 'PP') = 0 AND own_goal = 0";
             ppGoalsCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
             ppGoalsCountQuery += " GROUP BY player_id";
 
@@ -59,7 +60,7 @@ namespace SportsManager.ViewModels
                     "INNER JOIN matches ON matches.id = match_id " +
                     "INNER JOIN seasons ON seasons.id = matches.season_id " +
                     "INNER JOIN strength ON strength.id = strength_id " +
-                    "WHERE STRCMP(strength.advantage, 'SH') = 0";
+                    "WHERE STRCMP(strength.advantage, 'SH') = 0 AND own_goal = 0";
             shGoalsCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
             shGoalsCountQuery += " GROUP BY player_id";
 
@@ -68,7 +69,7 @@ namespace SportsManager.ViewModels
                     "INNER JOIN matches ON matches.id = match_id " +
                     "INNER JOIN seasons ON seasons.id = matches.season_id " +
                     "INNER JOIN strength ON strength.id = strength_id " +
-                    "WHERE STRCMP(strength.advantage, 'EV') = 0";
+                    "WHERE STRCMP(strength.advantage, 'EV') = 0 AND own_goal = 0";
             evGoalsCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
             evGoalsCountQuery += " GROUP BY player_id";
 
@@ -84,7 +85,7 @@ namespace SportsManager.ViewModels
                     "FROM penalty_shots " +
                     "INNER JOIN matches ON matches.id = match_id " +
                     "INNER JOIN seasons ON seasons.id = matches.season_id";
-            penaltyShotCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
+            penaltyShotCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(true, "matches.season_id", "seasons.competition_id");
             penaltyShotCountQuery += " GROUP BY player_id";
 
             string penaltyShotGoalCountQuery = "SELECT player_id, COUNT(*) AS penalty_shot_goal_count " +
@@ -95,6 +96,46 @@ namespace SportsManager.ViewModels
             penaltyShotGoalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
             penaltyShotGoalCountQuery += " GROUP BY player_id";
 
+            string emptyNetGoalCountQuery = "SELECT player_id, COUNT(*) AS empty_net_goal_count " +
+                                "FROM goals " +
+                                "INNER JOIN matches ON matches.id = match_id " +
+                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                "WHERE empty_net = 1";
+            emptyNetGoalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
+            emptyNetGoalCountQuery += " GROUP BY player_id";
+
+            string delayedPenaltyGoalCountQuery = "SELECT player_id, COUNT(*) AS delayed_penalty_goal_count " +
+                                "FROM goals " +
+                                "INNER JOIN matches ON matches.id = match_id " +
+                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                "WHERE delayed_penalty = 1";
+            delayedPenaltyGoalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
+            delayedPenaltyGoalCountQuery += " GROUP BY player_id";
+
+            string ownGoalCountQuery = "SELECT player_id, COUNT(*) AS own_goal_count " +
+                                "FROM goals " +
+                                "INNER JOIN matches ON matches.id = match_id " +
+                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                "WHERE own_goal = 1";
+            ownGoalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
+            ownGoalCountQuery += " GROUP BY player_id";
+
+            string gwGoalCountQuery = "SELECT player_id, COUNT(*) AS gwg_goal_count " +
+                                "FROM goals " +
+                                "INNER JOIN matches ON matches.id = match_id " +
+                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                "WHERE gwg_glog = 1";
+            gwGoalCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
+            gwGoalCountQuery += " GROUP BY player_id";
+
+            string goalWithoutAssistCountQuery = "SELECT player_id, COUNT(*) AS goal_without_assist_count " +
+                                "FROM goals " +
+                                "INNER JOIN matches ON matches.id = match_id " +
+                                "INNER JOIN seasons ON seasons.id = matches.season_id " +
+                                "WHERE assist_player_id = -1 AND own_goal = 0 AND penalty_shot = 0";
+            goalWithoutAssistCountQuery += DatabaseHandler.WhereSeasonCompetitionQuery(false, "matches.season_id", "seasons.competition_id");
+            goalWithoutAssistCountQuery += " GROUP BY player_id";
+
             string playerStatsQuery = "SELECT p.*, s.competition_id, " +
                                               "IFNULL(match_count, 0) AS match_count, " +
                                               "IFNULL(goal_count, 0) AS goal_count, " +
@@ -104,7 +145,12 @@ namespace SportsManager.ViewModels
                                               "IFNULL(ev_goal_count, 0) AS ev_goal_count, " +
                                               "IFNULL(penalty_minutes, 0) AS penalty_minutes, " +
                                               "IFNULL(penalty_shot_count, 0) AS penalty_shot_count, " +
-                                              "IFNULL(penalty_shot_goal_count, 0) AS penalty_shot_goal_count " +
+                                              "IFNULL(penalty_shot_goal_count, 0) AS penalty_shot_goal_count, " +
+                                              "IFNULL(empty_net_goal_count, 0) AS empty_net_goal_count, " +
+                                              "IFNULL(delayed_penalty_goal_count, 0) AS delayed_penalty_goal_count, " +
+                                              "IFNULL(own_goal_count, 0) AS own_goal_count, " +
+                                              "IFNULL(gwg_goal_count, 0) AS gwg_goal_count, " +
+                                              "IFNULL(goal_without_assist_count, 0) AS goal_without_assist_count " +
                                       "FROM player_enlistment " +
                                       "RIGHT JOIN player AS p ON p.id = player_id " +
                                       "INNER JOIN seasons AS s ON s.id = season_id ";
@@ -117,7 +163,12 @@ namespace SportsManager.ViewModels
                                 "LEFT JOIN (" + evGoalsCountQuery + ") AS evg ON evg.player_id = p.id " +
                                 "LEFT JOIN (" + penaltyMinutesQuery + ") AS pm ON pm.player_id = p.id " +
                                 "LEFT JOIN (" + penaltyShotCountQuery + ") AS ps ON ps.player_id = p.id " +
-                                "LEFT JOIN (" + penaltyShotGoalCountQuery + ") AS psg ON psg.player_id = p.id";
+                                "LEFT JOIN (" + penaltyShotGoalCountQuery + ") AS psg ON psg.player_id = p.id " +
+                                "LEFT JOIN (" + emptyNetGoalCountQuery + ") AS eng ON eng.player_id = p.id " +
+                                "LEFT JOIN (" + delayedPenaltyGoalCountQuery + ") AS dpg ON dpg.player_id = p.id " +
+                                "LEFT JOIN (" + ownGoalCountQuery + ") AS og ON og.player_id = p.id " +
+                                "LEFT JOIN (" + gwGoalCountQuery + ") AS gwg ON gwg.player_id = p.id " +
+                                "LEFT JOIN (" + goalWithoutAssistCountQuery + ") AS gwoa ON gwoa.player_id = p.id";
 
             playerStatsQuery += " WHERE p.id <> -1";
             if (SportsData.IsCompetitionSet())
@@ -173,14 +224,19 @@ namespace SportsManager.ViewModels
                                               int.Parse(row["ev_goal_count"].ToString()),
                                               int.Parse(row["penalty_minutes"].ToString()),
                                               int.Parse(row["penalty_shot_count"].ToString()),
-                                              int.Parse(row["penalty_shot_goal_count"].ToString()));
+                                              int.Parse(row["penalty_shot_goal_count"].ToString()),
+                                              int.Parse(row["empty_net_goal_count"].ToString()),
+                                              int.Parse(row["delayed_penalty_goal_count"].ToString()),
+                                              int.Parse(row["own_goal_count"].ToString()),
+                                              int.Parse(row["gwg_goal_count"].ToString()),
+                                              int.Parse(row["goal_without_assist_count"].ToString()));
 
                     Entities.Add(p);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _ = MessageBox.Show("Unable to connect to databse."+e.Message, "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("Unable to connect to databse.", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

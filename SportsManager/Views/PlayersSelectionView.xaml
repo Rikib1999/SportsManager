@@ -190,7 +190,23 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Goals&#10;per game" Binding="{Binding Stats.GoalsPerGame}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
                 <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Assists" Binding="{Binding Stats.Assists}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Assists&#10;per game" Binding="{Binding Stats.AssistsPerGame}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -230,7 +246,55 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.ExtendedStatsVisibility, Source={x:Reference extendedStatsVisibilityManager}}" Header="Empty net&#10;goals" Binding="{Binding Stats.EmptyNetGoals}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.ExtendedStatsVisibility, Source={x:Reference extendedStatsVisibilityManager}}" Header="Delayed penalty&#10;goals" Binding="{Binding Stats.DelayedPenaltyGoals}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.ExtendedStatsVisibility, Source={x:Reference extendedStatsVisibilityManager}}" Header="Own&#10;goals" Binding="{Binding Stats.OwnGoals}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.ExtendedStatsVisibility, Source={x:Reference extendedStatsVisibilityManager}}" Header="Game winning&#10;goals" Binding="{Binding Stats.GameWinningGoals}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.ExtendedStatsVisibility, Source={x:Reference extendedStatsVisibilityManager}}" Header="Goals without&#10;assist" Binding="{Binding Stats.GoalsWithoutAssist}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
                 <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Penalty&#10;minutes" Binding="{Binding Stats.PenaltyMinutes}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="8,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Visibility="{Binding DataContext.StatsVisibility, Source={x:Reference statsVisibilityManager}}" Header="Penalty minutes&#10;per game" Binding="{Binding Stats.PenaltyMinutesPerGame}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>

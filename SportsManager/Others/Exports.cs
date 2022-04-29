@@ -44,7 +44,7 @@ namespace SportsManager.Others
             {
                 Binding binding = (columns[i] as DataGridBoundColumn).Binding as Binding;
                 propNames.Add(binding.Path.Path);
-                char col = (char)('A' + i);
+                string col = GetColumnName(i);//(char)('A' + i);
                 table.Range[col + "2"].Value = columns[i].Header;
             }
 
@@ -56,13 +56,13 @@ namespace SportsManager.Others
                 for (int j = 0; j < columns.Count; j++)
                 {
                     string s = GetPropertyValue(dataGrid.Items[i], propNames[j]).ToString();
-                    char col = (char)('A' + j);
+                    string col = GetColumnName(j);//(char)('A' + j);
                     table.Range[col + "" + (i + 3)].Value = s;
                 }
             }
 
             //create table
-            Microsoft.Office.Interop.Excel.Range range = table.get_Range("A2:" + (char)('A' + columns.Count - 1) + "" + (rowCount + 2));
+            Microsoft.Office.Interop.Excel.Range range = table.get_Range("A2:" + GetColumnName(columns.Count - 1)/*(char)('A' + columns.Count - 1)*/ + "" + (rowCount + 2));
             table.ListObjects.AddEx(XlListObjectSourceType.xlSrcRange, range, Type.Missing, XlYesNoGuess.xlYes, Type.Missing).Name = "MyTableStyle";
             table.ListObjects.get_Item("MyTableStyle").TableStyle = "TableStyleLight9";
 
@@ -75,6 +75,19 @@ namespace SportsManager.Others
             SaveExcelSheet(format, excelWorkbook, "table");
 
             excelWorkbook.Close(false);
+        }
+
+        public static string GetColumnName(int index)
+        {
+            const byte BASE = 'Z' - 'A' + 1;
+            string name = string.Empty;
+            do
+            {
+                name = Convert.ToChar('A' + index % BASE) + name;
+                index = index / BASE - 1;
+            }
+            while (index >= 0);
+            return name;
         }
 
         public static void ExportStandings(ObservableCollection<Group> groups, string format, string lastRound)

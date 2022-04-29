@@ -297,7 +297,7 @@ namespace SportsManager.ViewModels
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
             MySqlCommand cmd = new("SELECT COUNT(*) FROM goals " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
-                                                "WHERE team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
+                                                "WHERE own_goal = 0 AND team_id = " + teamID + " AND m.qualification_id = -1 AND m.serie_match_number = -1 AND round <= " + roundID, connection);
             if (SportsData.SEASON.ID > 0) { cmd.CommandText += " AND m.season_id = " + SportsData.SEASON.ID; }
             try
             {

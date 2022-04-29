@@ -583,6 +583,8 @@ namespace SportsManager.Models
             }
         }
 
+        public float GoalsPerGame => GamesPlayed != 0 ? (float)Math.Round(Goals / (float)GamesPlayed, 2) : float.NaN;
+
         private int assists;
         public int Assists
         {
@@ -593,6 +595,8 @@ namespace SportsManager.Models
                 OnPropertyChanged();
             }
         }
+
+        public float AssistsPerGame => GamesPlayed != 0 ? (float)Math.Round(Assists / (float)GamesPlayed, 2) : float.NaN;
 
         private int ppGoals;
         public int PpGoals
@@ -640,6 +644,8 @@ namespace SportsManager.Models
             }
         }
 
+        public string PenaltyMinutesPerGame => GamesPlayed != 0 ? (PenaltyMinutes / GamesPlayed) + ":" + (PenaltyMinutes * 60 / GamesPlayed % 60).ToString("00") : "0:00";
+
         private int penaltyShots;
         public int PenaltyShots
         {
@@ -663,9 +669,65 @@ namespace SportsManager.Models
         }
 
         public float PenaltyShotsPercentage => PenaltyShots != 0 ? (float)Math.Round(PenaltyShotGoals / (float)PenaltyShots * 100, 2) : float.NaN;
+
+        private int emptyNetGoals;
+        public int EmptyNetGoals
+        {
+            get => emptyNetGoals;
+            set
+            {
+                emptyNetGoals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int delayedPenaltyGoals;
+        public int DelayedPenaltyGoals
+        {
+            get => delayedPenaltyGoals;
+            set
+            {
+                delayedPenaltyGoals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int ownGoals;
+        public int OwnGoals
+        {
+            get => ownGoals;
+            set
+            {
+                ownGoals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int gameWinningGoals;
+        public int GameWinningGoals
+        {
+            get => gameWinningGoals;
+            set
+            {
+                gameWinningGoals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int goalsWithoutAssist;
+        public int GoalsWithoutAssist
+        {
+            get => goalsWithoutAssist;
+            set
+            {
+                goalsWithoutAssist = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
-        public PlayerStats(int gamesPlayed, int goals, int assists, int ppGoals, int shGoals, int evGoals, int penaltyMinutes, int penaltyShots, int penaltyShotGoals)
+        public PlayerStats(int gamesPlayed, int goals, int assists, int ppGoals, int shGoals, int evGoals, int penaltyMinutes, int penaltyShots, int penaltyShotGoals,
+                           int emptyNetGoals, int delayedPenaltyGoals, int ownGoals, int gameWinningGoals, int goalsWithoutAssist)
         {
             GamesPlayed = gamesPlayed;
             Goals = goals;
@@ -676,6 +738,11 @@ namespace SportsManager.Models
             PenaltyMinutes = penaltyMinutes;
             PenaltyShots = penaltyShots;
             PenaltyShotGoals = penaltyShotGoals;
+            EmptyNetGoals = emptyNetGoals;
+            DelayedPenaltyGoals = delayedPenaltyGoals;
+            OwnGoals = ownGoals;
+            GameWinningGoals = gameWinningGoals;
+            GoalsWithoutAssist = goalsWithoutAssist;
         }
 
         public PlayerStats(Player player, int seasonID, int competitionID)
@@ -725,7 +792,7 @@ namespace SportsManager.Models
                                                 "FROM goals " +
                                                 "INNER JOIN matches AS m ON m.id = match_id " +
                                                 "INNER JOIN seasons AS s ON s.id = m.season_id " +
-                                                "WHERE player_id = " + playerID, connection);
+                                                "WHERE own_goal = 0 AND player_id = " + playerID, connection);
             if (seasonID > 0) { cmd.CommandText += " AND m.season_id = " + seasonID; }
             if (competitionID > 0) { cmd.CommandText += " AND s.competition_id = " + competitionID; }
             try
@@ -1207,7 +1274,7 @@ namespace SportsManager.Models
 
                                                 "LEFT JOIN " +
                                                 "(SELECT g.match_id AS g_match_id, COUNT(g.player_id) AS g_count FROM goals AS g " +
-                                                "WHERE g.player_id = " + player.ID + " " +
+                                                "WHERE g.own_goal = 0 AND g.player_id = " + player.ID + " " +
                                                 "GROUP BY g.match_id) " +
                                                 "AS g_table ON g_table.g_match_id = m.match_id " +
 
