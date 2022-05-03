@@ -973,15 +973,9 @@ namespace SportsManager.ViewModels
             }
         }
 
-        public string Time
-        {
-            get { return Minute + ":" + Second.ToString("00"); }
-        }
+        public string Time => Minute + ":" + Second.ToString("00");
 
-        public int TimeInSeconds
-        {
-            get { return (Minute * 60) + Second; }
-        }
+        public int TimeInSeconds => (Minute * 60) + Second;
 
         private string side;
         public string Side
@@ -994,13 +988,7 @@ namespace SportsManager.ViewModels
             }
         }
 
-        public virtual string Text
-        {
-            get
-            {
-                return Time + "\t\t" + Side;
-            }
-        }
+        public virtual string Text => Time + "\t\t" + Side;
 
         public int homeScore;
         public int awayScore;
@@ -1190,13 +1178,7 @@ namespace SportsManager.ViewModels
             }
         }
 
-        public override string Text
-        {
-            get
-            {
-                return Time + "\t\t" + Side + "\t\t" + PenaltyType.Name + " for " + Player.Number;
-            }
-        }
+        public override string Text => Time + "\t\t" + Side + "\t\t" + PenaltyType.Name + " for " + Player.Number;
     }
 
     public class PenaltyShot : BasicStat
@@ -1261,15 +1243,9 @@ namespace SportsManager.ViewModels
             }
         }
 
-        public string StartTime
-        {
-            get { return StartMinute + ":" + StartSecond.ToString("00"); }
-        }
+        public string StartTime => StartMinute + ":" + StartSecond.ToString("00");
 
-        public int StartTimeInSeconds
-        {
-            get { return (StartMinute * 60) + StartSecond; }
-        }
+        public int StartTimeInSeconds => (StartMinute * 60) + StartSecond;
 
         private int endMinute;
         public int EndMinute
@@ -1293,15 +1269,9 @@ namespace SportsManager.ViewModels
             }
         }
 
-        public string EndTime
-        {
-            get { return EndMinute + ":" + EndSecond.ToString("00"); }
-        }
+        public string EndTime => EndMinute + ":" + EndSecond.ToString("00");
 
-        public int EndTimeInSeconds
-        {
-            get { return (EndMinute * 60) + EndSecond; }
-        }
+        public int EndTimeInSeconds => (EndMinute * 60) + EndSecond;
 
         private string side;
         public string Side
@@ -1412,13 +1382,7 @@ namespace SportsManager.ViewModels
 
     public class TimeOut : BasicStat
     {
-        public override string Text
-        {
-            get
-            {
-                return Time + "\t\t" + Side + "\t\ttime-out";
-            }
-        }
+        public override string Text => Time + "\t\t" + Side + "\t\ttime-out";
     }
 
     public class ShootoutShot : Stat
@@ -1431,10 +1395,12 @@ namespace SportsManager.ViewModels
             GoalieRoster = goalieRoster;
         }
 
-        public ShootoutShot(int number, string side, PlayerInRoster player, PlayerInRoster goalie)
+        public ShootoutShot(int number, string side, ObservableCollection<PlayerInRoster> playerRoster, ObservableCollection<PlayerInRoster> goalieRoster, PlayerInRoster player, PlayerInRoster goalie)
         {
             Number = number;
             Side = side;
+            PlayerRoster = playerRoster;
+            GoalieRoster = goalieRoster;
             Player = player;
             Goalie = goalie;
         }
@@ -1658,10 +1624,7 @@ namespace SportsManager.ViewModels
             }
         }
 
-        public DateTime MatchDateTime
-        {
-            get { return MatchDate + new TimeSpan(MatchTimeHours, MatchTimeMinutes, 0); }
-        }
+        public DateTime MatchDateTime => MatchDate + new TimeSpan(MatchTimeHours, MatchTimeMinutes, 0);
         #endregion
 
         #region Rosters
@@ -4061,6 +4024,12 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// If editing decided serie in bracket, this method checks if we wont add more wins than possible to the winning team.
+        /// </summary>
+        /// <param name="homeScore"></param>
+        /// <param name="awayScore"></param>
+        /// <returns></returns>
         private bool ExceedsFirstToWin(int homeScore, int awayScore)
         {
             if (!(HomeScore <= AwayScore && homeScore > awayScore) || !(HomeScore >= AwayScore && homeScore < awayScore))
@@ -4439,6 +4408,7 @@ namespace SportsManager.ViewModels
                         ps.strength = g.strength;
                         ps.homeScore = g.homeScore;
                         ps.awayScore = g.awayScore;
+                        ps.goalie = g.goalie;
                         Events.Add(new Event { Period = period, Stat = ps });
                     }
                 }
@@ -4980,8 +4950,8 @@ namespace SportsManager.ViewModels
             Random r = new();
 
             //date and time
-            DateTime start = new(2019, 10, 1);
-            int range = (new DateTime(2020, 3, 15) - start).Days;
+            DateTime start = new(2020, 10, 1);
+            int range = (new DateTime(2021, 3, 15) - start).Days;
             MatchDate = start.AddDays(r.Next(range));
             MatchTimeHours = r.Next(8, 14);
             int randomMinute = r.Next(0, 3);
@@ -5072,11 +5042,11 @@ namespace SportsManager.ViewModels
                             if (p.Goals.Last().Assist.id == SportsData.NOID)
                             {
                                 int probability = r.Next(1, 100);
-                                if (probability <= 10)
+                                if (probability <= 50)
                                 {
                                     p.Goals.Last().PenaltyShot = true;
                                 }
-                                else if (probability <= 13)
+                                else if (probability <= 55)
                                 {
                                     p.Goals.Last().OwnGoal = true;
                                 }
@@ -5116,7 +5086,7 @@ namespace SportsManager.ViewModels
                         }
                         else if (eventType <= 95)
                         {
-                            //saved penalty shot
+                            //saved penalty shots
                             //time, side, player, no_goal
                             p.PenaltyShots.Add(new PenaltyShot
                             {
@@ -5150,6 +5120,22 @@ namespace SportsManager.ViewModels
                     }
                 }
 
+                //scored penalty shots
+                foreach (Goal g in p.Goals)
+                {
+                    if (g.PenaltyShot)
+                    {
+                        p.PenaltyShots.Add(new PenaltyShot
+                        {
+                            Minute = g.Minute,
+                            Second = g.Second,
+                            Side = g.Side,
+                            Player = g.Scorer,
+                            WasGoal = true
+                        });
+                    }
+                }
+
                 p.Goals.Sort();
                 p.Penalties.Sort();
                 p.PenaltyShots.Sort();
@@ -5161,8 +5147,8 @@ namespace SportsManager.ViewModels
                     Player = HomeRoster.First(x => x.id == homeGoalieID),
                     StartMinute = 0,
                     StartSecond = 0,
-                    EndMinute = 9,
-                    EndSecond = 59
+                    EndMinute = 10,
+                    EndSecond = 0
                 });
 
                 p.GoalieShifts.Add(new GoalieShift
@@ -5199,11 +5185,15 @@ namespace SportsManager.ViewModels
                 while (!end)
                 {
                     ShootoutShot firstShot = new(number, firstSide,
-                        firstSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
-                        firstSide == "Home" ? AwayRoster.First(x => x.id == awayGoalieID) : HomeRoster.First(x => x.id == homeGoalieID));
+                        playerRoster: firstSide == "Home" ? HomeRoster : AwayRoster,
+                        goalieRoster: firstSide == "Home" ? AwayRoster : HomeRoster,
+                        player: firstSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
+                        goalie: firstSide == "Home" ? AwayRoster.First(x => x.id == awayGoalieID) : HomeRoster.First(x => x.id == homeGoalieID));
                     ShootoutShot secondShot = new(number, secondSide,
-                        secondSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
-                        secondSide == "Home" ? AwayRoster.First(x => x.id == awayGoalieID) : HomeRoster.First(x => x.id == homeGoalieID));
+                        playerRoster: secondSide == "Home" ? HomeRoster : AwayRoster,
+                        goalieRoster: secondSide == "Home" ? AwayRoster : HomeRoster,
+                        player: secondSide == "Home" ? HomeRoster.Where(x => x.id != homeGoalieID).OrderBy(x => r.Next()).First() : AwayRoster.Where(x => x.id != awayGoalieID).OrderBy(x => r.Next()).First(),
+                        goalie: secondSide == "Home" ? AwayRoster.First(x => x.id == awayGoalieID) : HomeRoster.First(x => x.id == homeGoalieID));
 
                     if (Shootout.Count < 2)
                     {
@@ -5268,7 +5258,7 @@ namespace SportsManager.ViewModels
                     }
                     number++;
                 }
-                ShootoutSeries = (Shootout.Count / 2) + 1;
+                shootoutSeries = (Shootout.Count + 1) / 2;
             }
         }
         #endregion

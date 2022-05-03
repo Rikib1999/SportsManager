@@ -44,7 +44,7 @@ namespace SportsManager.Others
             {
                 Binding binding = (columns[i] as DataGridBoundColumn).Binding as Binding;
                 propNames.Add(binding.Path.Path);
-                string col = GetColumnName(i);//(char)('A' + i);
+                string col = GetColumnName(i);
                 table.Range[col + "2"].Value = columns[i].Header;
             }
 
@@ -56,7 +56,7 @@ namespace SportsManager.Others
                 for (int j = 0; j < columns.Count; j++)
                 {
                     string s = GetPropertyValue(dataGrid.Items[i], propNames[j]).ToString();
-                    string col = GetColumnName(j);//(char)('A' + j);
+                    string col = GetColumnName(j);
                     table.Range[col + "" + (i + 3)].Value = s;
                 }
             }
