@@ -4409,7 +4409,7 @@ namespace SportsManager.ViewModels
                         ps.homeScore = g.homeScore;
                         ps.awayScore = g.awayScore;
                         ps.goalie = g.goalie;
-                        Events.Add(new Event { Period = period, Stat = ps });
+                        Events.Add(new Event { Period = period, Stat = ps, index = Events.First(x => x.Stat == g).index });
                     }
                 }
             }

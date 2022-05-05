@@ -801,12 +801,12 @@ namespace SportsManager.ViewModels
                     PeriodEvents.First(x => x.Period == int.Parse(row["period"].ToString())).Events.Add(e);
                 }
 
-                //load penalty shots
+                //load unsuccesful penalty shots
                 cmd = new MySqlCommand("SELECT p.first_name AS player_first_name, p.last_name AS player_last_name, " +
                                        "period, period_seconds, order_in_match, team_id, was_goal " +
                                        "FROM penalty_shots " +
                                        "INNER JOIN player AS p ON p.id = player_id " +
-                                       "WHERE match_id = " + Match.ID, connection);
+                                       "WHERE was_goal = 0 AND match_id = " + Match.ID, connection);
 
                 dataTable = new DataTable();
                 dataTable.Load(cmd.ExecuteReader());
