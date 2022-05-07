@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportsManager", "SportsManager\SportsManager.csproj", "{5CDE3117-6638-4321-97E1-11CC53AE8589}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SportsManagerInstaller", "SportsManagerInstaller\SportsManagerInstaller.vdproj", "{679FB51E-6985-466D-B458-D4F0994747D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,8 @@ Global
 		{5CDE3117-6638-4321-97E1-11CC53AE8589}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CDE3117-6638-4321-97E1-11CC53AE8589}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CDE3117-6638-4321-97E1-11CC53AE8589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{679FB51E-6985-466D-B458-D4F0994747D2}.Debug|Any CPU.ActiveCfg = Debug
+		{679FB51E-6985-466D-B458-D4F0994747D2}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

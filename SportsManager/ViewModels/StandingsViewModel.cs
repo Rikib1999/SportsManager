@@ -1202,7 +1202,7 @@ namespace SportsManager.ViewModels
 
                 UIElement = new TextBlock
                 {
-                    Text = "Weak",
+                    Text = "Defensive play",
                     FontWeight = FontWeights.Bold,
                     FontSize = 20,
                     Opacity = 0.6
@@ -1217,7 +1217,7 @@ namespace SportsManager.ViewModels
 
                 UIElement = new TextBlock
                 {
-                    Text = "Offensive play",
+                    Text = "Strong",
                     FontWeight = FontWeights.Bold,
                     FontSize = 20,
                     Opacity = 0.6
@@ -1232,7 +1232,7 @@ namespace SportsManager.ViewModels
 
                 UIElement = new TextBlock
                 {
-                    Text = "Good",
+                    Text = "Offensive play",
                     FontWeight = FontWeights.Bold,
                     FontSize = 20,
                     Opacity = 0.6
@@ -1247,7 +1247,7 @@ namespace SportsManager.ViewModels
 
                 UIElement = new TextBlock
                 {
-                    Text = "Defensive play",
+                    Text = "Weak",
                     FontWeight = FontWeights.Bold,
                     FontSize = 20,
                     Opacity = 0.6
