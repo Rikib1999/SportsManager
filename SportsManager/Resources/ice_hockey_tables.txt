@@ -384,7 +384,7 @@ INSERT IGNORE INTO `penalty_type` (`code`, `name`, `minutes`) VALUES
 ('MP3', 'Match penalty 3', 20);
 
 INSERT IGNORE INTO `player` (`id`, `first_name`, `last_name`, `birthdate`, `gender`, `height`, `weight`, `plays_with`, `citizenship`, `birthplace_city`, `birthplace_country`, `status`, `info`) VALUES
-(-1, 'NONE', 'NONE', '1900-01-01', 'M', 0, 0, 'R', 'SK', 'NONE', 'SK', 0, 'NONE'),;
+(-1, 'NONE', 'NONE', '1900-01-01', 'M', 0, 0, 'R', 'SK', 'NONE', 'SK', 0, 'NONE');
 
 INSERT IGNORE INTO `position` (`code`, `name`) VALUES
 ('C', 'center'),

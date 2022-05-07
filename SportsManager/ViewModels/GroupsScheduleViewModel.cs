@@ -230,7 +230,7 @@ namespace SportsManager.ViewModels
                     StringBuilder sb = new();
                     foreach (DataRow row in dataTable.Rows)
                     {
-                        _ = sb.Append("'" + row["id"].ToString() + "',");
+                        _ = sb.Append(row["id"].ToString() + ",");
                     }
                     if (sb.Length > 0) { _ = sb.Remove(sb.Length - 1, 1); }
 

@@ -220,7 +220,7 @@ namespace SportsManager.ViewModels
                     //delete photo
                     if (previousFilePath != "")
                     {
-                        if (Bitmap.StreamSource != null) { Bitmap.StreamSource.Dispose(); }
+                        if (Bitmap != null && Bitmap.StreamSource != null) { Bitmap.StreamSource.Dispose(); }
                         GC.Collect();
                         File.Delete(previousFilePath);
                     }

@@ -907,10 +907,7 @@ namespace SportsManager.ViewModels
             t1.Start();
             LoadCompetitions();
 
-            if (SportsData.IsCompetitionSet())
-            {
-                CurrentSeason.Competition = Competitions.Where(x => x.ID == SportsData.COMPETITION.ID).First();
-            }
+            CurrentSeason.Competition = SportsData.IsCompetitionSet() ? Competitions.First(x => x.ID == SportsData.COMPETITION.ID) : (new());
             Teams = new ObservableCollection<Team>();
             QualificationBrackets = new ObservableCollection<Bracket>();
             Groups = new ObservableCollection<Group>();
@@ -1042,7 +1039,7 @@ namespace SportsManager.ViewModels
             Teams.Add(t);
             NotSelectedTeams.Add(t);
             NewTeam = new Team();
-            if (BitmapTeam.StreamSource != null) { BitmapTeam.StreamSource.Dispose(); }
+            if (BitmapTeam != null && BitmapTeam.StreamSource != null) { BitmapTeam.StreamSource.Dispose(); }
             BitmapTeam = new BitmapImage();
         }
 
@@ -1786,8 +1783,8 @@ namespace SportsManager.ViewModels
                 CurrentSeason.QualificationRounds = QualificationRoundsCount;
                 CurrentSeason.WinnerID = SportsData.NOID;
                 CurrentSeason.WinnerName = "";
-                if (BitmapSeason.StreamSource != null) { BitmapSeason.StreamSource.Dispose(); }
-                if (BitmapTeam.StreamSource != null) { BitmapTeam.StreamSource.Dispose(); }
+                if (BitmapSeason != null && BitmapSeason.StreamSource != null) { BitmapSeason.StreamSource.Dispose(); }
+                if (BitmapTeam != null && BitmapTeam.StreamSource != null) { BitmapTeam.StreamSource.Dispose(); }
 
                 transaction.Commit();
                 connection.Close();
