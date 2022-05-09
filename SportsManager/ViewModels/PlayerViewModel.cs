@@ -14,9 +14,16 @@ using System.Windows.Media;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Class for representing players statistics and participations in given competition.
+    /// </summary>
+    /// <typeparam name="T">Generic parameter of interface IStats.</typeparam>
     public class CompetitionRecord<T> : NotifyPropertyChanged where T : IStats
     {
         private Competition competition;
+        /// <summary>
+        /// Competition instance.
+        /// </summary>
         public Competition Competition
         {
             get => competition;
@@ -28,6 +35,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<T> stats;
+        /// <summary>
+        /// Player statistics in the competition.
+        /// </summary>
         public ObservableCollection<T> Stats
         {
             get => stats;
@@ -39,6 +49,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<SeasonRecord<T>> seasons = new();
+        /// <summary>
+        /// Collection of seasons in the competition in which player participated.
+        /// </summary>
         public ObservableCollection<SeasonRecord<T>> Seasons
         {
             get => seasons;
@@ -50,6 +63,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility competitionVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of competition detail.
+        /// </summary>
         public Visibility CompetitionVisibility
         {
             get => competitionVisibility;
@@ -61,6 +77,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand setCompetitionVisibilityCommand;
+        /// <summary>
+        /// Sets competition detail visibility when executed.
+        /// </summary>
         public ICommand SetCompetitionVisibilityCommand
         {
             get
@@ -73,15 +92,25 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Switches competition visibility.
+        /// </summary>
         private void SetCompetitionVisibility()
         {
             CompetitionVisibility = CompetitionVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
+    /// <summary>
+    /// Class for representing players statistics and participations in given season.
+    /// </summary>
+    /// <typeparam name="T">Generic parameter of interface IStats.</typeparam>
     public class SeasonRecord<T> : NotifyPropertyChanged where T : IStats
     {
         private Season season;
+        /// <summary>
+        /// Season insatnce.
+        /// </summary>
         public Season Season
         {
             get => season;
@@ -93,6 +122,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<T> stats;
+        /// <summary>
+        /// Stats of player in current season.
+        /// </summary>
         public ObservableCollection<T> Stats
         {
             get => stats;
@@ -104,6 +136,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Match> matches = new();
+        /// <summary>
+        /// Matches in current season that player participated in.
+        /// </summary>
         public ObservableCollection<Match> Matches
         {
             get => matches;
@@ -115,6 +150,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility seasonVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of season detail.
+        /// </summary>
         public Visibility SeasonVisibility
         {
             get => seasonVisibility;
@@ -126,6 +164,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand setSeasonVisibilityCommand;
+        /// <summary>
+        /// When executed, it switches season detail visibility.
+        /// </summary>
         public ICommand SetSeasonVisibilityCommand
         {
             get
@@ -138,16 +179,25 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Switches season detail visibility.
+        /// </summary>
         private void SetSeasonVisibility()
         {
             SeasonVisibility = SeasonVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
+    /// <summary>
+    /// Viewmodel for player detail. Shows player info, statistics and participations in competitions, and graphs of his performance.
+    /// </summary>
     public class PlayerViewModel : NotifyPropertyChanged
     {
         #region Data
         private Player player;
+        /// <summary>
+        /// Current player instance.
+        /// </summary>
         public Player Player
         {
             get => player;
@@ -158,9 +208,15 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Currently selected match for its detail viewmodel.
+        /// </summary>
         public Match SelectedMatch { get; set; }
 
         private ObservableCollection<CompetitionRecord<PlayerStats>> competitions = new();
+        /// <summary>
+        /// Collection of all players competitions as CompetitionRecords.
+        /// </summary>
         public ObservableCollection<CompetitionRecord<PlayerStats>> Competitions
         {
             get => competitions;
@@ -172,6 +228,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<CompetitionRecord<GoalieStats>> competitionsAsGoalie = new();
+        /// <summary>
+        /// Collection of all players competitions as CompetitionRecords as a goaltender.
+        /// </summary>
         public ObservableCollection<CompetitionRecord<GoalieStats>> CompetitionsAsGoalie
         {
             get => competitionsAsGoalie;
@@ -183,6 +242,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInMatchStats> playerInMatchStats = new();
+        /// <summary>
+        /// Collection of all players statistics by match.
+        /// </summary>
         public ObservableCollection<PlayerInMatchStats> PlayerInMatchStats
         {
             get => playerInMatchStats;
@@ -195,10 +257,19 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Charting
+        /// <summary>
+        /// Predicate for template how to show chart axis labels.
+        /// </summary>
         public Func<double, string> AxisFormatterScatter { get; set; } = value => value.ToString("N2");
 
+        /// <summary>
+        /// Labels of x axis of the charts.
+        /// </summary>
         public string[] DatetimeXLabels { get; set; }
 
+        /// <summary>
+        /// Data of player statistics by match for its graph.
+        /// </summary>
         private SeriesCollection playerInMatchStatsSeries = new();
         public SeriesCollection PlayerInMatchStatsSeries
         {
@@ -211,6 +282,9 @@ namespace SportsManager.ViewModels
         }
 
         private SeriesCollection playerInMatchStatsSumSeries = new();
+        /// <summary>
+        /// Data of summed player statistics by match for its graph.
+        /// </summary>
         public SeriesCollection PlayerInMatchStatsSumSeries
         {
             get => playerInMatchStatsSumSeries;
@@ -222,6 +296,9 @@ namespace SportsManager.ViewModels
         }
 
         private SeriesCollection playerInMatchStatsAverageSeries = new();
+        /// <summary>
+        /// Data of average player statistics by match for its graph.
+        /// </summary>
         public SeriesCollection PlayerInMatchStatsAverageSeries
         {
             get => playerInMatchStatsAverageSeries;
@@ -235,6 +312,9 @@ namespace SportsManager.ViewModels
 
         #region Commands
         private ICommand exportChartCommand;
+        /// <summary>
+        /// When executed, exports chart to PNG.
+        /// </summary>
         public ICommand ExportChartCommand
         {
             get
@@ -247,9 +327,15 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Navigates to the selected match detail viewmodel when executed.
+        /// </summary>
         public ICommand NavigateMatchCommand { get; set; }
 
         private ICommand checkNavigateMatchCommand;
+        /// <summary>
+        /// Checks if match was selected when executed.
+        /// </summary>
         public ICommand CheckNavigateMatchCommand
         {
             get
@@ -262,9 +348,17 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Navigates player edit viewmodel when executed.
+        /// </summary>
         public ICommand NavigateEditCommand { get; }
         #endregion
 
+        /// <summary>
+        /// Instantiates new PlayerViewModel.
+        /// </summary>
+        /// <param name="ns">Current instance of the NavigationStore.</param>
+        /// <param name="p">Player instance.</param>
         public PlayerViewModel(NavigationStore ns, Player p)
         {
             NavigateMatchCommand = new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, SelectedMatch, new PlayerViewModel(ns, p))));
@@ -280,6 +374,9 @@ namespace SportsManager.ViewModels
             LoadPlayerInMatchStatsAverageSeries();
         }
 
+        /// <summary>
+        /// Loads competitions, seasons and matches that player participated in and all his statistics in them.
+        /// </summary>
         private void LoadCompetitions()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -396,6 +493,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads competitions, seasons and matches that player participated in as a goaltender and all his statistics in them.
+        /// </summary>
         private void LoadCompetitionsAsGoalie()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -512,6 +612,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Checks if match is selected before navigating its viewmodel.
+        /// </summary>
         private void CheckNavigateMatch()
         {
             if (SelectedMatch != null)
@@ -520,6 +623,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads data for graph representing players statistics by match.
+        /// </summary>
         private void LoadPlayerInMatchStatsSeries()
         {
             //goals per match
@@ -571,6 +677,9 @@ namespace SportsManager.ViewModels
             });
         }
 
+        /// <summary>
+        /// Loads data for graph representing players summed statistics by match.
+        /// </summary>
         private void LoadPlayerInMatchStatsSumSeries()
         {
             //goals until match
@@ -628,6 +737,9 @@ namespace SportsManager.ViewModels
             });
         }
 
+        /// <summary>
+        /// Loads data for graph representing players average statistics by match.
+        /// </summary>
         private void LoadPlayerInMatchStatsAverageSeries()
         {
             //goals average until match

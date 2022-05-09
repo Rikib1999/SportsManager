@@ -10,21 +10,45 @@ using System.Windows.Media;
 
 namespace SportsManager
 {
+    /// <summary>
+    /// Structure for a specific sport.
+    /// </summary>
     public struct Sport
     {
+        /// <summary>
+        /// Name of the sport in lowercase.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Formatted name of the sport.
+        /// </summary>
         public string FormattedName => char.ToUpper(Name[0]) + Name[1..].Replace('_', '-');
 
+        /// <summary>
+        /// Color of the sport used in view.
+        /// </summary>
         public Brush Color { get; set; }
 
+        /// <summary>
+        /// Path to the sports image.
+        /// </summary>
         public string Image => SportsData.ResourcesPath + "/" + Name + ".png";
 
+        /// <summary>
+        /// Query for adding all tables to the sports database.
+        /// </summary>
         public string DatabaseTables { get; set; }
     }
 
+    /// <summary>
+    /// Interface for entities like competition, season, team or player.
+    /// </summary>
     public interface IEntity
     {
+        /// <summary>
+        /// Identification number of the entity.
+        /// </summary>
         public int ID { get; set; }
     }
 
@@ -34,28 +58,73 @@ namespace SportsManager
     public static class SportsData
     {
         #region Database connection strings
+        /// <summary>
+        /// Server name.
+        /// </summary>
         public static readonly string server = "localhost";
+        /// <summary>
+        /// Server user name.
+        /// </summary>
         public static readonly string UID = "root";
+        /// <summary>
+        /// Server password.
+        /// </summary>
         public static readonly string password = "";
+        /// <summary>
+        /// Name of shared database between sports.
+        /// </summary>
         public static readonly string commonDatabaseName = "sports_manager";
+        /// <summary>
+        /// Connection string without database selected.
+        /// </summary>
         public static string ConnectionStringNoDatabase => "SERVER=" + server + ";UID=" + UID + ";PASSWORD=" + password + ";";
+        /// <summary>
+        /// Connection string for database of the selected sport.
+        /// </summary>
         public static string ConnectionStringSport => "SERVER=" + server + ";DATABASE=" + SPORT.Name + ";UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
+        /// <summary>
+        /// Connection string for the shared database.
+        /// </summary>
         public static string ConnectionStringCommon => "SERVER=" + server + ";DATABASE=" + commonDatabaseName + ";UID=" + UID + ";PASSWORD=" + password + "; convert zero datetime=True";
         #endregion
 
         #region Application folder and file paths
+        /// <summary>
+        /// Path for local Roaming folder used to save local database data, mostly images.
+        /// </summary>
         public static readonly string AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/SportsManager";
+        /// <summary>
+        /// Path to local Image folder of application for storing images.
+        /// </summary>
         public static readonly string ImagesPath = AppDataPath + "/Images";
+        /// <summary>
+        /// Path to application resources.
+        /// </summary>
         public static readonly string ResourcesPath = "/Resources";
+        /// <summary>
+        /// Path to Competition_Logos folder used for storing competitions logos.
+        /// </summary>
         public static readonly string CompetitionLogosPath = AppDataPath + "/Images/Competition_Logos";
+        /// <summary>
+        /// Path to Season_Logos folder used for storing seasons logos.
+        /// </summary>
         public static readonly string SeasonLogosPath = AppDataPath + "/Images/Season_Logos";
+        /// <summary>
+        /// Path to Team_Logos folder used for storing teams logos.
+        /// </summary>
         public static readonly string TeamLogosPath = AppDataPath + "/Images/Team_Logos";
+        /// <summary>
+        /// Path to Player_Photos folder used for storing players photos.
+        /// </summary>
         public static readonly string PlayerPhotosPath = AppDataPath + "/Images/Player_Photos";
+        /// <summary>
+        /// Path to GamesheetOCR.exe python executable script used for optical character recognition of scanned gamesheet.
+        /// </summary>
         public static readonly string PythonOCRPath = AppDataPath + "/GamesheetOCR.exe";
         #endregion
 
         /// <summary>
-        /// Constant for not missing ID.
+        /// Constant for missing ID (-1).
         /// </summary>
         public static readonly int NOID = -1;
 

@@ -11,11 +11,20 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for viewing all seasons and theirs statistics in one sortable table with filtering. Serves for navigating to a season detail viewmodel.
+    /// </summary>
     public class SeasonsSelectionViewModel : TemplateSelectionDataGridViewModel<Season>
     {
+        /// <summary>
+        /// Command that navigates to viewmodel for adding a new season after executing it.
+        /// </summary>
         public ICommand NavigateAddSeasonCommand { get; set; }
 
         private ICommand checkNavigateEntityCommand;
+        /// <summary>
+        /// Checks wheter season is selected for navigating to its detail viewmodel when executed.
+        /// </summary>
         public new ICommand CheckNavigateEntityCommand
         {
             get
@@ -28,6 +37,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Instantiates new SeasonsSelectionViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
         public SeasonsSelectionViewModel(NavigationStore navigationStore)
         {
             NavigateAddSeasonCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new AddSeasonViewModel(navigationStore)));
@@ -35,6 +48,9 @@ namespace SportsManager.ViewModels
             LoadData();
         }
 
+        /// <summary>
+        /// Loads the seasons with their statistics from the database.
+        /// </summary>
         protected override void LoadData()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);

@@ -2,9 +2,15 @@
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Class for representing a country of a world.
+    /// </summary>
     public class Country : NotifyPropertyChanged
     {
         private string name = "";
+        /// <summary>
+        /// Full name of the country in English.
+        /// </summary>
         public string Name
         {
             get => name;
@@ -16,6 +22,9 @@ namespace SportsManager.Models
         }
 
         private string codeTwo;
+        /// <summary>
+        /// International abbreviation of the country of two characters.
+        /// </summary>
         public string CodeTwo
         {
             get => codeTwo;
@@ -27,6 +36,9 @@ namespace SportsManager.Models
         }
 
         private string codeThree;
+        /// <summary>
+        /// International abbreviation of the country of three characters.
+        /// </summary>
         public string CodeThree
         {
             get => codeThree;

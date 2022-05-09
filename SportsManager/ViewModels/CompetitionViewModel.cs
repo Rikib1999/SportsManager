@@ -12,10 +12,20 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for competition detail.
+    /// </summary>
     public class CompetitionViewModel : TemplateEntityViewModel
     {
+        /// <summary>
+        /// Current competition.
+        /// </summary>
         public Competition Competition { get; set; }
 
+        /// <summary>
+        /// Instantiates new CompetitionViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
         public CompetitionViewModel(NavigationStore navigationStore)
         {
             Competition = SportsData.COMPETITION;
@@ -32,6 +42,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Deletes competition from the database.
+        /// </summary>
         protected override void Delete()
         {
             MessageBoxResult msgResult = MessageBox.Show("Do you really want to delete this competition? All seasons and matches will be deleted.", "Delete competition", MessageBoxButton.YesNo, MessageBoxImage.Warning);

@@ -13,6 +13,11 @@ namespace SportsManager.Views
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Overrides the page scrolling.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             ScrollViewer scv = (ScrollViewer)sender;

@@ -6,12 +6,22 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Template viewmodel for viewing all entites and theirs statistics in one sortable table with filtering. Serves for navigating to an entity detail viewmodel.
+    /// </summary>
+    /// <typeparam name="T">Type of the entity.</typeparam>
     public class TemplateSelectionDataGridViewModel<T> : NotifyPropertyChanged where T : IEntity
     {
         #region Commands
+        /// <summary>
+        /// After executing it, it navigates to the entity detail viewmodel.
+        /// </summary>
         public ICommand NavigateEntityCommand { get; set; }
 
         private ICommand checkNavigateEntityCommand;
+        /// <summary>
+        /// Command that checks wheter entity was selected, so it can navigate its detail viewmodel, when executed.
+        /// </summary>
         public ICommand CheckNavigateEntityCommand
         {
             get
@@ -25,6 +35,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand exportPDFCommand;
+        /// <summary>
+        /// When executed, it calls method Exports.ExportTable() for exporting the selection in PDF format.
+        /// </summary>
         public ICommand ExportPDFCommand
         {
             get
@@ -38,6 +51,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand exportXLSXCommand;
+        /// <summary>
+        /// When executed, it calls method Exports.ExportTable() for exporting the selection in XLSX format.
+        /// </summary>
         public ICommand ExportXLSXCommand
         {
             get
@@ -52,6 +68,9 @@ namespace SportsManager.ViewModels
         #endregion
 
         private int? exportTop;
+        /// <summary>
+        /// Number of top rows to be exported. If null, all rows will be exported.
+        /// </summary>
         public int? ExportTop
         {
             get => exportTop;
@@ -64,6 +83,9 @@ namespace SportsManager.ViewModels
 
         #region Visibilities
         private bool showPhoto = true;
+        /// <summary>
+        /// Switches the visibility of photo column.
+        /// </summary>
         public bool ShowPhoto
         {
             get => showPhoto;
@@ -76,6 +98,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool showInfo = true;
+        /// <summary>
+        /// Switches the visibility of info columns.
+        /// </summary>
         public bool ShowInfo
         {
             get => showInfo;
@@ -88,6 +113,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool showStats = true;
+        /// <summary>
+        /// Switches the visibility of statistics columns.
+        /// </summary>
         public bool ShowStats
         {
             get => showStats;
@@ -100,6 +128,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool showExtendedStats = true;
+        /// <summary>
+        /// Switches the visibility of extended statistics columns.
+        /// </summary>
         public bool ShowExtendedStats
         {
             get => showExtendedStats;
@@ -112,6 +143,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility photoVisibility = Visibility.Visible;
+        /// <summary>
+        /// Visibility of photo column.
+        /// </summary>
         public Visibility PhotoVisibility
         {
             get => photoVisibility;
@@ -123,6 +157,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility infoVisibility = Visibility.Visible;
+        /// <summary>
+        /// Visibility of info columns.
+        /// </summary>
         public Visibility InfoVisibility
         {
             get => infoVisibility;
@@ -134,6 +171,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility statsVisibility = Visibility.Visible;
+        /// <summary>
+        /// Visibility of statistics columns.
+        /// </summary>
         public Visibility StatsVisibility
         {
             get => statsVisibility;
@@ -145,6 +185,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility extendedStatsVisibility = Visibility.Visible;
+        /// <summary>
+        /// Visibility of extended statistics columns.
+        /// </summary>
         public Visibility ExtendedStatsVisibility
         {
             get => extendedStatsVisibility;
@@ -156,12 +199,25 @@ namespace SportsManager.ViewModels
         }
         #endregion
 
+        /// <summary>
+        /// Currently selected entity from the list.
+        /// </summary>
         public T SelectedEntity { get; set; }
 
+        /// <summary>
+        /// Collection of all entities to be shown.
+        /// </summary>
         public ObservableCollection<T> Entities { get; set; }
 
+        /// <summary>
+        /// Virtual method for loading entities and their statistics and populating the Entities collection with them.
+        /// </summary>
         protected virtual void LoadData() { }
 
+        /// <summary>
+        /// Checks wheter there is a selected entity.
+        /// </summary>
+        /// <param name="entity">Instance of the entity.</param>
         protected void CheckNavigateEntity(object entity)
         {
             if (SelectedEntity != null)

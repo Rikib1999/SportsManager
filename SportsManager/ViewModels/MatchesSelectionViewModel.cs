@@ -10,14 +10,24 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for viewing all matches and theirs statistics in one sortable table with filtering. Serves for navigating to a match detail viewmodel.
+    /// </summary>
     public class MatchesSelectionViewModel : TemplateSelectionDataGridViewModel<Match>
     {
+        /// <summary>
+        /// Instantiates new MatchesSelectionViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
         public MatchesSelectionViewModel(NavigationStore navigationStore)
         {
             NavigateEntityCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new MatchViewModel(navigationStore, SelectedEntity, new MatchesSelectionViewModel(navigationStore))));
             LoadData();
         }
 
+        /// <summary>
+        /// Loads the matches with their statistics from the database.
+        /// </summary>
         protected override void LoadData()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);

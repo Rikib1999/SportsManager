@@ -13,14 +13,29 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Template viewmodel for play-off and qualification schedule viewmodels.
+    /// </summary>
     public class TemplateBracketScheduleViewModel : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Current instance of the NavigationStore.
+        /// </summary>
         protected NavigationStore Ns { get; set; }
+        /// <summary>
+        /// ConstructorInfo of the current specific viewmodel.
+        /// </summary>
         protected ConstructorInfo Constructor { get; set; }
+        /// <summary>
+        /// True if the editing of the bracket is enabled, otherwise false.
+        /// </summary>
         public bool IsEnabled { get; protected set; } = true;
 
         #region Commands
         private ICommand exportBracketCommand;
+        /// <summary>
+        /// Command that exports bracket to PNG after execution.
+        /// </summary>
         public ICommand ExportBracketCommand
         {
             get
@@ -34,6 +49,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand matchDetailCommand;
+        /// <summary>
+        /// Command that navigates to the selected match detail viewmodel after execution.
+        /// </summary>
         public ICommand MatchDetailCommand
         {
             get
@@ -47,6 +65,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addMatchCommand;
+        /// <summary>
+        /// Command that navigates to viewmodel for adding a new match to the selected serie after execution.
+        /// </summary>
         public ICommand AddMatchCommand
         {
             get
@@ -60,6 +81,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeFirstTeamFromSerieCommand;
+        /// <summary>
+        /// Command that removes first team from the selected serie after execution.
+        /// </summary>
         public ICommand RemoveFirstTeamFromSerieCommand
         {
             get
@@ -73,6 +97,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addFirstTeamToSerieCommand;
+        /// <summary>
+        /// Command that adds selected first team to the selected serie after execution.
+        /// </summary>
         public ICommand AddFirstTeamToSerieCommand
         {
             get
@@ -86,6 +113,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeSecondTeamFromSerieCommand;
+        /// <summary>
+        /// Command that removes second team from the selected serie after execution.
+        /// </summary>
         public ICommand RemoveSecondTeamFromSerieCommand
         {
             get
@@ -99,6 +129,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addSecondTeamToSerieCommand;
+        /// <summary>
+        /// Command that adds selected second team to the selected serie after execution.
+        /// </summary>
         public ICommand AddSecondTeamToSerieCommand
         {
             get
@@ -114,6 +147,9 @@ namespace SportsManager.ViewModels
 
         #region Data
         private ObservableCollection<Team> notSelectedTeams;
+        /// <summary>
+        /// Collection of all available currently not seleceted teams.
+        /// </summary>
         public ObservableCollection<Team> NotSelectedTeams
         {
             get => notSelectedTeams;
@@ -125,6 +161,9 @@ namespace SportsManager.ViewModels
         }
 
         private Bracket currentBracket;
+        /// <summary>
+        /// Insatnce of the currently shown bracket.
+        /// </summary>
         public Bracket CurrentBracket
         {
             get => currentBracket;
@@ -139,7 +178,7 @@ namespace SportsManager.ViewModels
         /// <summary>
         /// Navigates to the provided match detail.
         /// </summary>
-        /// <param name="m"></param>
+        /// <param name="m">Match instance to navigate.</param>
         protected void NavigateMatchDetail(Match m)
         {
             new NavigateCommand<SportViewModel>(Ns, () => new SportViewModel(Ns, new MatchViewModel(Ns, m, (NotifyPropertyChanged)Constructor.Invoke(new object[] { Ns })))).Execute(null);

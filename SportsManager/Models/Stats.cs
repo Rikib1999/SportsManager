@@ -11,12 +11,21 @@ using System.Windows;
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Interface for classes representing statistics.
+    /// </summary>
     public interface IStats { }
 
+    /// <summary>
+    /// Class representing statistics of a season.
+    /// </summary>
     public class SeasonStats : NotifyPropertyChanged, IStats
     {
         #region Properties
         private int matches;
+        /// <summary>
+        /// Number of played matches in the season.
+        /// </summary>
         public int Matches
         {
             get => matches;
@@ -28,6 +37,9 @@ namespace SportsManager.Models
         }
 
         private int teams;
+        /// <summary>
+        /// Number of teams in the season.
+        /// </summary>
         public int Teams
         {
             get => teams;
@@ -39,6 +51,9 @@ namespace SportsManager.Models
         }
 
         private int players;
+        /// <summary>
+        /// Number of players in the season.
+        /// </summary>
         public int Players
         {
             get => players;
@@ -50,6 +65,9 @@ namespace SportsManager.Models
         }
 
         private int goals;
+        /// <summary>
+        /// Number of scored goals in the season.
+        /// </summary>
         public int Goals
         {
             get => goals;
@@ -61,6 +79,9 @@ namespace SportsManager.Models
         }
 
         private float goalsPerGame;
+        /// <summary>
+        /// Number of goals per match in the season.
+        /// </summary>
         public float GoalsPerGame
         {
             get => goalsPerGame;
@@ -72,6 +93,9 @@ namespace SportsManager.Models
         }
 
         private int assists;
+        /// <summary>
+        /// Number of assists in the season.
+        /// </summary>
         public int Assists
         {
             get => assists;
@@ -83,6 +107,9 @@ namespace SportsManager.Models
         }
 
         private float assistsPerGame;
+        /// <summary>
+        /// Number of assists per match in the season.
+        /// </summary>
         public float AssistsPerGame
         {
             get => assistsPerGame;
@@ -94,6 +121,9 @@ namespace SportsManager.Models
         }
 
         private int penaltyMinutes;
+        /// <summary>
+        /// Number of penalty minutes in the season.
+        /// </summary>
         public int PenaltyMinutes
         {
             get => penaltyMinutes;
@@ -105,6 +135,9 @@ namespace SportsManager.Models
         }
 
         private float penaltyMinutesPerGame;
+        /// <summary>
+        /// Number of penalty minutes per match in the season.
+        /// </summary>
         public float PenaltyMinutesPerGame
         {
             get => penaltyMinutesPerGame;
@@ -116,11 +149,24 @@ namespace SportsManager.Models
         }
         #endregion
 
+        /// <summary>
+        /// Loads all stats of a season asynchronously by category.
+        /// </summary>
+        /// <param name="s">Season to calculate stats for.</param>
         public SeasonStats(Season s)
         {
             CalculateStats(s.ID).Await();
         }
 
+        /// <summary>
+        /// Stores and calculates stats for a season.
+        /// </summary>
+        /// <param name="matches">Number of played matches in the season.</param>
+        /// <param name="teams">Number of teams in the season.</param>
+        /// <param name="players">Number of players in the season</param>
+        /// <param name="goals">Number of goals in the season</param>
+        /// <param name="assists">Number of assists in the season</param>
+        /// <param name="penaltyMinutes">Number of penalty minutes in the season</param>
         public SeasonStats(int matches, int teams, int players, int goals, int assists, int penaltyMinutes)
         {
             Matches = matches;
@@ -137,6 +183,11 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Loads season stats asynchronously.
+        /// </summary>
+        /// <param name="seasonID">Identification number of season to load stats for.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CalculateStats(int seasonID)
         {
             List<Task> tasks = new();
@@ -150,6 +201,11 @@ namespace SportsManager.Models
             await Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// Calculate number of played matches in the season asynchronously.
+        /// </summary>
+        /// <param name="seasonID">Identification number of season to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountMatches(int seasonID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -169,6 +225,11 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of teams in the season asynchronously.
+        /// </summary>
+        /// <param name="seasonID">Identification number of season to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountTeams(int seasonID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -188,6 +249,11 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of players in the season asynchronously.
+        /// </summary>
+        /// <param name="seasonID">Identification number of season to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountPlayers(int seasonID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -207,6 +273,11 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of scored goals in the season asynchronously.
+        /// </summary>
+        /// <param name="seasonID">Identification number of season to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountGoals(int seasonID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -229,6 +300,11 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of assists in the season asynchronously.
+        /// </summary>
+        /// <param name="seasonID">Identification number of season to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountAssists(int seasonID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -251,6 +327,11 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of penalty minutes in the season asynchronously.
+        /// </summary>
+        /// <param name="seasonID">Identification number of season to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountPenalties(int seasonID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -274,10 +355,16 @@ namespace SportsManager.Models
         }
     }
 
+    /// <summary>
+    /// Class representing statistics of a team.
+    /// </summary>
     public class TeamStats : NotifyPropertyChanged, IStats
     {
         #region Properties
         private int gamesPlayed;
+        /// <summary>
+        /// Number of played matches.
+        /// </summary>
         public int GamesPlayed
         {
             get => gamesPlayed;
@@ -289,6 +376,9 @@ namespace SportsManager.Models
         }
 
         private int wins;
+        /// <summary>
+        /// Number of won matches.
+        /// </summary>
         public int Wins
         {
             get => wins;
@@ -300,6 +390,9 @@ namespace SportsManager.Models
         }
 
         private int winsOT;
+        /// <summary>
+        /// Number of won matches in overtime.
+        /// </summary>
         public int WinsOT
         {
             get => winsOT;
@@ -311,6 +404,9 @@ namespace SportsManager.Models
         }
 
         private int ties;
+        /// <summary>
+        /// Number of tied matches.
+        /// </summary>
         public int Ties
         {
             get => ties;
@@ -322,6 +418,9 @@ namespace SportsManager.Models
         }
 
         private int lossesOT;
+        /// <summary>
+        /// Number of lost matches in overtime.
+        /// </summary>
         public int LossesOT
         {
             get => lossesOT;
@@ -333,6 +432,9 @@ namespace SportsManager.Models
         }
 
         private int losses;
+        /// <summary>
+        /// Number of lost matches.
+        /// </summary>
         public int Losses
         {
             get => losses;
@@ -344,6 +446,9 @@ namespace SportsManager.Models
         }
 
         private int goals;
+        /// <summary>
+        /// Number of scored goals.
+        /// </summary>
         public int Goals
         {
             get => goals;
@@ -355,6 +460,9 @@ namespace SportsManager.Models
         }
 
         private int assists;
+        /// <summary>
+        /// Number of assists.
+        /// </summary>
         public int Assists
         {
             get => assists;
@@ -366,6 +474,9 @@ namespace SportsManager.Models
         }
 
         private int goalsAgainst;
+        /// <summary>
+        /// Number of goals against.
+        /// </summary>
         public int GoalsAgainst
         {
             get => goalsAgainst;
@@ -377,6 +488,9 @@ namespace SportsManager.Models
         }
 
         private int goalDifference;
+        /// <summary>
+        /// The goal difference. Scored goals minus goals against.
+        /// </summary>
         public int GoalDifference
         {
             get => goalDifference;
@@ -388,6 +502,9 @@ namespace SportsManager.Models
         }
 
         private int penaltyMinutes;
+        /// <summary>
+        /// Number of penalty minutes recieved.
+        /// </summary>
         public int PenaltyMinutes
         {
             get => penaltyMinutes;
@@ -399,6 +516,9 @@ namespace SportsManager.Models
         }
 
         private int points;
+        /// <summary>
+        /// Number of points recieved for match results.
+        /// </summary>
         public int Points
         {
             get => points;
@@ -410,6 +530,19 @@ namespace SportsManager.Models
         }
         #endregion
 
+        /// <summary>
+        /// Stores all stats in a single object.
+        /// </summary>
+        /// <param name="gamesPlayed">Number of played games.</param>
+        /// <param name="goals">Number of scored goals.</param>
+        /// <param name="goalsAgainst">Number of goals against.</param>
+        /// <param name="assists">Number of assists.</param>
+        /// <param name="penaltyMinutes">Number of recieved penalty minutes.</param>
+        /// <param name="wins">Number of won matches.</param>
+        /// <param name="winsOT">Number of won matches in overtime.</param>
+        /// <param name="ties">Number of tied matches.</param>
+        /// <param name="lossesOT">Number of lost matches in overtime.</param>
+        /// <param name="losses">Number of lost matches.</param>
         public TeamStats(int gamesPlayed, int goals, int goalsAgainst, int assists, int penaltyMinutes, int wins, int winsOT, int ties, int lossesOT, int losses)
         {
             GamesPlayed = gamesPlayed;
@@ -426,10 +559,16 @@ namespace SportsManager.Models
         }
     }
 
+    /// <summary>
+    /// Class representing statistics of a match.
+    /// </summary>
     public class MatchStats : NotifyPropertyChanged, IStats
     {
         #region Properties
         private string partOfSeason = "";
+        /// <summary>
+        /// Name of the part of season the match was played in.
+        /// </summary>
         public string PartOfSeason
         {
             get => partOfSeason;
@@ -441,6 +580,9 @@ namespace SportsManager.Models
         }
 
         private int goals;
+        /// <summary>
+        /// Number of goals in the match.
+        /// </summary>
         public int Goals
         {
             get => goals;
@@ -452,6 +594,9 @@ namespace SportsManager.Models
         }
 
         private int assists;
+        /// <summary>
+        /// Number of assists in the match.
+        /// </summary>
         public int Assists
         {
             get => assists;
@@ -463,6 +608,9 @@ namespace SportsManager.Models
         }
 
         private int penaltyMinutes;
+        /// <summary>
+        /// Number of penalty minutes in the match.
+        /// </summary>
         public int PenaltyMinutes
         {
             get => penaltyMinutes;
@@ -474,6 +622,13 @@ namespace SportsManager.Models
         }
         #endregion
 
+        /// <summary>
+        /// Stores match statistics in a single object.
+        /// </summary>
+        /// <param name="goals">Number of goals in the match.</param>
+        /// <param name="assists">Number of assists in the match.</param>
+        /// <param name="penaltyMinutes">Number of penalty minutes in the match.</param>
+        /// <param name="partOfSeason">Name of the part of season the match was played in.</param>
         public MatchStats(int goals, int assists, int penaltyMinutes, string partOfSeason)
         {
             Goals = goals;
@@ -482,11 +637,20 @@ namespace SportsManager.Models
             PartOfSeason = partOfSeason;
         }
 
+        /// <summary>
+        /// Loads all stats of a match asynchronously by category.
+        /// </summary>
+        /// <param name="m">Match to calculate stats for.</param>
         public MatchStats(Match m)
         {
             CalculateStats(m.ID).Await();
         }
 
+        /// <summary>
+        /// Loads match stats asynchronously.
+        /// </summary>
+        /// <param name="matchID">Identification number of match to load stats for.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CalculateStats(int matchID)
         {
             List<Task> tasks = new();
@@ -496,6 +660,11 @@ namespace SportsManager.Models
             await Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// Calculate number of scored goals in the match asynchronously.
+        /// </summary>
+        /// <param name="matchID">Identification number of match to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountGoals(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -516,6 +685,11 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of assists in the match asynchronously.
+        /// </summary>
+        /// <param name="matchID">Identification number of match to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountAssists(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -536,6 +710,11 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of penalty minutes in the match asynchronously.
+        /// </summary>
+        /// <param name="matchID">Identification number of match to load stats for.</param>
+        /// <returns>Task calculating the stats.</returns>
         private async Task CountPenalties(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -558,10 +737,16 @@ namespace SportsManager.Models
         }
     }
 
+    /// <summary>
+    /// Class representing statistics of a player.
+    /// </summary>
     public class PlayerStats : NotifyPropertyChanged, IStats
     {
         #region Properties
         private int gamesPlayed;
+        /// <summary>
+        /// Number of games played.
+        /// </summary>
         public int GamesPlayed
         {
             get => gamesPlayed;
@@ -573,6 +758,9 @@ namespace SportsManager.Models
         }
 
         private int goals;
+        /// <summary>
+        /// Number of goals scored.
+        /// </summary>
         public int Goals
         {
             get => goals;
@@ -583,9 +771,15 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Number of goals scored per game.
+        /// </summary>
         public float GoalsPerGame => GamesPlayed != 0 ? (float)Math.Round(Goals / (float)GamesPlayed, 2) : float.NaN;
 
         private int assists;
+        /// <summary>
+        /// Number of assists.
+        /// </summary>
         public int Assists
         {
             get => assists;
@@ -596,9 +790,15 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Number of assists per game.
+        /// </summary>
         public float AssistsPerGame => GamesPlayed != 0 ? (float)Math.Round(Assists / (float)GamesPlayed, 2) : float.NaN;
 
         private int ppGoals;
+        /// <summary>
+        /// Number of power play goals scored.
+        /// </summary>
         public int PpGoals
         {
             get => ppGoals;
@@ -610,6 +810,9 @@ namespace SportsManager.Models
         }
 
         private int shGoals;
+        /// <summary>
+        /// Number of short-handed goals scored.
+        /// </summary>
         public int ShGoals
         {
             get => shGoals;
@@ -621,6 +824,9 @@ namespace SportsManager.Models
         }
 
         private int evGoals;
+        /// <summary>
+        /// Number of even strength goals scored.
+        /// </summary>
         public int EvGoals
         {
             get => evGoals;
@@ -631,9 +837,15 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Number of goals and assists.
+        /// </summary>
         public int Points => Goals + Assists;
 
         private int penaltyMinutes;
+        /// <summary>
+        /// Number of penalty minutes recieved.
+        /// </summary>
         public int PenaltyMinutes
         {
             get => penaltyMinutes;
@@ -644,9 +856,15 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Number of penalty minutes recieved per game.
+        /// </summary>
         public string PenaltyMinutesPerGame => GamesPlayed != 0 ? (PenaltyMinutes / GamesPlayed) + ":" + (PenaltyMinutes * 60 / GamesPlayed % 60).ToString("00") : "0:00";
 
         private int penaltyShots;
+        /// <summary>
+        /// Number of penalty shot attempts.
+        /// </summary>
         public int PenaltyShots
         {
             get => penaltyShots;
@@ -658,6 +876,9 @@ namespace SportsManager.Models
         }
 
         private int penaltyShotGoals;
+        /// <summary>
+        /// Number of penalty shot goals.
+        /// </summary>
         public int PenaltyShotGoals
         {
             get => penaltyShotGoals;
@@ -668,9 +889,15 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Percentage of successfull penalty shot attempts.
+        /// </summary>
         public float PenaltyShotsPercentage => PenaltyShots != 0 ? (float)Math.Round(PenaltyShotGoals / (float)PenaltyShots * 100, 2) : float.NaN;
 
         private int emptyNetGoals;
+        /// <summary>
+        /// Number of goals scored into an empty net.
+        /// </summary>
         public int EmptyNetGoals
         {
             get => emptyNetGoals;
@@ -682,6 +909,9 @@ namespace SportsManager.Models
         }
 
         private int delayedPenaltyGoals;
+        /// <summary>
+        /// Number of goals scored during delayed penalty.
+        /// </summary>
         public int DelayedPenaltyGoals
         {
             get => delayedPenaltyGoals;
@@ -693,6 +923,9 @@ namespace SportsManager.Models
         }
 
         private int ownGoals;
+        /// <summary>
+        /// Number of own goals scored.
+        /// </summary>
         public int OwnGoals
         {
             get => ownGoals;
@@ -704,6 +937,9 @@ namespace SportsManager.Models
         }
 
         private int gameWinningGoals;
+        /// <summary>
+        /// Number of winning goals scored.
+        /// </summary>
         public int GameWinningGoals
         {
             get => gameWinningGoals;
@@ -715,6 +951,9 @@ namespace SportsManager.Models
         }
 
         private int goalsWithoutAssist;
+        /// <summary>
+        /// Number of own goals scored without assist.
+        /// </summary>
         public int GoalsWithoutAssist
         {
             get => goalsWithoutAssist;
@@ -726,6 +965,23 @@ namespace SportsManager.Models
         }
         #endregion
 
+        /// <summary>
+        /// Stores player statistics in a single object.
+        /// </summary>
+        /// <param name="gamesPlayed">Number of games played.</param>
+        /// <param name="goals">Number of scored goals.</param>
+        /// <param name="assists">Number of assists.</param>
+        /// <param name="ppGoals">Number of power play goals scored.</param>
+        /// <param name="shGoals">Number of goals scored while short-handed.</param>
+        /// <param name="evGoals">Number of even strength goals scored.</param>
+        /// <param name="penaltyMinutes">Number of penalty minutes recieved.</param>
+        /// <param name="penaltyShots">Number of penlaty shot attempts.</param>
+        /// <param name="penaltyShotGoals">Number of penalty shot goals.</param>
+        /// <param name="emptyNetGoals">Number of empty net goals scored.</param>
+        /// <param name="delayedPenaltyGoals">Number of goals scored during delayed penalty.</param>
+        /// <param name="ownGoals">Number of own goals scored.</param>
+        /// <param name="gameWinningGoals">Number of winning goals scored.</param>
+        /// <param name="goalsWithoutAssist">Number of scored goals without assist.</param>
         public PlayerStats(int gamesPlayed, int goals, int assists, int ppGoals, int shGoals, int evGoals, int penaltyMinutes, int penaltyShots, int penaltyShotGoals,
                            int emptyNetGoals, int delayedPenaltyGoals, int ownGoals, int gameWinningGoals, int goalsWithoutAssist)
         {
@@ -745,11 +1001,24 @@ namespace SportsManager.Models
             GoalsWithoutAssist = goalsWithoutAssist;
         }
 
+        /// <summary>
+        /// Loads all stats of a player asynchronously by category.
+        /// </summary>
+        /// <param name="player">Player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
         public PlayerStats(Player player, int seasonID, int competitionID)
         {
             CalculateStats(player.ID, seasonID, competitionID).Await();
         }
 
+        /// <summary>
+        /// Loads match stats asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CalculateStats(int playerID, int seasonID, int competitionID)
         {
             List<Task> tasks = new();
@@ -760,6 +1029,13 @@ namespace SportsManager.Models
             await Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// Calculate number of played games asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountGamesPlayed(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -785,6 +1061,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of scored goals asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountGoals(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -810,6 +1093,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of assists asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountAssists(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -835,6 +1125,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of recieved penalty minutes asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountPenaltyMinutes(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -862,10 +1159,16 @@ namespace SportsManager.Models
         }
     }
 
+    /// <summary>
+    /// Class representing statistics of a goaltender.
+    /// </summary>
     public class GoalieStats : NotifyPropertyChanged, IStats
     {
         #region Properties
         private int gamesPlayed;
+        /// <summary>
+        /// Number of played games.
+        /// </summary>
         public int GamesPlayed
         {
             get => gamesPlayed;
@@ -877,6 +1180,9 @@ namespace SportsManager.Models
         }
 
         private int shutouts;
+        /// <summary>
+        /// Number of shutouts (full games without recieving a goal).
+        /// </summary>
         public int Shutouts
         {
             get => shutouts;
@@ -888,6 +1194,9 @@ namespace SportsManager.Models
         }
 
         private int timeInGame;
+        /// <summary>
+        /// Time spent in game in seconds.
+        /// </summary>
         public int TimeInGame
         {
             get => timeInGame;
@@ -898,11 +1207,17 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Time spent in game in format "mm:ss".
+        /// </summary>
         public string TimeInGameText => (TimeInGame / 60) + ":" + (TimeInGame % 60).ToString("00");
 
         public string TimeInGamePerGame => GamesPlayed != 0 ? (TimeInGame / GamesPlayed / 60) + ":" + (TimeInGame / GamesPlayed % 60).ToString("00") : "0:00";
 
         private int goalsAgainst;
+        /// <summary>
+        /// Number of goals against.
+        /// </summary>
         public int GoalsAgainst
         {
             get => goalsAgainst;
@@ -913,11 +1228,21 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Number of goals against per game.
+        /// </summary>
         public float GoalsAgainstPerGame => GamesPlayed != 0 ? (float)Math.Round(GoalsAgainst / (float)GamesPlayed, 2) : 0;
 
+        /// <summary>
+        /// Time spent in game per goal against in format "mm:ss".
+        /// </summary>
+        /// <remarks>If no goals against, returns "no goals against".</remarks>
         public string TimeInGamePerGoalAgainst => GoalsAgainst != 0 ? (TimeInGame / GoalsAgainst / 60) + ":" + (TimeInGame / GoalsAgainst % 60).ToString("00") : "no goal against";
 
         private int penaltyShotsAgainst;
+        /// <summary>
+        /// Number of penalty shot attempts against.
+        /// </summary>
         public int PenaltyShotsAgainst
         {
             get => penaltyShotsAgainst;
@@ -929,6 +1254,9 @@ namespace SportsManager.Models
         }
 
         private int penaltyShotGoalsAgainst;
+        /// <summary>
+        /// Number of penalty shot goals against.
+        /// </summary>
         public int PenaltyShotGoalsAgainst
         {
             get => penaltyShotGoalsAgainst;
@@ -939,9 +1267,16 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Percentage of successfully saved penalty shot attempts.
+        /// </summary>
+        /// <remarks>If no penalty shots against, returns NaN.</remarks>
         public float PenaltyShotsPercentage => PenaltyShotsAgainst != 0 ? (float)Math.Round((PenaltyShotsAgainst - PenaltyShotGoalsAgainst) / (float)PenaltyShotsAgainst * 100, 2) : float.NaN;
 
         private int shootoutShotsAgainst;
+        /// <summary>
+        /// Number of shootout shot attempts against.
+        /// </summary>
         public int ShootoutShotsAgainst
         {
             get => shootoutShotsAgainst;
@@ -953,6 +1288,9 @@ namespace SportsManager.Models
         }
 
         private int shootoutShotGoalsAgainst;
+        /// <summary>
+        /// Number of shootout shot goals against.
+        /// </summary>
         public int ShootoutShotGoalsAgainst
         {
             get => shootoutShotGoalsAgainst;
@@ -963,9 +1301,24 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Percentage of successfully saved shootout shot attempts.
+        /// </summary>
+        /// <remarks>If no shootout shots against, returns NaN.</remarks>
         public float ShootoutShotsPercentage => ShootoutShotsAgainst != 0 ? (float)Math.Round((ShootoutShotsAgainst - ShootoutShotGoalsAgainst) / (float)ShootoutShotsAgainst * 100, 2) : float.NaN;
         #endregion
 
+        /// <summary>
+        /// Stores goaltender statistics in a single object.
+        /// </summary>
+        /// <param name="gamesPlayed">Number of games played.</param>
+        /// <param name="goalsAgainst">Number of goals against.</param>
+        /// <param name="shutouts">Number of shutouts.</param>
+        /// <param name="timeInGame">Time spent in game in seconds.</param>
+        /// <param name="penaltyShots">Number of penalty shot attempts against.</param>
+        /// <param name="penaltyShotGoalsAgainst">Number of penalty shot goals against.</param>
+        /// <param name="shootoutShots">Number of shootout shot attempts against.</param>
+        /// <param name="shootoutShotGoalsAgainst">Number of shootout shot goals against.</param>
         public GoalieStats(int gamesPlayed, int goalsAgainst, int shutouts, int timeInGame, int penaltyShots, int penaltyShotGoalsAgainst, int shootoutShots, int shootoutShotGoalsAgainst)
         {
             GamesPlayed = gamesPlayed;
@@ -978,11 +1331,24 @@ namespace SportsManager.Models
             ShootoutShotGoalsAgainst = shootoutShotGoalsAgainst;
         }
 
+        /// <summary>
+        /// Loads all stats of a goaltender asynchronously by category.
+        /// </summary>
+        /// <param name="player">Player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
         public GoalieStats(Player player, int seasonID, int competitionID)
         {
             CalculateStats(player.ID, seasonID, competitionID).Await();
         }
 
+        /// <summary>
+        /// Loads goaltender stats asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CalculateStats(int playerID, int seasonID, int competitionID)
         {
             List<Task> tasks = new();
@@ -997,6 +1363,13 @@ namespace SportsManager.Models
             await Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// Calculate number of played games asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountGamesPlayed(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -1022,6 +1395,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of goals against asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountGoalsAgainst(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -1047,6 +1427,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of shutouts asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountShutouts(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -1072,6 +1459,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate time in game asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountTimeInGame(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -1097,6 +1491,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of penalty shot attempts against asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountPenaltyShots(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -1122,6 +1523,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of penalty shot goals against asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountPenaltyShotGoalsAgainst(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -1147,6 +1555,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of shootout shot attempts against asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountShootoutShots(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -1172,6 +1587,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Calculate number of shootout shot goals against asynchronously.
+        /// </summary>
+        /// <param name="playerID">Identification number of player for which the stats will be loaded.</param>
+        /// <param name="seasonID">Identification number of season from witch the stats will be loaded.</param>
+        /// <param name="competitionID">Identification number of competition from witch the stats will be loaded.</param>
+        /// <returns>The task calculating the stats.</returns>
         public async Task CountShootoutShotGoalsAgainst(int playerID, int seasonID, int competitionID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -1199,12 +1621,15 @@ namespace SportsManager.Models
     }
 
     /// <summary>
-    /// Queries player stats by match.
+    /// Class representing statistics of a player in one match.
     /// </summary>
     public class PlayerInMatchStats : NotifyPropertyChanged
     {
         #region Properties
         private DateTime datetime;
+        /// <summary>
+        /// The date on which the match was played.
+        /// </summary>
         public DateTime Datetime
         {
             get => datetime;
@@ -1216,6 +1641,9 @@ namespace SportsManager.Models
         }
 
         private int goals;
+        /// <summary>
+        /// Number of goals scored in the match.
+        /// </summary>
         public int Goals
         {
             get => goals;
@@ -1227,6 +1655,9 @@ namespace SportsManager.Models
         }
 
         private int assists;
+        /// <summary>
+        /// Number of assists in the match.
+        /// </summary>
         public int Assists
         {
             get => assists;
@@ -1238,6 +1669,9 @@ namespace SportsManager.Models
         }
 
         private int points;
+        /// <summary>
+        /// Number of scored points in the match. Goals plus assists.
+        /// </summary>
         public int Points
         {
             get => points;
@@ -1249,6 +1683,9 @@ namespace SportsManager.Models
         }
 
         private int penaltyMinutes;
+        /// <summary>
+        /// Number of recieved penalty minutes in the match.
+        /// </summary>
         public int PenaltyMinutes
         {
             get => penaltyMinutes;
@@ -1261,8 +1698,17 @@ namespace SportsManager.Models
         #endregion
     }
 
+    /// <summary>
+    /// Queries player statistics by match.
+    /// </summary>
     public static class PlayerInMatchStatsLoader
     {
+        /// <summary>
+        /// Loads player statistics by matches he played in.
+        /// </summary>
+        /// <param name="stats">Empty collection of PlayerInMatchStats.</param>
+        /// <param name="datetimeXLabels">Labels for the x axis of the graph consisting of matches dates.</param>
+        /// <param name="player">Player for which the stats will be loaded.</param>
         public static void LoadPlayerInMatchStats(ObservableCollection<PlayerInMatchStats> stats, out string[] datetimeXLabels, Player player)
         {
             datetimeXLabels = null;

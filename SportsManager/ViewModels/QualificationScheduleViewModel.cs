@@ -13,10 +13,16 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for qualification schedule.
+    /// </summary>
     public class QualificationScheduleViewModel : TemplateBracketScheduleViewModel
     {
         #region Commands
         private ICommand nextBracketCommand;
+        /// <summary>
+        /// When executed, switches to the next bracket.
+        /// </summary>
         public ICommand NextBracketCommand
         {
             get
@@ -30,6 +36,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand previousBracketCommand;
+        /// <summary>
+        /// When executed, switches to the previous bracket.
+        /// </summary>
         public ICommand PreviousBracketCommand
         {
             get
@@ -45,6 +54,9 @@ namespace SportsManager.ViewModels
 
         #region Data
         private ObservableCollection<Bracket> brackets;
+        /// <summary>
+        /// Collection of all qualification brackets of the current season.
+        /// </summary>
         public ObservableCollection<Bracket> Brackets
         {
             get => brackets;
@@ -56,6 +68,10 @@ namespace SportsManager.ViewModels
         }
         #endregion
 
+        /// <summary>
+        /// Instantiates new PlayOffScheduleViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
         public QualificationScheduleViewModel(NavigationStore navigationStore)
         {
             Ns = navigationStore;

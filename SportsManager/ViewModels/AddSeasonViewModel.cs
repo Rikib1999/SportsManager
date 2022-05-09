@@ -17,20 +17,38 @@ using System.Windows.Media.Imaging;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for creating a new season.
+    /// </summary>
     public class AddSeasonViewModel : NotifyPropertyChanged
     {
         #region Properties
 
         #region Variables
+        /// <summary>
+        /// Current instance of the NavigationStore.
+        /// </summary>
         private readonly NavigationStore ns;
 
+        /// <summary>
+        /// Index of the next created group.
+        /// </summary>
         private int groupLetterCounter;
 
+        /// <summary>
+        /// Object for generating random numbers.
+        /// </summary>
         private readonly Random r = new();
 
+        /// <summary>
+        /// Collecation of all competitions.
+        /// </summary>
         public ObservableCollection<Competition> Competitions { get; set; }
 
         private Season currentSeason;
+        /// <summary>
+        /// Instance of the current new season.
+        /// </summary>
         public Season CurrentSeason
         {
             get => currentSeason;
@@ -42,6 +60,9 @@ namespace SportsManager.ViewModels
         }
 
         private Team newTeam;
+        /// <summary>
+        /// Insatnce of a newly created team to be enlsited in the season.
+        /// </summary>
         public Team NewTeam
         {
             get => newTeam;
@@ -53,6 +74,9 @@ namespace SportsManager.ViewModels
         }
 
         private Team existingTeam;
+        /// <summary>
+        /// Instance of an existing team to be enlisted in the season.
+        /// </summary>
         public Team ExistingTeam
         {
             get => existingTeam;
@@ -64,6 +88,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Team> existingTeams;
+        /// <summary>
+        /// Collection of all existing teams in the current sport.
+        /// </summary>
         public ObservableCollection<Team> ExistingTeams
         {
             get => existingTeams;
@@ -75,6 +102,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Team> teams;
+        /// <summary>
+        /// Collection of enlisted teams in the current season.
+        /// </summary>
         public ObservableCollection<Team> Teams
         {
             get => teams;
@@ -86,6 +116,9 @@ namespace SportsManager.ViewModels
         }
 
         private BitmapImage bitmapSeason;
+        /// <summary>
+        /// Bitmap for the seasons logo image.
+        /// </summary>
         public BitmapImage BitmapSeason
         {
             get => bitmapSeason;
@@ -97,6 +130,9 @@ namespace SportsManager.ViewModels
         }
 
         private BitmapImage bitmapTeam;
+        /// <summary>
+        /// Bitmap for the newly created teams logo image.
+        /// </summary>
         public BitmapImage BitmapTeam
         {
             get => bitmapTeam;
@@ -108,6 +144,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Country> countries;
+        /// <summary>
+        /// Collection of all the countries in the world.
+        /// </summary>
         public ObservableCollection<Country> Countries
         {
             get => countries;
@@ -119,6 +158,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Team> notSelectedTeams;
+        /// <summary>
+        /// Collection of teams enlisted in the season, that are not seeded in any of the group or bracket.
+        /// </summary>
         public ObservableCollection<Team> NotSelectedTeams
         {
             get => notSelectedTeams;
@@ -134,6 +176,9 @@ namespace SportsManager.ViewModels
 
         #region ImageCommands
         private ICommand loadSeasonImageCommand;
+        /// <summary>
+        /// When executed, it loads a logo image for the season into a bitmap.
+        /// </summary>
         public ICommand LoadSeasonImageCommand
         {
             get
@@ -147,6 +192,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeSeasonImageCommand;
+        /// <summary>
+        /// When executed, it removes the logo image for the season from the bitmap.
+        /// </summary>
         public ICommand RemoveSeasonImageCommand
         {
             get
@@ -160,6 +208,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand loadTeamImageCommand;
+        /// <summary>
+        /// When executed, it loads a logo image for the newly created team into a bitmap.
+        /// </summary>
         public ICommand LoadTeamImageCommand
         {
             get
@@ -173,6 +224,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeTeamImageCommand;
+        /// <summary>
+        /// When executed, it removes the logo image for the newly created team from the bitmap.
+        /// </summary>
         public ICommand RemoveTeamImageCommand
         {
             get
@@ -188,6 +242,9 @@ namespace SportsManager.ViewModels
 
         #region TeamCommands
         private ICommand addNewTeamCommand;
+        /// <summary>
+        /// When executed, it creates a new team and enlists it in the season.
+        /// </summary>
         public ICommand AddNewTeamCommand
         {
             get
@@ -201,6 +258,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addExistingTeamCommand;
+        /// <summary>
+        /// When executed, it enlists an existing team in the season.
+        /// </summary>
         public ICommand AddExistingTeamCommand
         {
             get
@@ -214,6 +274,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeTeamCommand;
+        /// <summary>
+        /// When executed, it removes the team enlistment in the season.
+        /// </summary>
         public ICommand RemoveTeamCommand
         {
             get
@@ -229,6 +292,9 @@ namespace SportsManager.ViewModels
 
         #region QualificationCommands
         private ICommand autoFillQualificationCommand;
+        /// <summary>
+        /// When executed, it randomly seeds not seeded teams into the qualification brackets, overwritting the current seed.
+        /// </summary>
         public ICommand AutoFillQualificationCommand
         {
             get
@@ -242,6 +308,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand autoCompleteQualificationCommand;
+        /// <summary>
+        /// When executed, it randomly seeds not seeded teams into the qualification brackets.
+        /// </summary>
         public ICommand AutoCompleteQualificationCommand
         {
             get
@@ -257,6 +326,9 @@ namespace SportsManager.ViewModels
 
         #region GroupsCommands
         private ICommand autoFillGroupsCommand;
+        /// <summary>
+        /// When executed, it randomly seeds not seeded teams into the groups, overwritting the current seed.
+        /// </summary>
         public ICommand AutoFillGroupsCommand
         {
             get
@@ -270,6 +342,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand autoCompleteGroupsCommand;
+        /// <summary>
+        /// When executed, it randomly seeds not seeded teams into the groups.
+        /// </summary>
         public ICommand AutoCompleteGroupsCommand
         {
             get
@@ -283,6 +358,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeGroupCommand;
+        /// <summary>
+        /// When executed, it removes the group.
+        /// </summary>
         public ICommand RemoveGroupCommand
         {
             get
@@ -296,6 +374,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeTeamFromGroupCommand;
+        /// <summary>
+        /// When executed, it removes the team from the group.
+        /// </summary>
         public ICommand RemoveTeamFromGroupCommand
         {
             get
@@ -309,6 +390,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addTeamToGroupCommand;
+        /// <summary>
+        /// When executed, it adds the team to the group.
+        /// </summary>
         public ICommand AddTeamToGroupCommand
         {
             get
@@ -324,6 +408,9 @@ namespace SportsManager.ViewModels
 
         #region PlayOffCommands
         private ICommand autoFillPlayOffCommand;
+        /// <summary>
+        /// When executed, it randomly seeds not seeded teams into the play-off bracket, overwritting the current seed.
+        /// </summary>
         public ICommand AutoFillPlayOffCommand
         {
             get
@@ -337,6 +424,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand autoCompletePlayOffCommand;
+        /// <summary>
+        /// When executed, it randomly seeds not seeded teams into the play-off bracket.
+        /// </summary>
         public ICommand AutoCompletePlayOffCommand
         {
             get
@@ -350,6 +440,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeFirstTeamFromSerieCommand;
+        /// <summary>
+        /// When executed, it removes the first team from the serie.
+        /// </summary>
         public ICommand RemoveFirstTeamFromSerieCommand
         {
             get
@@ -363,6 +456,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addFirstTeamToSerieCommand;
+        /// <summary>
+        /// When executed, it adds the first team to the serie.
+        /// </summary>
         public ICommand AddFirstTeamToSerieCommand
         {
             get
@@ -376,6 +472,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeSecondTeamFromSerieCommand;
+        /// <summary>
+        /// When executed, it removes the second team from the serie.
+        /// </summary>
         public ICommand RemoveSecondTeamFromSerieCommand
         {
             get
@@ -389,6 +488,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addSecondTeamToSerieCommand;
+        /// <summary>
+        /// When executed, it adds the second team to the serie.
+        /// </summary>
         public ICommand AddSecondTeamToSerieCommand
         {
             get
@@ -404,6 +506,9 @@ namespace SportsManager.ViewModels
 
         #region SaveCommand
         private ICommand saveCommand;
+        /// <summary>
+        /// When executed, it saves the season into the database.
+        /// </summary>
         public ICommand SaveCommand
         {
             get
@@ -423,6 +528,9 @@ namespace SportsManager.ViewModels
 
         #region Qualification
         private string qualificationHeader = "Qualification";
+        /// <summary>
+        /// Header for the qualification format section.
+        /// </summary>
         public string QualificationHeader
         {
             get => qualificationHeader;
@@ -434,6 +542,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool qualificationSet;
+        /// <summary>
+        /// True, if qualification is set. If true, it disables groups format. Sets the visibilities of qualification and groups. If false, it deletes the qualification brackets.
+        /// </summary>
         public bool QualificationSet
         {
             get => qualificationSet;
@@ -456,6 +567,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool qualificationEnabled = true;
+        /// <summary>
+        /// If true, qualification format is enabled. It sets the qualification header.
+        /// </summary>
         public bool QualificationEnabled
         {
             get => qualificationEnabled;
@@ -475,6 +589,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility qualificationVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the qualification section.
+        /// </summary>
         public Visibility QualificationVisibility
         {
             get => qualificationVisibility;
@@ -486,6 +603,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Bracket> qualificationBrackets;
+        /// <summary>
+        /// Collection of all qualification brackets.
+        /// </summary>
         public ObservableCollection<Bracket> QualificationBrackets
         {
             get => qualificationBrackets;
@@ -497,6 +617,9 @@ namespace SportsManager.ViewModels
         }
 
         private int qualificationCount;
+        /// <summary>
+        /// Number of qualififcation brackets. Creates new brackets if changed to bigger value and deletes brackets from end if changed to smaller value. Max number of possible teams is 256.
+        /// </summary>
         public int QualificationCount
         {
             get => qualificationCount;
@@ -553,6 +676,9 @@ namespace SportsManager.ViewModels
         }
 
         private int qualificationRoundsCount;
+        /// <summary>
+        /// Number of rounds in qualififcation brackets. Creates new rounds if changed to bigger value and deletes rounds if changed to smaller value. Max number of possible teams is 256. Edits the QualificationRoundOf accordingly.
+        /// </summary>
         public int QualificationRoundsCount
         {
             get => qualificationRoundsCount;
@@ -598,6 +724,9 @@ namespace SportsManager.ViewModels
         }
 
         private int qualificationRoundOf;
+        /// <summary>
+        /// Number of competitors in the first round in qualififcation brackets. Creates new rounds if changed to bigger value and deletes rounds if changed to smaller value. Max number of possible teams is 256. Edits the QualificationRoundsCount accordingly.
+        /// </summary>
         public int QualificationRoundOf
         {
             get => qualificationRoundOf;
@@ -644,6 +773,9 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Groups
+        /// <summary>
+        /// Collection of all groups in the season.
+        /// </summary>
         private ObservableCollection<Group> groups;
         public ObservableCollection<Group> Groups
         {
@@ -656,6 +788,9 @@ namespace SportsManager.ViewModels
         }
 
         private string groupsHeader = "Groups";
+        /// <summary>
+        /// Header of the group stage section.
+        /// </summary>
         public string GroupsHeader
         {
             get => groupsHeader;
@@ -667,6 +802,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool groupsSet;
+        /// <summary>
+        /// True, if group stage is selected. If enabled, it disables qualification section. If disabled, it resets all points for results settings and deletes all groups. It switches visibility of group stage and qualification section.
+        /// </summary>
         public bool GroupsSet
         {
             get => groupsSet;
@@ -694,6 +832,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool groupsEnabled = true;
+        /// <summary>
+        /// If true, group stage is enabled. It switches the group stage section header.
+        /// </summary>
         public bool GroupsEnabled
         {
             get => groupsEnabled;
@@ -713,6 +854,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility groupsVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the group stage section.
+        /// </summary>
         public Visibility GroupsVisibility
         {
             get => groupsVisibility;
@@ -724,6 +868,9 @@ namespace SportsManager.ViewModels
         }
 
         private int groupsCount;
+        /// <summary>
+        /// Number of groups in the season. I the value is changed to bigger, it adds new groups, if it is changed to a smaller value, it deletes groups from the end.
+        /// </summary>
         public int GroupsCount
         {
             get => groupsCount;
@@ -762,9 +909,15 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region PlayOff
+        /// <summary>
+        /// Instance of the play-off bracket.
+        /// </summary>
         public Bracket PlayOff { get; set; }
 
         private bool playOffSet;
+        /// <summary>
+        /// If true, the play-off is enabled. Sets play-off section visibility. If disabled, clears the play-off bracket.
+        /// </summary>
         public bool PlayOffSet
         {
             get => playOffSet;
@@ -785,6 +938,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility playOffVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the play-off section.
+        /// </summary>
         public Visibility PlayOffVisibility
         {
             get => playOffVisibility;
@@ -796,6 +952,9 @@ namespace SportsManager.ViewModels
         }
 
         private int playOffRoundsCount;
+        /// <summary>
+        /// Number of rounds in play-off bracket. Creates new rounds if changed to bigger value and deletes rounds if changed to smaller value. Edits the PlayOffRoundOf accordingly.
+        /// </summary>
         public int PlayOffRoundsCount
         {
             get => playOffRoundsCount;
@@ -827,6 +986,9 @@ namespace SportsManager.ViewModels
         }
 
         private int playOffRoundOf;
+        /// <summary>
+        /// Number of competitors in the first round of play-off bracket. Creates new rounds if changed to bigger value and deletes rounds if changed to smaller value. Edits the PlayOffRoundsCount accordingly.
+        /// </summary>
         public int PlayOffRoundOf
         {
             get => playOffRoundOf;
@@ -858,6 +1020,9 @@ namespace SportsManager.ViewModels
         }
 
         private int playOffBestOf;
+        /// <summary>
+        /// Max number of matches that could be played in a play-off serie. Edits the PlayOffFirstTo accordingly.
+        /// </summary>
         public int PlayOffBestOf
         {
             get => playOffBestOf;
@@ -874,6 +1039,9 @@ namespace SportsManager.ViewModels
         }
 
         private int playOffFirstTo;
+        /// <summary>
+        /// Number of wins in a play-off serie needed for winning it. Edits the PlayOffBestOf accordingly.
+        /// </summary>
         public int PlayOffFirstTo
         {
             get => playOffFirstTo;
@@ -895,6 +1063,10 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Instatiates a new AddSeasonViewModel. Loads all needed data from database.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
         public AddSeasonViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
@@ -919,6 +1091,9 @@ namespace SportsManager.ViewModels
         #region Methods
 
         #region Loading
+        /// <summary>
+        /// Loads all existing competitions in the current sport from the database.
+        /// </summary>
         private void LoadCompetitions()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -956,6 +1131,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads all existing teams in the current sport from the database.
+        /// </summary>
         private void LoadExistingTeams()
         {
             ExistingTeams = new ObservableCollection<Team>();
@@ -1003,6 +1181,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads an image to a bitmap from local file.
+        /// </summary>
+        /// <param name="entity"></param>
         private void LoadImage(Competition entity)
         {
             entity.ImagePath = ImageHandler.SelectImagePath();
@@ -1023,6 +1205,9 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Teams
+        /// <summary>
+        /// Creates a new team and enlists it for the season.
+        /// </summary>
         private void AddNewTeam()
         {
             if (string.IsNullOrWhiteSpace(NewTeam.Name))
@@ -1043,6 +1228,9 @@ namespace SportsManager.ViewModels
             BitmapTeam = new BitmapImage();
         }
 
+        /// <summary>
+        /// Enlists an existing team for the season.
+        /// </summary>
         private void AddExistingTeam()
         {
             if (ExistingTeam == null || ExistingTeam.ID == SportsData.NOID)
@@ -1057,6 +1245,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Removes a team enlistment for the season and removes the team from groups or brackets if it was seeded there.
+        /// </summary>
+        /// <param name="t"></param>
         private void RemoveTeam(Team t)
         {
             _ = Teams.Remove(t);
@@ -1111,6 +1303,9 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Qualification
+        /// <summary>
+        /// Randomly seeds not selected teams into qualification brackets. It overwrites the old seeding.
+        /// </summary>
         private void AutoFillQualification()
         {
             if (QualificationCount == 0)
@@ -1167,6 +1362,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Randomly seeds not selected teams into qualification brackets.
+        /// </summary>
         private void AutoCompleteQualification()
         {
             if (QualificationCount == 0 || NotSelectedTeams.Count == 0)
@@ -1201,6 +1399,11 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Groups
+        /// <summary>
+        /// Gets the next group name created from capital letters ordered lexicographically.
+        /// </summary>
+        /// <param name="index">New group index.</param>
+        /// <returns>The next group name created from capital letters ordered lexicographically.</returns>
         public static string GetGroupName(int index)
         {
             const byte BASE = 'Z' - 'A' + 1;
@@ -1214,6 +1417,9 @@ namespace SportsManager.ViewModels
             return name;
         }
 
+        /// <summary>
+        /// Randomly seeds not selected teams into groups. It overwrites the old seeding.
+        /// </summary>
         private void AutoFillGroups()
         {
             if (GroupsCount == 0)
@@ -1251,6 +1457,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Randomly seeds not selected teams into groups.
+        /// </summary>
         private void AutoCompleteGroups()
         {
             if (GroupsCount == 0)
@@ -1292,6 +1501,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Removes the team from the group. Edits the collection of not selected teams.
+        /// </summary>
+        /// <param name="param">Object of type IList containing team and group instance in that order.</param>
         private void RemoveTeamFromGroup(object param)
         {
             IList teamAndGroup = (IList)param;
@@ -1299,6 +1512,10 @@ namespace SportsManager.ViewModels
             NotSelectedTeams.Add((Team)teamAndGroup[0]);
         }
 
+        /// <summary>
+        /// Deletes the whole group from the season. Teams in it are inserted into the collection of not selected teams.
+        /// </summary>
+        /// <param name="g">Group instance to delete.</param>
         private void RemoveGroup(Group g)
         {
             foreach (Team t in g.Teams)
@@ -1309,6 +1526,10 @@ namespace SportsManager.ViewModels
             GroupsCount = Groups.Count;
         }
 
+        /// <summary>
+        /// Adds the team to the group. Edits the collection of not selected teams.
+        /// </summary>
+        /// <param name="param">Object of type IList containing team and group instance in that order.</param>
         private void AddTeamToGroup(object param)
         {
             IList teamAndGroup = (IList)param;
@@ -1322,6 +1543,9 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region PlayOff
+        /// <summary>
+        /// Randomly seeds not selected teams into play-off bracket. It overwrites the old seeding.
+        /// </summary>
         private void AutoFillPlayOff()
         {
             if (PlayOffRoundOf == 0)
@@ -1368,6 +1592,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Randomly seeds not selected teams into play-off bracket.
+        /// </summary>
         private void AutoCompletePlayOff()
         {
             if (PlayOffRoundOf == 0 || NotSelectedTeams.Count == 0)
@@ -1397,6 +1624,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Removes the first team from the serie of the play-off. Edits the collection of not selected teams.
+        /// </summary>
+        /// <param name="param">Object of type IList containing serie and bracket instance in that order.</param>
         private void RemoveFirstTeamFromSerie(object param)
         {
             IList serieAndBracket = (IList)param;
@@ -1410,6 +1641,10 @@ namespace SportsManager.ViewModels
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, -1);
         }
 
+        /// <summary>
+        /// Adds the first team to the serie of the play-off. Edits the collection of not selected teams.
+        /// </summary>
+        /// <param name="param">Object of type IList containing serie and bracket instance in that order.</param>
         private void AddFirstTeamToSerie(object param)
         {
             IList serieAndBracket = (IList)param;
@@ -1428,6 +1663,10 @@ namespace SportsManager.ViewModels
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 1, 1);
         }
 
+        /// <summary>
+        /// Removes the second team from the serie of the play-off. Edits the collection of not selected teams.
+        /// </summary>
+        /// <param name="param">Object of type IList containing serie and bracket instance in that order.</param>
         private void RemoveSecondTeamFromSerie(object param)
         {
             IList serieAndBracket = (IList)param;
@@ -1441,6 +1680,10 @@ namespace SportsManager.ViewModels
             b.IsEnabledTreeAfterInsertionAt(roundIndex.Item1, roundIndex.Item2, 2, -1);
         }
 
+        /// <summary>
+        /// Adds the second team to the serie of the play-off. Edits the collection of not selected teams.
+        /// </summary>
+        /// <param name="param">Object of type IList containing serie and bracket instance in that order.</param>
         private void AddSecondTeamToSerie(object param)
         {
             IList serieAndBracket = (IList)param;
@@ -1461,6 +1704,10 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Others
+        /// <summary>
+        /// Clears bitmap image.
+        /// </summary>
+        /// <param name="entity"></param>
         private void RemoveImage(Competition entity)
         {
             entity.ImagePath = "";
@@ -1475,6 +1722,10 @@ namespace SportsManager.ViewModels
             GC.Collect();
         }
 
+        /// <summary>
+        /// Randomly shuffles a list.
+        /// </summary>
+        /// <param name="list"></param>
         private void ShuffleList(IList list)
         {
             int n = list.Count;
@@ -1488,6 +1739,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Validates and saves the season to the database.
+        /// </summary>
         private void Save()
         {
             //validation

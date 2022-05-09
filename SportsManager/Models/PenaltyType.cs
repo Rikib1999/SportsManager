@@ -2,6 +2,9 @@
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Class for representing a penalty type.
+    /// </summary>
     public class PenaltyType : NotifyPropertyChanged
     {
         private string name = "";
@@ -16,6 +19,9 @@ namespace SportsManager.Models
         }
 
         private string code;
+        /// <summary>
+        /// Code of the penalty type.
+        /// </summary>
         public string Code
         {
             get => code;
@@ -27,6 +33,9 @@ namespace SportsManager.Models
         }
 
         private int minutes;
+        /// <summary>
+        /// Penalty minutes given to a player.
+        /// </summary>
         public int Minutes
         {
             get => minutes;
@@ -37,6 +46,9 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Returns penalty name with its code in format "name (code)".
+        /// </summary>
         public string FullName => Name + " (" + Code + ")";
     }
 }

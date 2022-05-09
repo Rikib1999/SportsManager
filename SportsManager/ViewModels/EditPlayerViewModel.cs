@@ -10,8 +10,14 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for editing the player.
+    /// </summary>
     public class EditPlayerViewModel : TemplateEditViewModel<Player>
     {
+        /// <summary>
+        /// Current player.
+        /// </summary>
         public Player Player
         {
             get => Entity;
@@ -23,6 +29,9 @@ namespace SportsManager.ViewModels
         }
 
         private string newPlaysWith;
+        /// <summary>
+        /// Right ot left.
+        /// </summary>
         public string NewPlaysWith
         {
             get => newPlaysWith;
@@ -34,6 +43,9 @@ namespace SportsManager.ViewModels
         }
 
         private string newGender;
+        /// <summary>
+        /// Players gender. M for males and F for females.
+        /// </summary>
         public string NewGender
         {
             get => newGender;
@@ -44,12 +56,26 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Collection of options for choosing playing side.
+        /// </summary>
         public ObservableCollection<string> PlaysWith { get; set; } = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Collection of genders.
+        /// </summary>
         public ObservableCollection<string> Genders { get; set; } = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Collection of countries of the world.
+        /// </summary>
         public ObservableCollection<Country> Countries { get; } = new ObservableCollection<Country>();
 
+        /// <summary>
+        /// Instantiates new EditPlayerViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
+        /// <param name="p">Player for editing.</param>
         public EditPlayerViewModel(NavigationStore navigationStore, Player p)
         {
             Player = p;
@@ -78,6 +104,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Populates the collection of genders.
+        /// </summary>
         private void LoadGenders()
         {
             Genders = new();
@@ -85,6 +114,9 @@ namespace SportsManager.ViewModels
             Genders.Add("Female");
         }
 
+        /// <summary>
+        /// Populates the collection of playing sides.
+        /// </summary>
         private void LoadPlaysWith()
         {
             PlaysWith = new();
@@ -92,6 +124,9 @@ namespace SportsManager.ViewModels
             PlaysWith.Add("Left");
         }
 
+        /// <summary>
+        /// Saves the player into database.
+        /// </summary>
         protected override void Save()
         {
             if (string.IsNullOrWhiteSpace(Player.FirstName) || string.IsNullOrWhiteSpace(Player.LastName))

@@ -19,11 +19,20 @@ using System.Windows.Input;
 namespace SportsManager.ViewModels
 {
     #region Classes
+    /// <summary>
+    /// Class for representing a player in roster.
+    /// </summary>
     public class PlayerInRoster : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Identification number of the player.
+        /// </summary>
         public int id;
 
         private string name;
+        /// <summary>
+        /// Name of the player.
+        /// </summary>
         public string Name
         {
             get => name;
@@ -35,6 +44,9 @@ namespace SportsManager.ViewModels
         }
 
         private string position;
+        /// <summary>
+        /// Position of the player.
+        /// </summary>
         public string Position
         {
             get => position;
@@ -46,6 +58,9 @@ namespace SportsManager.ViewModels
         }
 
         private int? number;
+        /// <summary>
+        /// Number of the player.
+        /// </summary>
         public int? Number
         {
             get => number;
@@ -57,6 +72,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool present;
+        /// <summary>
+        /// True, if the player was playing the match. If set to false, it deletes all the match events of which the player was part of.
+        /// </summary>
         public bool Present
         {
             get => present;
@@ -154,21 +172,47 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Reference to the current viewmodel.
+        /// </summary>
         public AddMatchViewModel vm;
     }
 
+    /// <summary>
+    /// Class representing a goaltender participation in the match.
+    /// </summary>
     public class GoalieInMatch
     {
+        /// <summary>
+        /// Identification number of the goaltender.
+        /// </summary>
         public int id;
+        /// <summary>
+        /// Team side of the goaltender.
+        /// </summary>
         public string side;
+        /// <summary>
+        /// 1 if the goaltender was in the net at the start of the match, otherwise 0.
+        /// </summary>
         public int started;
+        /// <summary>
+        /// 1 if the goaltender was relieved in the match, otherwise 0.
+        /// </summary>
         public int relieved;
     }
 
+    /// <summary>
+    /// Class representing one period of a match with all its events.
+    /// </summary>
     public class Period : NotifyPropertyChanged
     {
         private static readonly object _lock = new();
 
+        /// <summary>
+        /// Instantiates a new period.
+        /// </summary>
+        /// <param name="vm">Insatnce of the viewmodel for adding or editing the match, in which this period is.</param>
+        /// <param name="overtime">True, if the period is overtime, otherwise false.</param>
         public Period(AddMatchViewModel vm, bool overtime = false)
         {
             this.vm = vm;
@@ -204,10 +248,19 @@ namespace SportsManager.ViewModels
             NewTimeOut = new TimeOut();
         }
 
+        /// <summary>
+        /// Insatnce of the viewmodel for adding or editing the match, in which this period is.
+        /// </summary>
         public AddMatchViewModel vm;
 
+        /// <summary>
+        /// True, if the period is overtime, otherwise false.
+        /// </summary>
         public readonly bool overtime;
 
+        /// <summary>
+        /// Name of the period.
+        /// </summary>
         public string Name
         {
             get
@@ -224,6 +277,9 @@ namespace SportsManager.ViewModels
         }
 
         private int number;
+        /// <summary>
+        /// Number of the period.
+        /// </summary>
         public int Number
         {
             get => number;
@@ -234,9 +290,15 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Duration of the period in minutes.
+        /// </summary>
         public int duration;
 
         private ObservableCollection<PlayerInRoster> homeRoster;
+        /// <summary>
+        /// Roster of the home team.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> HomeRoster
         {
             get => homeRoster;
@@ -252,6 +314,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> awayRoster;
+        /// <summary>
+        /// Roster of the away team.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> AwayRoster
         {
             get => awayRoster;
@@ -268,6 +333,9 @@ namespace SportsManager.ViewModels
 
         #region Goals
         private ObservableCollection<Goal> goals;
+        /// <summary>
+        /// Collection of all goal events in the period.
+        /// </summary>
         public ObservableCollection<Goal> Goals
         {
             get => goals;
@@ -279,6 +347,9 @@ namespace SportsManager.ViewModels
         }
 
         private Goal newGoal;
+        /// <summary>
+        /// New goal event to be added to the period.
+        /// </summary>
         public Goal NewGoal
         {
             get => newGoal;
@@ -290,6 +361,9 @@ namespace SportsManager.ViewModels
         }
 
         private string goalSide;
+        /// <summary>
+        /// Team side of the new goal.
+        /// </summary>
         public string GoalSide
         {
             get => goalSide;
@@ -315,6 +389,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> goalsRoster;
+        /// <summary>
+        /// Team roster for the goal by side.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> GoalsRoster
         {
             get => goalsRoster;
@@ -326,6 +403,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addGoalCommand;
+        /// <summary>
+        /// When executed, adds a new goal event to the period.
+        /// </summary>
         public ICommand AddGoalCommand
         {
             get
@@ -338,6 +418,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Validates goal insertion to the period and if allowed adds it.
+        /// </summary>
         private void AddGoal()
         {
             if (string.IsNullOrWhiteSpace(NewGoal.Side))
@@ -380,6 +463,9 @@ namespace SportsManager.ViewModels
 
         #region Penalties
         private ObservableCollection<Penalty> penalties;
+        /// <summary>
+        /// Collection of all penalty events in the period.
+        /// </summary>
         public ObservableCollection<Penalty> Penalties
         {
             get => penalties;
@@ -391,6 +477,9 @@ namespace SportsManager.ViewModels
         }
 
         private Penalty newPenalty;
+        /// <summary>
+        /// New penalty event to be added to the period.
+        /// </summary>
         public Penalty NewPenalty
         {
             get => newPenalty;
@@ -402,6 +491,9 @@ namespace SportsManager.ViewModels
         }
 
         private string penaltySide;
+        /// <summary>
+        /// Team side of the new penalty.
+        /// </summary>
         public string PenaltySide
         {
             get => penaltySide;
@@ -426,6 +518,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> penaltyRoster;
+        /// <summary>
+        /// Team roster for the penalty by side.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> PenaltyRoster
         {
             get => penaltyRoster;
@@ -437,6 +532,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addPenaltyCommand;
+        /// <summary>
+        /// When executed, adds a new penalty event to the period.
+        /// </summary>
         public ICommand AddPenaltyCommand
         {
             get
@@ -449,6 +547,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Validates penalty insertion to the period and if allowed adds it.
+        /// </summary>
         private void AddPenalty()
         {
             if (string.IsNullOrWhiteSpace(NewPenalty.Side))
@@ -481,6 +582,9 @@ namespace SportsManager.ViewModels
 
         #region PenaltyShots
         private ObservableCollection<PenaltyShot> penaltyShots;
+        /// <summary>
+        /// Collection of all penalty shot events in the period.
+        /// </summary>
         public ObservableCollection<PenaltyShot> PenaltyShots
         {
             get => penaltyShots;
@@ -492,6 +596,9 @@ namespace SportsManager.ViewModels
         }
 
         private PenaltyShot newPenaltyShot;
+        /// <summary>
+        /// New penalty shot event to be added to the period.
+        /// </summary>
         public PenaltyShot NewPenaltyShot
         {
             get => newPenaltyShot;
@@ -503,6 +610,9 @@ namespace SportsManager.ViewModels
         }
 
         private string penaltyShotSide;
+        /// <summary>
+        /// Team side of the new penalty shot.
+        /// </summary>
         public string PenaltyShotSide
         {
             get => penaltyShotSide;
@@ -527,6 +637,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> penaltyShotRoster;
+        /// <summary>
+        /// Team roster for the penalty shot by side.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> PenaltyShotRoster
         {
             get => penaltyShotRoster;
@@ -538,6 +651,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addPenaltyShotCommand;
+        /// <summary>
+        /// When executed, adds a new penalty shot event to the period.
+        /// </summary>
         public ICommand AddPenaltyShotCommand
         {
             get
@@ -550,6 +666,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Validates penalty shot insertion to the period and if allowed adds it.
+        /// </summary>
         private void AddPenaltyShot()
         {
             if (string.IsNullOrWhiteSpace(NewPenaltyShot.Side))
@@ -577,6 +696,9 @@ namespace SportsManager.ViewModels
 
         #region GoalieShifts
         private ObservableCollection<GoalieShift> goalieShifts;
+        /// <summary>
+        /// Collection of all goaltender shift events in the period.
+        /// </summary>
         public ObservableCollection<GoalieShift> GoalieShifts
         {
             get => goalieShifts;
@@ -588,6 +710,9 @@ namespace SportsManager.ViewModels
         }
 
         private GoalieShift newGoalieShift;
+        /// <summary>
+        /// New goaltender shift event to be added to the period.
+        /// </summary>
         public GoalieShift NewGoalieShift
         {
             get => newGoalieShift;
@@ -599,6 +724,9 @@ namespace SportsManager.ViewModels
         }
 
         private string goalieShiftSide;
+        /// <summary>
+        /// Team side of the new goaltender shift.
+        /// </summary>
         public string GoalieShiftSide
         {
             get => goalieShiftSide;
@@ -623,6 +751,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> goalieShiftRoster;
+        /// <summary>
+        /// Team roster for the goaltender shift by side.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> GoalieShiftRoster
         {
             get => goalieShiftRoster;
@@ -634,6 +765,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addGoalieShiftCommand;
+        /// <summary>
+        /// When executed, adds a new goaltender shift event to the period.
+        /// </summary>
         public ICommand AddGoalieShiftCommand
         {
             get
@@ -646,6 +780,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Validates goaltender shift insertion to the period and if allowed adds it.
+        /// </summary>
         private void AddGoalieShift()
         {
             if (string.IsNullOrWhiteSpace(NewGoalieShift.Side))
@@ -678,6 +815,9 @@ namespace SportsManager.ViewModels
 
         #region TimeOuts
         private ObservableCollection<TimeOut> timeOuts;
+        /// <summary>
+        /// Collection of all time-out events in the period.
+        /// </summary>
         public ObservableCollection<TimeOut> TimeOuts
         {
             get => timeOuts;
@@ -689,6 +829,9 @@ namespace SportsManager.ViewModels
         }
 
         private TimeOut newTimeOut;
+        /// <summary>
+        /// New time-out event to be added to the period.
+        /// </summary>
         public TimeOut NewTimeOut
         {
             get => newTimeOut;
@@ -700,6 +843,9 @@ namespace SportsManager.ViewModels
         }
 
         private string timeOutSide;
+        /// <summary>
+        /// Team side of the new time-out.
+        /// </summary>
         public string TimeOutSide
         {
             get => timeOutSide;
@@ -715,6 +861,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addTimeOutCommand;
+        /// <summary>
+        /// When executed, adds a new time-out event to the period.
+        /// </summary>
         public ICommand AddTimeOutCommand
         {
             get
@@ -727,6 +876,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Validates time-out insertion to the period and if allowed adds it.
+        /// </summary>
         private void AddTimeOut()
         {
             if (string.IsNullOrWhiteSpace(NewTimeOut.Side))
@@ -748,11 +900,20 @@ namespace SportsManager.ViewModels
         #endregion
     }
 
+    /// <summary>
+    /// Class for representing a match event.
+    /// </summary>
     public class Event : NotifyPropertyChanged, IComparable
     {
+        /// <summary>
+        /// Index of the event.
+        /// </summary>
         public int index;
 
         private BasicStat stat;
+        /// <summary>
+        /// Event itself as a specific statistics.
+        /// </summary>
         public BasicStat Stat
         {
             get => stat;
@@ -764,6 +925,9 @@ namespace SportsManager.ViewModels
         }
 
         private Period period;
+        /// <summary>
+        /// Period of the event.
+        /// </summary>
         public Period Period
         {
             get => period;
@@ -774,6 +938,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Description of the event.
+        /// </summary>
         public string Text
         {
             get
@@ -784,11 +951,20 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Returns description of the event.
+        /// </summary>
+        /// <returns>Description of the event.</returns>
         public override string ToString()
         {
             return Stat.Text;
         }
 
+        /// <summary>
+        /// Compare events by periods and then by time ine period.
+        /// </summary>
+        /// <param name="obj">Other event to compare with.</param>
+        /// <returns>-1 if happend sooner, 0 if happend at the same time, 1 if happend later.</returns>
         public int CompareTo(object obj)
         {
             int otherPeriod = ((Event)obj).Period.Number;
@@ -819,8 +995,15 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing a container for choosing if the event happend in penalty or not.
+    /// </summary>
     public class SwapEvent : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Instantiates new SwapEvent.
+        /// </summary>
+        /// <param name="inPenalty">Event to swap.</param>
         public SwapEvent(Event inPenalty)
         {
             InPenaltyEvent = inPenalty;
@@ -828,6 +1011,9 @@ namespace SportsManager.ViewModels
         }
 
         private Event inPenaltyEvent;
+        /// <summary>
+        /// This is the event instance if it happened in the penalty. Otherwise null.
+        /// </summary>
         public Event InPenaltyEvent
         {
             get => inPenaltyEvent;
@@ -839,6 +1025,9 @@ namespace SportsManager.ViewModels
         }
 
         private Event outPenaltyEvent;
+        /// <summary>
+        /// This is the event instance if it did not happen in the penalty. Otherwise null.
+        /// </summary>
         public Event OutPenaltyEvent
         {
             get => outPenaltyEvent;
@@ -850,6 +1039,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand eventInCommand;
+        /// <summary>
+        /// When executed, it puts event into penalty.
+        /// </summary>
         public ICommand EventInCommand
         {
             get
@@ -863,6 +1055,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand eventOutCommand;
+        /// <summary>
+        /// When executed, it puts event out of penalty.
+        /// </summary>
         public ICommand EventOutCommand
         {
             get
@@ -875,6 +1070,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// It puts event into penalty.
+        /// </summary>
         private void EventIn()
         {
             if (InPenaltyEvent == null && OutPenaltyEvent != null)
@@ -884,6 +1082,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// It puts event out of penalty.
+        /// </summary>
         private void EventOut()
         {
             if (InPenaltyEvent != null && OutPenaltyEvent == null)
@@ -894,8 +1095,17 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class for representing collision of an event with end of a penalty.
+    /// </summary>
     public class PenaltyEndCollision : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Instantiates a new PenaltyEndCollision.
+        /// </summary>
+        /// <param name="inPenalty">State of game in the penalty.</param>
+        /// <param name="outPenalty">State of game out of the penalty.</param>
+        /// <param name="penalty">Penalty instance.</param>
         public PenaltyEndCollision(State inPenalty, State outPenalty, Penalty penalty)
         {
             InPenalty = inPenalty;
@@ -904,9 +1114,15 @@ namespace SportsManager.ViewModels
             SwapEvents = new();
         }
 
+        /// <summary>
+        /// Current penalty instance.
+        /// </summary>
         public Penalty penalty;
 
         private State inPenalty;
+        /// <summary>
+        /// State of game in the penalty.
+        /// </summary>
         public State InPenalty
         {
             get => inPenalty;
@@ -918,6 +1134,9 @@ namespace SportsManager.ViewModels
         }
 
         private State outPenalty;
+        /// <summary>
+        /// State of game out of the penalty.
+        /// </summary>
         public State OutPenalty
         {
             get => outPenalty;
@@ -929,6 +1148,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<SwapEvent> swapEvents;
+        /// <summary>
+        /// Collection of events colliding with the penalty.
+        /// </summary>
         public ObservableCollection<SwapEvent> SwapEvents
         {
             get => swapEvents;
@@ -939,6 +1161,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Returns event description.
+        /// </summary>
+        /// <returns>Event description.</returns>
         public override string ToString()
         {
             string from = (penalty.startTime / 60) + ":" + (penalty.startTime % 60).ToString("00");
@@ -947,11 +1173,20 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Template class for representing an event as a statistics.
+    /// </summary>
     public class Stat : NotifyPropertyChanged { }
 
+    /// <summary>
+    /// Class containing shared properties between different types of statistics.
+    /// </summary>
     public class BasicStat : Stat, IComparable
     {
         private int minute;
+        /// <summary>
+        /// Minute when the event happened.
+        /// </summary>
         public int Minute
         {
             get => minute;
@@ -963,6 +1198,9 @@ namespace SportsManager.ViewModels
         }
 
         private int second;
+        /// <summary>
+        /// Second when the event happened.
+        /// </summary>
         public int Second
         {
             get => second;
@@ -973,11 +1211,20 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Time when the event happened in format "mm:ss".
+        /// </summary>
         public string Time => Minute + ":" + Second.ToString("00");
 
+        /// <summary>
+        /// Time when the event happened in seconds.
+        /// </summary>
         public int TimeInSeconds => (Minute * 60) + Second;
 
         private string side;
+        /// <summary>
+        /// Side of the team that did the event.
+        /// </summary>
         public string Side
         {
             get => side;
@@ -988,12 +1235,29 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Description of the statistics.
+        /// </summary>
         public virtual string Text => Time + "\t\t" + Side;
 
+        /// <summary>
+        /// Current score of the home team.
+        /// </summary>
         public int homeScore;
+        /// <summary>
+        /// Current score of the away team.
+        /// </summary>
         public int awayScore;
+        /// <summary>
+        /// Current strength of the teams.
+        /// </summary>
         public string strength;
 
+        /// <summary>
+        /// Compares two statistics based on time they happend at.
+        /// </summary>
+        /// <param name="obj">Other statistics to compare with.</param>
+        /// <returns>-1 if it happend earlier, 0 if it happened at the same time, 1 if it happened later.</returns>
         public int CompareTo(object obj)
         {
             int otherTime = ((BasicStat)obj).TimeInSeconds;
@@ -1012,6 +1276,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand deleteCommand;
+        /// <summary>
+        /// When executed, it deletes the statistics (event).
+        /// </summary>
         public ICommand DeleteCommand
         {
             get
@@ -1024,6 +1291,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// deletes the statistics (event) from the period.
+        /// </summary>
+        /// <param name="period"></param>
         private void Delete(Period period)
         {
             switch (this)
@@ -1046,15 +1317,33 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing the end of a period. Used as a stopper dividing events into periods.
+    /// </summary>
     public class PeriodEnd : BasicStat { }
 
+    /// <summary>
+    /// Class representing a goal event.
+    /// </summary>
     public class Goal : BasicStat
     {
+        /// <summary>
+        /// True if it was a game losing own goal.
+        /// </summary>
         public bool gameLosingOwnGoal;
+        /// <summary>
+        /// True if it was a game winning goal.
+        /// </summary>
         public bool gameWinningGoal;
+        /// <summary>
+        /// Goaltender of the opponent team.
+        /// </summary>
         public PlayerInRoster goalie;
 
         private PlayerInRoster scorer = new();
+        /// <summary>
+        /// Scorer of the goal.
+        /// </summary>
         public PlayerInRoster Scorer
         {
             get => scorer;
@@ -1066,6 +1355,9 @@ namespace SportsManager.ViewModels
         }
 
         private PlayerInRoster assist = new();
+        /// <summary>
+        /// Player that assisted on the goal.
+        /// </summary>
         public PlayerInRoster Assist
         {
             get => assist;
@@ -1077,6 +1369,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool penaltyShot;
+        /// <summary>
+        /// True, if it was a goal from a penalty shot.
+        /// </summary>
         public bool PenaltyShot
         {
             get => penaltyShot;
@@ -1088,6 +1383,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool ownGoal;
+        /// <summary>
+        /// True, if it was an own goal.
+        /// </summary>
         public bool OwnGoal
         {
             get => ownGoal;
@@ -1099,6 +1397,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool delayedPenalty;
+        /// <summary>
+        /// True, if the goal was scored durng delayed penalty.
+        /// </summary>
         public bool DelayedPenalty
         {
             get => delayedPenalty;
@@ -1109,8 +1410,14 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// True, if the goal was scored into an empty net.
+        /// </summary>
         public bool emptyNet;
 
+        /// <summary>
+        /// Returns the name of the type of the goal.
+        /// </summary>
         public string Type
         {
             get
@@ -1123,6 +1430,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Returns the description of the event.
+        /// </summary>
         public override string Text
         {
             get
@@ -1138,14 +1448,32 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing a penalty event.
+    /// </summary>
     public class Penalty : BasicStat
     {
+        /// <summary>
+        /// Start time of the penalty in period.
+        /// </summary>
         public int startTime;
+        /// <summary>
+        /// End time of the penalty in period.
+        /// </summary>
         public int endTime;
+        /// <summary>
+        /// Duration of the penalty in seconds.
+        /// </summary>
         public int duration;
+        /// <summary>
+        /// If true, the penalty was punished by goal.
+        /// </summary>
         public bool punished;
 
         private PlayerInRoster player = new();
+        /// <summary>
+        /// Player that recieved the penalty.
+        /// </summary>
         public PlayerInRoster Player
         {
             get => player;
@@ -1157,6 +1485,9 @@ namespace SportsManager.ViewModels
         }
 
         private PenaltyReason penaltyReason;
+        /// <summary>
+        /// Reason of the penalty.
+        /// </summary>
         public PenaltyReason PenaltyReason
         {
             get => penaltyReason;
@@ -1168,6 +1499,9 @@ namespace SportsManager.ViewModels
         }
 
         private PenaltyType penaltyType;
+        /// <summary>
+        /// Type of the penalty.
+        /// </summary>
         public PenaltyType PenaltyType
         {
             get => penaltyType;
@@ -1178,14 +1512,26 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Returns description of the event.
+        /// </summary>
         public override string Text => Time + "\t\t" + Side + "\t\t" + PenaltyType.Name + " for " + Player.Number;
     }
 
+    /// <summary>
+    /// Class representing a penalty shot event.
+    /// </summary>
     public class PenaltyShot : BasicStat
     {
+        /// <summary>
+        /// Goaltender during the penalty shot.
+        /// </summary>
         public PlayerInRoster goalie;
 
         private PlayerInRoster player = new();
+        /// <summary>
+        /// Player given the penalty shot.
+        /// </summary>
         public PlayerInRoster Player
         {
             get => player;
@@ -1197,6 +1543,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool wasGoal;
+        /// <summary>
+        /// True, if a goal was scored from the penalty shot.
+        /// </summary>
         public bool WasGoal
         {
             get => wasGoal;
@@ -1207,6 +1556,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Description of the penalty shot event.
+        /// </summary>
         public override string Text
         {
             get
@@ -1219,9 +1571,15 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing a goaltender shift event.
+    /// </summary>
     public class GoalieShift : Stat, IComparable
     {
         private int startMinute;
+        /// <summary>
+        /// Starting minute of the shift in period.
+        /// </summary>
         public int StartMinute
         {
             get => startMinute;
@@ -1233,6 +1591,9 @@ namespace SportsManager.ViewModels
         }
 
         private int startSecond;
+        /// <summary>
+        /// Starting second of the shift in period.
+        /// </summary>
         public int StartSecond
         {
             get => startSecond;
@@ -1243,11 +1604,20 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Starting time of the shift in period in format "mm:ss".
+        /// </summary>
         public string StartTime => StartMinute + ":" + StartSecond.ToString("00");
 
+        /// <summary>
+        /// Starting time of the shift in period in seconds.
+        /// </summary>
         public int StartTimeInSeconds => (StartMinute * 60) + StartSecond;
 
         private int endMinute;
+        /// <summary>
+        /// Ending minute of the shift in period.
+        /// </summary>
         public int EndMinute
         {
             get => endMinute;
@@ -1259,6 +1629,9 @@ namespace SportsManager.ViewModels
         }
 
         private int endSecond;
+        /// <summary>
+        /// Ending second of the shift in period.
+        /// </summary>
         public int EndSecond
         {
             get => endSecond;
@@ -1269,11 +1642,20 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Ending time of the shift in period in format "mm:ss".
+        /// </summary>
         public string EndTime => EndMinute + ":" + EndSecond.ToString("00");
 
+        /// <summary>
+        /// Ending time of the shift in period in seconds.
+        /// </summary>
         public int EndTimeInSeconds => (EndMinute * 60) + EndSecond;
 
         private string side;
+        /// <summary>
+        /// Team side of the goaltender.
+        /// </summary>
         public string Side
         {
             get => side;
@@ -1285,6 +1667,9 @@ namespace SportsManager.ViewModels
         }
 
         private PlayerInRoster player = new();
+        /// <summary>
+        /// The goaltender playing the shift.
+        /// </summary>
         public PlayerInRoster Player
         {
             get => player;
@@ -1295,6 +1680,11 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Compares two shifts based on the starting time.
+        /// </summary>
+        /// <param name="obj">Other shift to compare with.</param>
+        /// <returns>-1 if it happened earlier, 0 if happened at the same time, 1 if it happened later.</returns>
         public int CompareTo(object obj)
         {
             int otherTime = ((GoalieShift)obj).StartTimeInSeconds;
@@ -1313,6 +1703,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand deleteCommand;
+        /// <summary>
+        /// When executed, it deletes the shift from the period events.
+        /// </summary>
         public ICommand DeleteCommand
         {
             get
@@ -1326,8 +1719,16 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing a goaltender change event.
+    /// </summary>
     public class GoalieChange : BasicStat
     {
+        /// <summary>
+        /// Instantiates a new GoalieChange.
+        /// </summary>
+        /// <param name="gs">Shift of the goaltender.</param>
+        /// <param name="entered">True, if the goaltender entered the net, started the shift. Otherwise false.</param>
         public GoalieChange(GoalieShift gs, bool entered)
         {
             if (entered)
@@ -1346,6 +1747,9 @@ namespace SportsManager.ViewModels
         }
 
         private PlayerInRoster player = new();
+        /// <summary>
+        /// The goaltender making the change.
+        /// </summary>
         public PlayerInRoster Player
         {
             get => player;
@@ -1356,6 +1760,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// True, if the goaltender entered the net, started the shift.
+        /// </summary>
         private bool entered;
         public bool Entered
         {
@@ -1367,8 +1774,14 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// The paired event. Start or end of shift of the other changed goaltender.
+        /// </summary>
         public Event pairEvent;
 
+        /// <summary>
+        /// Description of the event.
+        /// </summary>
         public override string Text
         {
             get
@@ -1380,13 +1793,29 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing a time-out event.
+    /// </summary>
     public class TimeOut : BasicStat
     {
+        /// <summary>
+        /// Description of the time-out event.
+        /// </summary>
         public override string Text => Time + "\t\t" + Side + "\t\ttime-out";
     }
 
+    /// <summary>
+    /// Class representing a shootout shot.
+    /// </summary>
     public class ShootoutShot : Stat
     {
+        /// <summary>
+        /// Instantiates a new ShootoutShot.
+        /// </summary>
+        /// <param name="number">Order of the shot in shootout.</param>
+        /// <param name="side">Side of the team making the shot.</param>
+        /// <param name="playerRoster">Roster of the team making the shot.</param>
+        /// <param name="goalieRoster">Roster of the team defending the shot.</param>
         public ShootoutShot(int number, string side, ObservableCollection<PlayerInRoster> playerRoster, ObservableCollection<PlayerInRoster> goalieRoster)
         {
             Number = number;
@@ -1395,6 +1824,15 @@ namespace SportsManager.ViewModels
             GoalieRoster = goalieRoster;
         }
 
+        /// <summary>
+        /// Instantiates a new ShootoutShot.
+        /// </summary>
+        /// <param name="number">Order of the shot in shootout.</param>
+        /// <param name="side">Side of the team making the shot.</param>
+        /// <param name="playerRoster">Roster of the team making the shot.</param>
+        /// <param name="goalieRoster">Roster of the team defending the shot.</param>
+        /// <param name="player">Player making the shot.</param>
+        /// <param name="goalie">Goaltender defending the shot.</param>
         public ShootoutShot(int number, string side, ObservableCollection<PlayerInRoster> playerRoster, ObservableCollection<PlayerInRoster> goalieRoster, PlayerInRoster player, PlayerInRoster goalie)
         {
             Number = number;
@@ -1406,6 +1844,9 @@ namespace SportsManager.ViewModels
         }
 
         private int number;
+        /// <summary>
+        /// Order of the shot in shootout.
+        /// </summary>
         public int Number
         {
             get => number;
@@ -1417,6 +1858,9 @@ namespace SportsManager.ViewModels
         }
 
         private string side;
+        /// <summary>
+        /// Side of the team making the shot.
+        /// </summary>
         public string Side
         {
             get => side;
@@ -1428,6 +1872,9 @@ namespace SportsManager.ViewModels
         }
 
         private PlayerInRoster player = new();
+        /// <summary>
+        /// Player making the shot.
+        /// </summary>
         public PlayerInRoster Player
         {
             get => player;
@@ -1439,6 +1886,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> playerRoster;
+        /// <summary>
+        /// Roster of the team making the shot.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> PlayerRoster
         {
             get => playerRoster;
@@ -1450,6 +1900,9 @@ namespace SportsManager.ViewModels
         }
 
         private PlayerInRoster goalie = new();
+        /// <summary>
+        /// Goaltender defending the shot.
+        /// </summary>
         public PlayerInRoster Goalie
         {
             get => goalie;
@@ -1461,6 +1914,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> goalieRoster;
+        /// <summary>
+        /// Roster of the team defending the shot.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> GoalieRoster
         {
             get => goalieRoster;
@@ -1472,6 +1928,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool wasGoal;
+        /// <summary>
+        /// True, if a goal was scored from the shot.
+        /// </summary>
         public bool WasGoal
         {
             get => wasGoal;
@@ -1483,6 +1942,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand resetCommand;
+        /// <summary>
+        /// When executed, it resets the shootout shot data.
+        /// </summary>
         public ICommand ResetCommand
         {
             get
@@ -1495,6 +1957,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Resets the shootout shot data.
+        /// </summary>
         private void Reset()
         {
             ObservableCollection<PlayerInRoster> tmpP = PlayerRoster;
@@ -1511,21 +1976,50 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing a shutout of a goalkeeper or team.
+    /// </summary>
     public class Shutout
     {
+        /// <summary>
+        /// Instantiates a new Shutout.
+        /// </summary>
+        /// <param name="goalie">Goaltender with the shutout. Null if it is a team shutout.</param>
+        /// <param name="side">Side of the team with shutout.</param>
         public Shutout(PlayerInRoster goalie, string side)
         {
             this.goalie = goalie;
             this.side = side;
         }
 
+        /// <summary>
+        /// Goaltender with the shutout. Null if it is a team shutout.
+        /// </summary>
         public PlayerInRoster goalie;
 
+        /// <summary>
+        /// Side of the team with shutout.
+        /// </summary>
         public string side;
     }
 
+    /// <summary>
+    /// Class representing a state of the game.
+    /// </summary>
     public class State
     {
+        /// <summary>
+        /// Instatiates a new State.
+        /// </summary>
+        /// <param name="p">Period of the state.</param>
+        /// <param name="startTime">Time when the game state changed to this state.</param>
+        /// <param name="endTime">Time when this game state changed to another state.</param>
+        /// <param name="hStrength">Number of players in play for the home team.</param>
+        /// <param name="aStrength">Number of players in play for the away team.</param>
+        /// <param name="hGoalieIn">True, if there was a goalie in the net of the home team. Otherwise false, means empty net.</param>
+        /// <param name="aGoalieIn">True, if there was a goalie in the net of the away team. Otherwise false, means empty net.</param>
+        /// <param name="hGoals">Number of scored goals by the home team.</param>
+        /// <param name="aGoals">Number of scored goals by the away team.</param>
         public State(Period p, int startTime, int endTime, int hStrength, int aStrength, bool hGoalieIn, bool aGoalieIn, int hGoals, int aGoals)
         {
             period = p;
@@ -1539,6 +2033,10 @@ namespace SportsManager.ViewModels
             awayGoals = aGoals;
         }
 
+        /// <summary>
+        /// Creates a deepcopy of a state.
+        /// </summary>
+        /// <param name="s">State to copy.</param>
         public State(State s)
         {
             period = s.period;
@@ -1552,24 +2050,55 @@ namespace SportsManager.ViewModels
             awayGoals = s.awayGoals;
         }
 
+        /// <summary>
+        /// Period of the state.
+        /// </summary>
         public Period period;
 
+        /// <summary>
+        /// Time when the game state changed to this state.
+        /// </summary>
         public int startTime;
 
+        /// <summary>
+        /// Time when this game state changed to another state.
+        /// </summary>
         public int endTime;
 
+        /// <summary>
+        /// Number of players in play for the home team.
+        /// </summary>
         public int homeStrength;
 
+        /// <summary>
+        /// Number of players in play for the away team.
+        /// </summary>
         public int awayStrength;
 
+        /// <summary>
+        /// True, if there was a goalie in the net of the home team. Otherwise false, means empty net.
+        /// </summary>
         public bool homeGoalieIn;
 
+        /// <summary>
+        /// True, if there was a goalie in the net of the away team. Otherwise false, means empty net.
+        /// </summary>
         public bool awayGoalieIn;
 
+        /// <summary>
+        /// Number of scored goals by the home team.
+        /// </summary>
         public int homeGoals;
 
+        /// <summary>
+        /// Number of scored goals by the away team.
+        /// </summary>
         public int awayGoals;
 
+        /// <summary>
+        /// Returns current teams strength. First is for home team.
+        /// </summary>
+        /// <returns>Current teams strength. First is for home team.</returns>
         public string StrengthToString()
         {
             string s = homeStrength.ToString();
@@ -1579,6 +2108,10 @@ namespace SportsManager.ViewModels
             return s;
         }
 
+        /// <summary>
+        /// Returns description of the state.
+        /// </summary>
+        /// <returns>Description of the state.</returns>
         public override string ToString()
         {
             return period.Name + "\t" + startTime + "\t" + endTime + "\t" + StrengthToString() + "\t" + homeGoals + ":" + awayGoals;
@@ -1586,12 +2119,18 @@ namespace SportsManager.ViewModels
     }
     #endregion
 
+    /// <summary>
+    /// Viewmodel for adding or editing a match.
+    /// </summary>
     public class AddMatchViewModel : NotifyPropertyChanged
     {
         #region Properties
 
         #region DateTime
         private DateTime matchDate = DateTime.Today;
+        /// <summary>
+        /// Date of the start of the match.
+        /// </summary>
         public DateTime MatchDate
         {
             get => matchDate;
@@ -1603,6 +2142,9 @@ namespace SportsManager.ViewModels
         }
 
         private int matchTimeHours;
+        /// <summary>
+        /// Hour the match started.
+        /// </summary>
         public int MatchTimeHours
         {
             get => matchTimeHours;
@@ -1614,6 +2156,9 @@ namespace SportsManager.ViewModels
         }
 
         private int matchTimeMinutes;
+        /// <summary>
+        /// Minute the match started.
+        /// </summary>
         public int MatchTimeMinutes
         {
             get => matchTimeMinutes;
@@ -1624,11 +2169,17 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Date and time the match started.
+        /// </summary>
         public DateTime MatchDateTime => MatchDate + new TimeSpan(MatchTimeHours, MatchTimeMinutes, 0);
         #endregion
 
         #region Rosters
         private ObservableCollection<Team> availableTeamsHome;
+        /// <summary>
+        /// Collection of teams available for the home team selection.
+        /// </summary>
         public ObservableCollection<Team> AvailableTeamsHome
         {
             get => availableTeamsHome;
@@ -1640,6 +2191,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Team> availableTeamsAway;
+        /// <summary>
+        /// Collection of teams available for the away team selection.
+        /// </summary>
         public ObservableCollection<Team> AvailableTeamsAway
         {
             get => availableTeamsAway;
@@ -1651,6 +2205,9 @@ namespace SportsManager.ViewModels
         }
 
         private Team homeTeam;
+        /// <summary>
+        /// Instance of the selected home team. If changed, it edits the available away teams collection and resets the home team match events.
+        /// </summary>
         public Team HomeTeam
         {
             get => homeTeam;
@@ -1702,6 +2259,9 @@ namespace SportsManager.ViewModels
         }
 
         private Team awayTeam;
+        /// <summary>
+        /// Instance of the selected away team. If changed, it edits the available home teams collection and resets the away team match events.
+        /// </summary>
         public Team AwayTeam
         {
             get => awayTeam;
@@ -1753,6 +2313,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> homePlayers = new();
+        /// <summary>
+        /// Collection of the players of the home team.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> HomePlayers
         {
             get => homePlayers;
@@ -1764,6 +2327,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> awayPlayers = new();
+        /// <summary>
+        /// Collection of the players of the away team.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> AwayPlayers
         {
             get => awayPlayers;
@@ -1775,6 +2341,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> homeRoster = new();
+        /// <summary>
+        /// Collection of the players of the home team roster that participated in the match.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> HomeRoster
         {
             get => homeRoster;
@@ -1786,6 +2355,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PlayerInRoster> awayRoster = new();
+        /// <summary>
+        /// Collection of the players of the away team roster that participated in the match.
+        /// </summary>
         public ObservableCollection<PlayerInRoster> AwayRoster
         {
             get => awayRoster;
@@ -1798,15 +2370,39 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Match info
+        /// <summary>
+        /// Identification number of the qualification the match is in.
+        /// </summary>
         int qualificationID = SportsData.NOID;
+        /// <summary>
+        /// Index of the bracket the match is in.
+        /// </summary>
         int bracketIndex = -1;
+        /// <summary>
+        /// Index of the round the match is in.
+        /// </summary>
         int round = -1;
+        /// <summary>
+        /// Number of the match in the serie.
+        /// </summary>
         int serieMatchNumber = -1;
+        /// <summary>
+        /// Identification number of the first team of the serie.
+        /// </summary>
         int bracketFirstTeamID = SportsData.NOID;
+        /// <summary>
+        /// Score of the home team.
+        /// </summary>
         int HomeScore;
+        /// <summary>
+        /// Score of the away team.
+        /// </summary>
         int AwayScore;
 
         private bool played;
+        /// <summary>
+        /// If true, the match was played, otherwise it is scheduled. Sets the visibility of the forms.
+        /// </summary>
         public bool Played
         {
             get => played;
@@ -1830,6 +2426,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool forfeit;
+        /// <summary>
+        /// If truem the match was forfeited. Sets the visibility of the forfeited side selection.
+        /// </summary>
         public bool Forfeit
         {
             get => forfeit;
@@ -1849,6 +2448,9 @@ namespace SportsManager.ViewModels
         }
 
         private string forfeitWinnerSide;
+        /// <summary>
+        /// Side which won after the forfeit of the match.
+        /// </summary>
         public string ForfeitWinnerSide
         {
             get => forfeitWinnerSide;
@@ -1862,6 +2464,9 @@ namespace SportsManager.ViewModels
 
         #region Periods
         private int periodCount;
+        /// <summary>
+        /// Number of periods. Creates or deletes periods when changed to fit the number.
+        /// </summary>
         public int PeriodCount
         {
             get => periodCount;
@@ -1898,6 +2503,9 @@ namespace SportsManager.ViewModels
         }
 
         private int periodDuration;
+        /// <summary>
+        /// Period duration in minutes. Deletes match events that happened after the max period duration.
+        /// </summary>
         public int PeriodDuration
         {
             get => periodDuration;
@@ -1950,6 +2558,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool overtime;
+        /// <summary>
+        /// True, if an overtime was played in the match. Adds or removes the last overtime period.
+        /// </summary>
         public bool Overtime
         {
             get => overtime;
@@ -1969,6 +2580,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool isShootout;
+        /// <summary>
+        /// True, if an shootout was played in the match. Sets shootout visibility.
+        /// </summary>
         public bool IsShootout
         {
             get => isShootout;
@@ -1988,6 +2602,9 @@ namespace SportsManager.ViewModels
         }
 
         private int shootoutSeries;
+        /// <summary>
+        /// Number of shootout series. Creates or delete shootout series to fit the number.
+        /// </summary>
         public int ShootoutSeries
         {
             get => shootoutSeries;
@@ -2027,6 +2644,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Period> periods;
+        /// <summary>
+        /// Collection of periods of the match.
+        /// </summary>
         public ObservableCollection<Period> Periods
         {
             get => periods;
@@ -2038,6 +2658,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<ShootoutShot> shootout;
+        /// <summary>
+        /// Collection of shootout shots.
+        /// </summary>
         public ObservableCollection<ShootoutShot> Shootout
         {
             get => shootout;
@@ -2051,6 +2674,9 @@ namespace SportsManager.ViewModels
 
         #region Visibilities
         public Visibility loadingVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the loading screen.
+        /// </summary>
         public Visibility LoadingVisibility
         {
             get => loadingVisibility;
@@ -2062,6 +2688,9 @@ namespace SportsManager.ViewModels
         }
 
         public Visibility pageVisibility = Visibility.Visible;
+        /// <summary>
+        /// Visibility of the page.
+        /// </summary>
         public Visibility PageVisibility
         {
             get => pageVisibility;
@@ -2073,6 +2702,9 @@ namespace SportsManager.ViewModels
         }
 
         public Visibility notPlayedSaveButtonVisibility = Visibility.Visible;
+        /// <summary>
+        /// Visibility of the save button for scheduled matches.
+        /// </summary>
         public Visibility NotPlayedSaveButtonVisibility
         {
             get => notPlayedSaveButtonVisibility;
@@ -2084,6 +2716,9 @@ namespace SportsManager.ViewModels
         }
 
         public Visibility formsVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the match events forms.
+        /// </summary>
         public Visibility FormsVisibility
         {
             get => formsVisibility;
@@ -2095,6 +2730,9 @@ namespace SportsManager.ViewModels
         }
 
         public Visibility forfeitVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the forfeit form.
+        /// </summary>
         public Visibility ForfeitVisibility
         {
             get => forfeitVisibility;
@@ -2106,6 +2744,9 @@ namespace SportsManager.ViewModels
         }
 
         public Visibility forfeitSideVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the forfeit side selection.
+        /// </summary>
         public Visibility ForfeitSideVisibility
         {
             get => forfeitSideVisibility;
@@ -2117,6 +2758,9 @@ namespace SportsManager.ViewModels
         }
 
         public Visibility shootoutVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the shootout section.
+        /// </summary>
         public Visibility ShootoutVisibility
         {
             get => shootoutVisibility;
@@ -2128,6 +2772,9 @@ namespace SportsManager.ViewModels
         }
 
         public Visibility checkButtonVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the check button.
+        /// </summary>
         public Visibility CheckButtonVisibility
         {
             get => checkButtonVisibility;
@@ -2139,6 +2786,9 @@ namespace SportsManager.ViewModels
         }
 
         public Visibility saveButtonVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the save button for played matches.
+        /// </summary>
         public Visibility SaveButtonVisibility
         {
             get => saveButtonVisibility;
@@ -2151,15 +2801,39 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Data
+        /// <summary>
+        /// Current instance of the NavigationStore.
+        /// </summary>
         public NavigationStore ns;
+        /// <summary>
+        /// Instance of a viewmodel of a schedule to return to, when the match will be saved.
+        /// </summary>
         public NotifyPropertyChanged scheduleToReturnVM;
+        /// <summary>
+        /// Identification number of the season the match is played in.
+        /// </summary>
         public int seasonID;
+        /// <summary>
+        /// Current match instance.
+        /// </summary>
         public Match match;
+        /// <summary>
+        /// True, if the match is being edited. False, if the match is being created and added to the database.
+        /// </summary>
         public bool edit;
+        /// <summary>
+        /// Thread for loading data from the scanned gamesheet with OCR script.
+        /// </summary>
         public Thread gamesheetLoadingThread;
+        /// <summary>
+        /// Process for loading data from the scanned gamesheet with OCR script.
+        /// </summary>
         private Process pythonProcess;
 
         private ObservableCollection<string> sides;
+        /// <summary>
+        /// Collection of sides. Home and Away.
+        /// </summary>
         public ObservableCollection<string> Sides
         {
             get => sides;
@@ -2170,15 +2844,27 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Collection of all team strength situations.
+        /// </summary>
         public ObservableCollection<Strength> Strengths { get; private set; }
 
+        /// <summary>
+        /// Collection of all penalty reasons.
+        /// </summary>
         public ObservableCollection<PenaltyReason> PenaltyReasons { get; private set; }
 
+        /// <summary>
+        /// Collection of all penalty types.
+        /// </summary>
         public ObservableCollection<PenaltyType> PenaltyTypes { get; private set; }
         #endregion
 
         #region Commands
         private ICommand processCommand;
+        /// <summary>
+        /// When executed, it will process the match events.
+        /// </summary>
         public ICommand ProcessCommand
         {
             get
@@ -2192,6 +2878,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand eventUpCommand;
+        /// <summary>
+        /// When executed, it will push the event earlier in the event order.
+        /// </summary>
         public ICommand EventUpCommand
         {
             get
@@ -2205,6 +2894,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand eventDownCommand;
+        /// <summary>
+        /// When executed, it will push the event later in the event order.
+        /// </summary>
         public ICommand EventDownCommand
         {
             get
@@ -2218,6 +2910,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand checkCommand;
+        /// <summary>
+        /// When executed, it will check the match events for collicions.
+        /// </summary>
         public ICommand CheckCommand
         {
             get
@@ -2231,6 +2926,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand saveCommand;
+        /// <summary>
+        /// When executed, it will save the played match.
+        /// </summary>
         public ICommand SaveCommand
         {
             get
@@ -2244,6 +2942,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand notPlayedSaveCommand;
+        /// <summary>
+        /// When executed, it will save the scheduled match.
+        /// </summary>
         public ICommand NotPlayedSaveCommand
         {
             get
@@ -2257,6 +2958,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand exportGamesheetCommand;
+        /// <summary>
+        /// When executed, it will export preprepared gameshhet with filled rosters to PDF.
+        /// </summary>
         public ICommand ExportGamesheetCommand
         {
             get
@@ -2270,6 +2974,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand exportGamesheetXLSXCommand;
+        /// <summary>
+        /// When executed, it will export preprepared gameshhet with filled rosters to XLSX.
+        /// </summary>
         public ICommand ExportGamesheetXLSXCommand
         {
             get
@@ -2283,6 +2990,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand loadGamesheetCommand;
+        /// <summary>
+        /// When executed, it load the data from scanned gamesheet by OCR technique.
+        /// </summary>
         public ICommand LoadGamesheetCommand
         {
             get
@@ -2296,6 +3006,9 @@ namespace SportsManager.ViewModels
         }
         
         private ICommand cancelGamesheetLoadingCommand;
+        /// <summary>
+        /// When executed, it will cancel the gamesheet loading by OCR.
+        /// </summary>
         public ICommand CancelGamesheetLoadingCommand
         {
             get
@@ -2312,6 +3025,9 @@ namespace SportsManager.ViewModels
 
         #region MatchEvents
         private ObservableCollection<Event> events;
+        /// <summary>
+        /// Collection of all match events.
+        /// </summary>
         public ObservableCollection<Event> Events
         {
             get => events;
@@ -2323,6 +3039,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Event> conflictEvents;
+        /// <summary>
+        /// Collection of all match events that are in conflict.
+        /// </summary>
         public ObservableCollection<Event> ConflictEvents
         {
             get => conflictEvents;
@@ -2334,6 +3053,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PenaltyEndCollision> penaltyEndCollisions;
+        /// <summary>
+        /// Collection of all match events that are in conflict with penalty end.
+        /// </summary>
         public ObservableCollection<PenaltyEndCollision> PenaltyEndCollisions
         {
             get => penaltyEndCollisions;
@@ -2355,7 +3077,11 @@ namespace SportsManager.ViewModels
         #region Constructors
         private static readonly object _lock = new();
 
-        //ADD for group
+        /// <summary>
+        /// Instantiates a new AddMatchViewModel for adding a match into a group.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
+        /// <param name="round">Index of the round the match will be inserted into.</param>
         public AddMatchViewModel(NavigationStore navigationStore, int round)
         {
             ns = navigationStore;
@@ -2373,7 +3099,17 @@ namespace SportsManager.ViewModels
             PenaltyTypes = SportsData.LoadPenaltyTypes();
         }
 
-        //ADD for bracket
+        /// <summary>
+        /// Instantiates a new AddMatchViewModel for adding a match into a qualification bracket.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
+        /// <param name="scheduleToReturnVM">Instance of a viewmodel of a schedule to return to, when the match will be saved.</param>
+        /// <param name="qualificationID">Identification number of qualification the match will be inserted into.</param>
+        /// <param name="bracketIndex">Index of the serie of the round the match will be inserted into.</param>
+        /// <param name="round">index of the round of the bracket the match will be inserted into.</param>
+        /// <param name="serieMatchNumber">Number of the match in the current serie.</param>
+        /// <param name="first">Instance of the first team of the serie.</param>
+        /// <param name="second">Instance of the second team of the serie.</param>
         public AddMatchViewModel(NavigationStore navigationStore, NotifyPropertyChanged scheduleToReturnVM, int qualificationID, int bracketIndex, int round, int serieMatchNumber, Team first, Team second)
         {
             ns = navigationStore;
@@ -2400,7 +3136,12 @@ namespace SportsManager.ViewModels
             PenaltyTypes = SportsData.LoadPenaltyTypes();
         }
 
-        //EDIT
+        /// <summary>
+        /// Instantiates a new AddMatchViewModel for editing an existing match.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
+        /// <param name="m">Instance of the match to edit.</param>
+        /// <param name="scheduleToReturnVM">Instance of a viewmodel of a schedule to return to, when the match will be saved.</param>
         public AddMatchViewModel(NavigationStore navigationStore, Match m, NotifyPropertyChanged scheduleToReturnVM)
         {
             edit = true;
@@ -2470,6 +3211,9 @@ namespace SportsManager.ViewModels
         #region Methods
 
         #region Loading
+        /// <summary>
+        /// Loads the playing side.
+        /// </summary>
         private void LoadSides()
         {
             Sides = new ObservableCollection<string>
@@ -2479,6 +3223,9 @@ namespace SportsManager.ViewModels
             };
         }
 
+        /// <summary>
+        /// Loads the strengths from the database.
+        /// </summary>
         private void LoadStrengths()
         {
             Strengths = new();
@@ -2518,6 +3265,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads the available teams from the season from the database.
+        /// </summary>
         private void LoadTeams()
         {
             AvailableTeamsHome = new();
@@ -2561,6 +3311,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads the roster of the team from the database.
+        /// </summary>
         private void LoadRoster(string side)
         {
             ObservableCollection<PlayerInRoster> roster = new();
@@ -2633,6 +3386,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads the existing roster of the team from the database with filled attendance.
+        /// </summary>
         private void LoadExistingRosters(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -2672,6 +3428,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads the match information from the database.
+        /// </summary>
         private void LoadMatchInfo(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -2702,6 +3461,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads all the existing events of the match from the database.
+        /// </summary>
         private void LoadExistingEvents(int matchID)
         {
             //load goals
@@ -2908,6 +3670,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads the existing shootout of the match from the database.
+        /// </summary>
         private void LoadExistingShootout(int matchID)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -2957,6 +3722,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Selects the scanned gamesheet document file via file dialog and starts GamesheetOCR.exe with the file as parameter and process its output. Fills all the obtained data into the viewmodels formulars.
+        /// </summary>
         private void LoadGamesheet()
         {
             try
@@ -3400,12 +4168,18 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Starts loading of the gamesheet by OCR in a new thread.
+        /// </summary>
         private void StartGameSheetLoading()
         {
             gamesheetLoadingThread = new Thread(() => { LoadGamesheet(); });
             gamesheetLoadingThread.Start();
         }
 
+        /// <summary>
+        /// Cancels loading of the gamesheet by OCR thread.
+        /// </summary>
         private void CancelGamesheetLoading()
         {
             pythonProcess.Kill();
@@ -3413,6 +4187,13 @@ namespace SportsManager.ViewModels
             gamesheetLoadingThread.Join();
         }
 
+        /// <summary>
+        /// Processes the output of OCR period cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="period">Returned number of period.</param>
+        /// <param name="overtime">Returned overtime flag.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessPeriodCell(string cellValue, out int period, out bool overtime)
         {
             period = 0;
@@ -3435,6 +4216,13 @@ namespace SportsManager.ViewModels
             return false;
         }
 
+        /// <summary>
+        /// Processes the output of OCR period time cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="minute">Returned number of minutes.</param>
+        /// <param name="second">Returned number of seconds.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessPeriodTimeCell(string cellValue, out int minute, out int second)
         {
             minute = -1;
@@ -3454,6 +4242,12 @@ namespace SportsManager.ViewModels
             return true;
         }
 
+        /// <summary>
+        /// Processes the output of OCR side cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="side">Returned Side.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessSideCell(string cellValue, out string side)
         {
             side = "";
@@ -3464,6 +4258,13 @@ namespace SportsManager.ViewModels
             return false;
         }
 
+        /// <summary>
+        /// Processes the output of OCR player cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="side">Returned side.</param>
+        /// <param name="player">Returned player number.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessPlayerCell(string cellValue, string side, out PlayerInRoster player)
         {
             player = new PlayerInRoster();
@@ -3485,6 +4286,14 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Processes the output of OCR assist cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="side">Returned side.</param>
+        /// <param name="player">Returned player number.</param>
+        /// <param name="exist">True, if there was an assist, otherwise false.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessAssistCell(string cellValue, string side, out PlayerInRoster player, out bool exist)
         {
             player = new PlayerInRoster();
@@ -3512,6 +4321,12 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Processes the output of OCR goal type cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="type">Returned goal type abbreviation.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessGoalTypeCell(string cellValue, out string type)
         {
             type = "";
@@ -3529,6 +4344,13 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Processes the output of OCR boolean cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="boolean">Returned boolean.</param>
+        /// <param name="empty">True, if there was no value.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessBooleanCell(string cellValue, out bool boolean, out bool empty)
         {
             boolean = false;
@@ -3550,6 +4372,12 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Processes the output of OCR penalty reason cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="reason">Returned penalty reason.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessPenaltyReasonCell(string cellValue, out PenaltyReason reason)
         {
             reason = PenaltyReasons.FirstOrDefault(x => x.Code == cellValue);
@@ -3558,6 +4386,12 @@ namespace SportsManager.ViewModels
             return true;
         }
 
+        /// <summary>
+        /// Processes the output of OCR penalty type cell.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell.</param>
+        /// <param name="type">Returned penalty type.</param>
+        /// <returns>True if successful.</returns>
         private bool ProcessPenaltyTypeCell(string cellValue, out PenaltyType type)
         {
             type = PenaltyTypes.FirstOrDefault(x => x.Code == cellValue);
@@ -3566,6 +4400,11 @@ namespace SportsManager.ViewModels
             return true;
         }
 
+        /// <summary>
+        /// Swaps Home for Away and the other way.
+        /// </summary>
+        /// <param name="side">Input side.</param>
+        /// <returns>Opposite side.</returns>
         string SwapSide(string side)
         {
             switch (side)
@@ -3581,7 +4420,9 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Validating
-        //group all events together and sorts them by time
+        /// <summary>
+        /// Group all events together and sorts them by time. Notifies for time collisions.
+        /// </summary>
         private void Process()
         {
             if (PeriodCount == 0)
@@ -3677,6 +4518,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Pushes event into earlier order that it happened in the match.
+        /// </summary>
+        /// <param name="e"></param>
         private void EventUp(Event e)
         {
             int idx = ConflictEvents.IndexOf(e);
@@ -3689,6 +4534,10 @@ namespace SportsManager.ViewModels
             e.index--;
         }
 
+        /// <summary>
+        /// Pushes event into later order that it happened in the match.
+        /// </summary>
+        /// <param name="e"></param>
         private void EventDown(Event e)
         {
             int idx = ConflictEvents.IndexOf(e);
@@ -3701,6 +4550,11 @@ namespace SportsManager.ViewModels
             e.index++;
         }
 
+        /// <summary>
+        /// Returns number of players of a team in play.
+        /// </summary>
+        /// <param name="penalties">Number of teams penalties.</param>
+        /// <returns>Number of players of a team in play.</returns>
         private int TeamStrength(int penalties)
         {
             if (penalties == 0)
@@ -3714,6 +4568,14 @@ namespace SportsManager.ViewModels
             return 3;
         }
 
+        /// <summary>
+        /// Checks for time collisions between events and end of penalties.
+        /// </summary>
+        /// <param name="eventStartTime">Start time of the event.</param>
+        /// <param name="actualPenalties">List of actual penalties.</param>
+        /// <param name="actualState">Actual state of the game.</param>
+        /// <param name="fullPenalties">List of penalties that were not ended by a goal.</param>
+        /// <param name="fullPenaltyStateIndices">Indeces of the states of the full penalties.</param>
         private void CheckEndOfPenalties(int eventStartTime, List<Penalty> actualPenalties, State actualState, List<Penalty> fullPenalties, List<int> fullPenaltyStateIndices)
         {
             int penCount = actualPenalties.Count;
@@ -3749,7 +4611,9 @@ namespace SportsManager.ViewModels
             }
         }
 
-        //sets event properties according to state they happened in, chcecks penalty end collisions with events
+        /// <summary>
+        /// Sets event properties according to state they happened in, chcecks penalty end collisions with events.
+        /// </summary>
         private void Check()
         {
             SaveButtonVisibility = Visibility.Visible;
@@ -4029,7 +4893,7 @@ namespace SportsManager.ViewModels
         /// </summary>
         /// <param name="homeScore"></param>
         /// <param name="awayScore"></param>
-        /// <returns></returns>
+        /// <returns>True, if the match result vioalates the serie limitation.</returns>
         private bool ExceedsFirstToWin(int homeScore, int awayScore)
         {
             if (!(HomeScore <= AwayScore && homeScore > awayScore) || !(HomeScore >= AwayScore && homeScore < awayScore))
@@ -4122,6 +4986,10 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Saving
+        /// <summary>
+        /// Exports empty gamesheet with preprepared rosters of teams into PDF or XLSX format. Opens up file dialog window.
+        /// </summary>
+        /// <param name="format">PDF or XLSX.</param>
         private void ExportGamesheet(string format = "PDF")
         {
             if (HomeTeam == null)
@@ -4235,6 +5103,9 @@ namespace SportsManager.ViewModels
             File.Delete(tempPath);
         }
 
+        /// <summary>
+        /// Save the match into the database when it was not played but is only scheduled.
+        /// </summary>
         private void NotPlayedSave()
         {
             //validation
@@ -4336,6 +5207,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves the match into the database if it was played.
+        /// </summary>
         private void Save()
         {
             //resolve score and strength for all PenaltyEndCollisions
@@ -4933,6 +5807,9 @@ namespace SportsManager.ViewModels
         //ignore
         #region Testing
         private ICommand generateMatchCommand;
+        /// <summary>
+        /// When executed, it generates a random match. Only for testing purposes.
+        /// </summary>
         public ICommand GenerateMatchCommand
         {
             get
@@ -4945,6 +5822,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Generates a random match. Only for testing purposes.
+        /// </summary>
         public void GenerateMatch()
         {
             Random r = new();

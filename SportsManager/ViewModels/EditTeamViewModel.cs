@@ -9,8 +9,14 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for editing a team.
+    /// </summary>
     public class EditTeamViewModel : TemplateEditViewModel<Team>
     {
+        /// <summary>
+        /// Current team instance.
+        /// </summary>
         public Team Team
         {
             get => Entity;
@@ -21,6 +27,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Collection of all the countries of the world.
+        /// </summary>
         private ObservableCollection<Country> countries;
         public ObservableCollection<Country> Countries
         {
@@ -32,6 +41,11 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Instantiates new EditTeamViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
+        /// <param name="t">Team for editing.</param>
         public EditTeamViewModel(NavigationStore navigationStore, Team t)
         {
             Team = t;
@@ -49,6 +63,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves the team into database.
+        /// </summary>
         protected override void Save()
         {
             if (string.IsNullOrWhiteSpace(Team.Name))

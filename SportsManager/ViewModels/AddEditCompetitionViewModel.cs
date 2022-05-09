@@ -8,8 +8,14 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for adding new competition or editing an existing one.
+    /// </summary>
     public class AddEditCompetitionViewModel : TemplateEditViewModel<Competition>
     {
+        /// <summary>
+        /// Current competition instance.
+        /// </summary>
         public Competition Competition
         {
             get => Entity;
@@ -20,8 +26,15 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Visibility of the header for adding a competition.
+        /// </summary>
         public Visibility HeaderVisibility { get; set; }
 
+        /// <summary>
+        /// Instantiates new AddEditCompetitionViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
         public AddEditCompetitionViewModel(NavigationStore navigationStore)
         {
             Competition = SportsData.COMPETITION;
@@ -47,6 +60,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves the current competition into database.
+        /// </summary>
         protected override void Save()
         {
             if (string.IsNullOrWhiteSpace(Competition.Name))

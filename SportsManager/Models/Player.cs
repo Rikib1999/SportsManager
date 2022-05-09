@@ -4,11 +4,20 @@ using System;
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Class for representing a player.
+    /// </summary>
     public class Player : NotifyPropertyChanged, IHasImage, IEntity
     {
+        /// <summary>
+        /// Identification number of the player.
+        /// </summary>
         public int ID { get; set; } = SportsData.NOID;
 
         private string firstName = "";
+        /// <summary>
+        /// First name of the player.
+        /// </summary>
         public string FirstName
         {
             get => firstName;
@@ -20,6 +29,9 @@ namespace SportsManager.Models
         }
 
         private string lastName = "";
+        /// <summary>
+        /// Last name of the player.
+        /// </summary>
         public string LastName
         {
             get => lastName;
@@ -30,9 +42,15 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Returns full name of the player (first name last name).
+        /// </summary>
         public string FullName => FirstName + " " + LastName;
 
         private DateTime birthdate = DateTime.Now;
+        /// <summary>
+        /// Birthdate of the player.
+        /// </summary>
         public DateTime Birthdate
         {
             get => birthdate;
@@ -43,6 +61,9 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Gender of the player. M for males and F for females.
+        /// </summary>
         private string gender;
         public string Gender
         {
@@ -54,8 +75,10 @@ namespace SportsManager.Models
             }
         }
 
-        //in centimeters
         private int height;
+        /// <summary>
+        /// Height of the player in centimeters.
+        /// </summary>
         public int Height
         {
             get => height;
@@ -66,8 +89,10 @@ namespace SportsManager.Models
             }
         }
 
-        //in kilograms
         private int weight;
+        /// <summary>
+        /// Weight of the player in kilograms.
+        /// </summary>
         public int Weight
         {
             get => weight;
@@ -79,6 +104,9 @@ namespace SportsManager.Models
         }
 
         private string playsWith;
+        /// <summary>
+        /// Side the player plays with. R for right-handed or L for left-handed.
+        /// </summary>
         public string PlaysWith
         {
             get => playsWith;
@@ -90,6 +118,9 @@ namespace SportsManager.Models
         }
 
         private Country citizenship;
+        /// <summary>
+        /// Instance of the country object of which the player is citizen.
+        /// </summary>
         public Country Citizenship
         {
             get => citizenship;
@@ -101,6 +132,9 @@ namespace SportsManager.Models
         }
 
         private string birthplaceCity;
+        /// <summary>
+        /// Name of the birthplace city of the player.
+        /// </summary>
         public string BirthplaceCity
         {
             get => birthplaceCity;
@@ -112,6 +146,9 @@ namespace SportsManager.Models
         }
 
         private Country birthplaceCountry;
+        /// <summary>
+        /// Instance of the country object in which the player was born.
+        /// </summary>
         public Country BirthplaceCountry
         {
             get => birthplaceCountry;
@@ -123,6 +160,9 @@ namespace SportsManager.Models
         }
 
         private bool status;
+        /// <summary>
+        /// True if the player is active and false if not.
+        /// </summary>
         public bool Status
         {
             get => status;
@@ -133,9 +173,15 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Returns players status. For true returns "active" and for false returns "inactive".
+        /// </summary>
         public string StatusText => Status ? "active" : "inactive";
 
         private string info;
+        /// <summary>
+        /// Additional information about the player.
+        /// </summary>
         public string Info
         {
             get => info;
@@ -147,6 +193,9 @@ namespace SportsManager.Models
         }
 
         private string imagePath;
+        /// <summary>
+        /// Local path to the image of the players photo.
+        /// </summary>
         public string ImagePath
         {
             get => imagePath;
@@ -158,6 +207,9 @@ namespace SportsManager.Models
         }
 
         private IStats stats;
+        /// <summary>
+        /// Statistics of the player represented in an object.
+        /// </summary>
         public IStats Stats
         {
             get => stats;

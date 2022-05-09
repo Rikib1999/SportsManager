@@ -15,8 +15,17 @@ using System.Windows.Media.Imaging;
 
 namespace SportsManager.Others
 {
+    /// <summary>
+    /// Static class containing methods for data export into different formats.
+    /// </summary>
     public static class Exports
     {
+        /// <summary>
+        /// Exports datagrid table in XLSX or PDF format. Brings up the file dialog window.
+        /// </summary>
+        /// <param name="dataGrid">Datagrid to export.</param>
+        /// <param name="format">XLSX or PDF.</param>
+        /// <param name="exportTop">Number of rows from top to be exported. If null, all rows will be exported.</param>
         public static void ExportTable(DataGrid dataGrid, string format, int? exportTop)
         {
             //create excel file
@@ -77,6 +86,12 @@ namespace SportsManager.Others
             excelWorkbook.Close(false);
         }
 
+        /// <summary>
+        /// Gets the lexicographical column name by its order index.
+        /// </summary>
+        /// <remarks>Starting with "A" for index 1 and "Z" for index 26, continuing with "AA" for index 27 and so on.</remarks>
+        /// <param name="index">Number of the desired column</param>
+        /// <returns>Column name in uppercase format.</returns>
         public static string GetColumnName(int index)
         {
             const byte BASE = 'Z' - 'A' + 1;
@@ -90,6 +105,12 @@ namespace SportsManager.Others
             return name;
         }
 
+        /// <summary>
+        /// Exports group standings in XLSX or PDF format. Brings up the file dialog window.
+        /// </summary>
+        /// <param name="groups">Collection of groups which standings should be exported.</param>
+        /// <param name="format">XLSX or PDF.</param>
+        /// <param name="lastRound">Name of round until which the standings should be calculated.</param>
         public static void ExportStandings(ObservableCollection<Group> groups, string format, string lastRound)
         {
             //load excel file
@@ -240,6 +261,12 @@ namespace SportsManager.Others
             File.Delete(tempPath);
         }
 
+        /// <summary>
+        /// Gets the value of a property by the given name.
+        /// </summary>
+        /// <param name="obj">Object to get the property from.</param>
+        /// <param name="propertyName">Name of the requested property.</param>
+        /// <returns>The value of the requested property.</returns>
         public static object GetPropertyValue(object obj, string propertyName)
         {
             foreach (System.Reflection.PropertyInfo prop in propertyName.Split('.').Select(s => obj.GetType().GetProperty(s)))
@@ -253,11 +280,11 @@ namespace SportsManager.Others
         /// <summary>
         /// Insert picture into excel sheet.
         /// </summary>
-        /// <param name="logoPath"></param>
+        /// <param name="logoPath">Path for the image of the logo.</param>
         /// <param name="width">In pixels.</param>
         /// <param name="height">In pixels.</param>
-        /// <param name="range"></param>
-        /// <param name="sheet"></param>
+        /// <param name="range">Range of excel cells where the image will be put.</param>
+        /// <param name="sheet">Excel sheet where the image will be put.</param>
         public static void InsertLogo(string logoPath, double width, double height, string range, Worksheet sheet)
         {
             if (!File.Exists(logoPath)) { return; }
@@ -307,6 +334,11 @@ namespace SportsManager.Others
             pic.Placement = XlPlacement.xlMove;
         }
 
+        /// <summary>
+        /// Saves the given control as PNG. Brings up the file dialog window.
+        /// </summary>
+        /// <param name="control">Control to save.</param>
+        /// <param name="name">New name of the saved file</param>
         public static void ExportControlToImage(FrameworkElement control, string name)
         {
             RenderTargetBitmap rtb = new((int)control.ActualWidth, (int)control.ActualHeight, 96, 96, PixelFormats.Pbgra32);
@@ -336,6 +368,12 @@ namespace SportsManager.Others
             }
         }
 
+        /// <summary>
+        /// Saves excel sheet in XLSX format or exports it to PDF format. Brings up the file dialog window.
+        /// </summary>
+        /// <param name="format">XLSX or PDF.</param>
+        /// <param name="excelWorkbook">Excel workbook to save.</param>
+        /// <param name="filename">New name of the saved file.</param>
         public static void SaveExcelSheet(string format, _Workbook excelWorkbook, string filename)
         {
             string tablePath;

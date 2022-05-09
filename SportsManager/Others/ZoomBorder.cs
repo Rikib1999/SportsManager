@@ -9,7 +9,7 @@ namespace SportsManager.Others
     /// <summary>
     /// Author: Wiesław Šoltés
     /// Date: 2021
-    /// Availability: https://stackoverflow.com/a/6782715/16441573
+    /// Availability: https://stackoverflow.com/a/6782715/16441573 [18.8.2021]
     /// </summary>
     public class ZoomBorder : Border
     {

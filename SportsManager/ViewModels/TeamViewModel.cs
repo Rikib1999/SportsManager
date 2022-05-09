@@ -14,13 +14,25 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Class representing the enlistment of a player in a season for a specific team.
+    /// </summary>
     public class PlayerEnlistment : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Identification number of the player.
+        /// </summary>
         public int ID { get; set; }
 
+        /// <summary>
+        /// Reference to the collection of PlayerEnlistments in which current object is stored.
+        /// </summary>
         public ObservableCollection<PlayerEnlistment> Parent { get; set; }
 
         private string name;
+        /// <summary>
+        /// Name of the player.
+        /// </summary>
         public string Name
         {
             get => name;
@@ -32,6 +44,9 @@ namespace SportsManager.ViewModels
         }
 
         private Position position;
+        /// <summary>
+        /// Position of the player.
+        /// </summary>
         public Position Position
         {
             get => position;
@@ -43,6 +58,9 @@ namespace SportsManager.ViewModels
         }
 
         private int number;
+        /// <summary>
+        /// Number of the player.
+        /// </summary>
         public int Number
         {
             get => number;
@@ -54,6 +72,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand deleteCommand;
+        /// <summary>
+        /// When executed, it deletes this player enlistment.
+        /// </summary>
         public ICommand DeleteCommand
         {
             get
@@ -66,6 +87,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Deletes this player enlistment from the database.
+        /// </summary>
+        /// <param name="param"></param>
         private void Delete(object param)
         {
             IList teamAndSerie = (IList)param;
@@ -142,13 +167,25 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing an enlistment of a team for a competition. It contains all season enlistments and player enlistments for them.
+    /// </summary>
     public class CompetitionRecord : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Identification number of the competition that team is enlisted in.
+        /// </summary>
         public int CompetitionID { get; set; }
 
+        /// <summary>
+        /// Name of the competition that team is enlisted in.
+        /// </summary>
         public string CompetitionName { get; set; }
 
         private ObservableCollection<SeasonRecord> seasons = new();
+        /// <summary>
+        /// Collection of all seasons of the competition in which the team is enlisted in.
+        /// </summary>
         public ObservableCollection<SeasonRecord> Seasons
         {
             get => seasons;
@@ -160,6 +197,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility competitionVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the competition enlistment detail.
+        /// </summary>
         public Visibility CompetitionVisibility
         {
             get => competitionVisibility;
@@ -171,6 +211,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand setCompetitionVisibilityCommand;
+        /// <summary>
+        /// When executed, it switches the competition detail visibility.
+        /// </summary>
         public ICommand SetCompetitionVisibilityCommand
         {
             get
@@ -183,19 +226,34 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Switches the competition detail visibility.
+        /// </summary>
         private void SetCompetitionVisibility()
         {
             CompetitionVisibility = CompetitionVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
+    /// <summary>
+    /// Class representing an enlistment of a team for a season. It contains player enlistments for the team in that season.
+    /// </summary>
     public class SeasonRecord : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Identification number of the season that team is enlisted in.
+        /// </summary>
         public int SeasonID { get; set; }
 
+        /// <summary>
+        /// Name of the season that team is enlisted in.
+        /// </summary>
         public string SeasonName { get; set; }
 
         private ObservableCollection<PlayerEnlistment> players = new();
+        /// <summary>
+        /// Collection of all player enlistments for the team in this season.
+        /// </summary>
         public ObservableCollection<PlayerEnlistment> Players
         {
             get => players;
@@ -207,6 +265,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility seasonVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the season enlistment detail.
+        /// </summary>
         public Visibility SeasonVisibility
         {
             get => seasonVisibility;
@@ -218,6 +279,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand setSeasonVisibilityCommand;
+        /// <summary>
+        /// When executed, it switches the season detail visibility.
+        /// </summary>
         public ICommand SetSeasonVisibilityCommand
         {
             get
@@ -230,6 +294,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Switches the season detail visibility.
+        /// </summary>
         private void SetSeasonVisibility()
         {
             SeasonVisibility = SeasonVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
@@ -239,6 +306,9 @@ namespace SportsManager.ViewModels
 
         #region Properties
         private PlayerEnlistment editedPlayer;
+        /// <summary>
+        /// New player enlistment ready to be added.
+        /// </summary>
         public PlayerEnlistment EditedPlayer
         {
             get => editedPlayer;
@@ -255,6 +325,9 @@ namespace SportsManager.ViewModels
         }
 
         private Player selectedPlayer;
+        /// <summary>
+        /// Instance of the player to be enlisted.
+        /// </summary>
         public Player SelectedPlayer
         {
             get => selectedPlayer;
@@ -266,6 +339,9 @@ namespace SportsManager.ViewModels
         }
 
         private int? selectedNumber;
+        /// <summary>
+        /// Number of the player to be enlisted.
+        /// </summary>
         public int? SelectedNumber
         {
             get => selectedNumber;
@@ -277,6 +353,9 @@ namespace SportsManager.ViewModels
         }
 
         private Position selectedPosition;
+        /// <summary>
+        /// Position of the player to be enlisted.
+        /// </summary>
         public Position SelectedPosition
         {
             get => selectedPosition;
@@ -288,6 +367,9 @@ namespace SportsManager.ViewModels
         }
 
         private int? editeddNumber;
+        /// <summary>
+        /// Number of the player to be edited.
+        /// </summary>
         public int? EditedNumber
         {
             get => editeddNumber;
@@ -299,6 +381,9 @@ namespace SportsManager.ViewModels
         }
 
         private Position editedPosition;
+        /// <summary>
+        /// Position of the player to be edited.
+        /// </summary>
         public Position EditedPosition
         {
             get => editedPosition;
@@ -312,6 +397,9 @@ namespace SportsManager.ViewModels
 
         #region New player properties
         private string newFirstName;
+        /// <summary>
+        /// First name of the player which will be enlisted.
+        /// </summary>
         public string NewFirstName
         {
             get => newFirstName;
@@ -323,6 +411,9 @@ namespace SportsManager.ViewModels
         }
 
         private string newLastName;
+        /// <summary>
+        /// Last name of the player which will be enlisted.
+        /// </summary>
         public string NewLastName
         {
             get => newLastName;
@@ -334,6 +425,9 @@ namespace SportsManager.ViewModels
         }
 
         private DateTime? newBirthdate;
+        /// <summary>
+        /// Birthdate of the player which will be enlisted.
+        /// </summary>
         public DateTime? NewBirthdate
         {
             get => newBirthdate;
@@ -345,6 +439,9 @@ namespace SportsManager.ViewModels
         }
 
         private string newGender;
+        /// <summary>
+        /// Gender of the player which will be enlisted.
+        /// </summary>
         public string NewGender
         {
             get => newGender;
@@ -356,6 +453,9 @@ namespace SportsManager.ViewModels
         }
 
         private int? newHeight;
+        /// <summary>
+        /// Height of the player which will be enlisted.
+        /// </summary>
         public int? NewHeight
         {
             get => newHeight;
@@ -367,6 +467,9 @@ namespace SportsManager.ViewModels
         }
 
         private int? newWeight;
+        /// <summary>
+        /// Weight of the player which will be enlisted.
+        /// </summary>
         public int? NewWeight
         {
             get => newWeight;
@@ -378,6 +481,9 @@ namespace SportsManager.ViewModels
         }
 
         private string newPlaysWith;
+        /// <summary>
+        /// Playing side of the player which will be enlisted.
+        /// </summary>
         public string NewPlaysWith
         {
             get => newPlaysWith;
@@ -389,6 +495,9 @@ namespace SportsManager.ViewModels
         }
 
         private Country newCitizenship;
+        /// <summary>
+        /// Citizenship of the player which will be enlisted.
+        /// </summary>
         public Country NewCitizenship
         {
             get => newCitizenship;
@@ -400,6 +509,9 @@ namespace SportsManager.ViewModels
         }
 
         private string newBirthplaceCity;
+        /// <summary>
+        /// Bithplace city of the player which will be enlisted.
+        /// </summary>
         public string NewBirthplaceCity
         {
             get => newBirthplaceCity;
@@ -411,6 +523,9 @@ namespace SportsManager.ViewModels
         }
 
         private Country newBirthplaceCountry;
+        /// <summary>
+        /// Bithplace country of the player which will be enlisted.
+        /// </summary>
         public Country NewBirthplaceCountry
         {
             get => newBirthplaceCountry;
@@ -422,6 +537,9 @@ namespace SportsManager.ViewModels
         }
 
         private string newInfo;
+        /// <summary>
+        /// Information about the player which will be enlisted.
+        /// </summary>
         public string NewInfo
         {
             get => newInfo;
@@ -433,6 +551,9 @@ namespace SportsManager.ViewModels
         }
 
         private string newStatus = "";
+        /// <summary>
+        /// Status of the player which will be enlisted.
+        /// </summary>
         public string NewStatus
         {
             get => newStatus;
@@ -486,6 +607,10 @@ namespace SportsManager.ViewModels
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Enlists an existing player to the season for the team. Inserts him to the database.
+        /// </summary>
+        /// <param name="param">Object of type IList containing team instance to be enlisted for and season identification number to be enlisted in, in this order.</param>
         private void AddPlayer(object param)
         {
             IList teamAndSeasonID = param as IList;
@@ -539,6 +664,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Edits an existing player enlistment. Updates the database.
+        /// </summary>
+        /// <param name="param">Object of type IList containing team instance to be enlisted for, season identification number to be enlisted in, and ComboBox instance for the player selection, in this order.</param>
         private void EditPlayer(object param)
         {
             IList teamIDSeasonIDcomboBox = param as IList;
@@ -581,6 +710,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Creates and enlists a new player to the season for the team. Inserts him to the database.
+        /// </summary>
+        /// <param name="param">Object of type IList containing team instance to be enlisted for and season identification number to be enlisted in, in this order.</param>
         private void AddNewPlayer(object param)
         {
             IList teamSeasonIDViewModel = param as IList;
@@ -671,14 +804,26 @@ namespace SportsManager.ViewModels
         #endregion
     }
 
+    /// <summary>
+    /// Viewmodel for detail of a team.
+    /// </summary>
     public class TeamViewModel : NotifyPropertyChanged
     {
+        /// <summary>
+        /// When executed, it navigates to a viewmodel for editing the current team.
+        /// </summary>
         public ICommand NavigateEditTeamCommand { get; }
 
         #region Data
+        /// <summary>
+        /// Instance of the current team.
+        /// </summary>
         public Team CurrentTeam { get; set; }
 
         private ObservableCollection<CompetitionRecord> competitionEnlistments;
+        /// <summary>
+        /// Collection of enlistments of the team in different competitions.
+        /// </summary>
         public ObservableCollection<CompetitionRecord> CompetitionEnlistments
         {
             get => competitionEnlistments;
@@ -689,19 +834,42 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Collection of all positions.
+        /// </summary>
         public ObservableCollection<Position> Positions { get; } = new ObservableCollection<Position>();
 
+        /// <summary>
+        /// Collection of all statuses. Active or Inactive.
+        /// </summary>
         public ObservableCollection<string> Statuses { get; set; } = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Collection of all playing sides. Right or Left.
+        /// </summary>
         public ObservableCollection<string> PlaysWith { get; set; } = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Collection of all genders. M for male and F for female.
+        /// </summary>
         public ObservableCollection<string> Genders { get; set; } = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Collection of all the countries in the world.
+        /// </summary>
         public ObservableCollection<Country> Countries { get; } = new ObservableCollection<Country>();
 
+        /// <summary>
+        /// Collection of all the available players in the current sport.
+        /// </summary>
         public ObservableCollection<Player> Players { get; } = new ObservableCollection<Player>();
         #endregion
 
+        /// <summary>
+        /// Instantiates a new TeamViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current NavigationStore instance.</param>
+        /// <param name="t">Instance of the team for which the viewmodel should be created.</param>
         public TeamViewModel(NavigationStore navigationStore, Team t)
         {
             NavigateEditTeamCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new EditTeamViewModel(navigationStore, CurrentTeam)));
@@ -718,6 +886,9 @@ namespace SportsManager.ViewModels
         }
 
         #region Loading
+        /// <summary>
+        /// Loads all statuses.
+        /// </summary>
         private void LoadStatuses()
         {
             Statuses = new ObservableCollection<string>
@@ -727,6 +898,9 @@ namespace SportsManager.ViewModels
             };
         }
 
+        /// <summary>
+        /// Loads all genders.
+        /// </summary>
         private void LoadGenders()
         {
             Genders = new ObservableCollection<string>
@@ -736,6 +910,9 @@ namespace SportsManager.ViewModels
             };
         }
 
+        /// <summary>
+        /// Loads all playing sides.
+        /// </summary>
         private void LoadPlaysWith()
         {
             PlaysWith = new ObservableCollection<string>
@@ -745,6 +922,9 @@ namespace SportsManager.ViewModels
             };
         }
 
+        /// <summary>
+        /// Loads the information about the team from the database.
+        /// </summary>
         private void LoadTeamInfo()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -768,6 +948,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads all current team enlistments in competitions and their seasons and all player enlistments for the team in this seasons.
+        /// </summary>
         private void LoadEnlistments()
         {
             CompetitionEnlistments = new ObservableCollection<CompetitionRecord>();
@@ -855,6 +1038,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads all positions from the database.
+        /// </summary>
         private void LoadPositions()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -881,6 +1067,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads all players from the current sport from the database.
+        /// </summary>
         private void LoadPlayers()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);

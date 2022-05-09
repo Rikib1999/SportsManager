@@ -13,12 +13,22 @@ namespace SportsManager.Views
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Validates the textbox input.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
         private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             //do not allow futher incorrect typing
             e.Handled = !int.TryParse(((TextBox)sender).Text + e.Text, out _) && !int.TryParse(e.Text + ((TextBox)sender).Text, out _) && e.Text != "-";
         }
 
+        /// <summary>
+        /// Corrects the textbox input.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
         private void IntegerTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!int.TryParse(((TextBox)sender).Text, out int j) && ((TextBox)sender).Text != "-")
@@ -36,6 +46,11 @@ namespace SportsManager.Views
             }
         }
 
+        /// <summary>
+        /// Validates the textbox input.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
         private void ValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             int max = 1;
@@ -85,6 +100,11 @@ namespace SportsManager.Views
             }
         }
 
+        /// <summary>
+        /// Corrects the textbox input.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             int max = 1;

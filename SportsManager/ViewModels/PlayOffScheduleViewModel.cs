@@ -12,19 +12,36 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Representation of the team points for match results as a stat.
+    /// </summary>
     public class TeamPoints : IStats
     {
+        /// <summary>
+        /// Points recieved by team according to its match results.
+        /// </summary>
         public int Points { get; set; }
+
+        /// <summary>
+        /// Stores teams points in new instance.
+        /// </summary>
+        /// <param name="points">Points of the team.</param>
         public TeamPoints(int points)
         {
             Points = points;
         }
     }
 
+    /// <summary>
+    /// Viewmodel for play-off schedule.
+    /// </summary>
     public class PlayOffScheduleViewModel : TemplateBracketScheduleViewModel
     {
         #region Commands
         private ICommand startPlayOffCommand;
+        /// <summary>
+        /// When executed, it starts the play-off.
+        /// </summary>
         public ICommand StartPlayOffCommand
         {
             get
@@ -38,6 +55,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand deleteCommand;
+        /// <summary>
+        /// When executed, it deletes the play-off.
+        /// </summary>
         public ICommand DeleteCommand
         {
             get
@@ -52,6 +72,9 @@ namespace SportsManager.ViewModels
         #endregion
 
         private bool seedCompetitors;
+        /// <summary>
+        /// If true, competitors are automatically seeded in the newly created play-off.
+        /// </summary>
         public bool SeedCompetitors
         {
             get => seedCompetitors;
@@ -63,6 +86,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility notStartedVisibility = Visibility.Visible;
+        /// <summary>
+        /// Visibility of the elements which are shown, when play-off has not started.
+        /// </summary>
         public Visibility NotStartedVisibility
         {
             get => notStartedVisibility;
@@ -74,6 +100,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility startedVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility of the elements which are shown, when play-off is started.
+        /// </summary>
         public Visibility StartedVisibility
         {
             get => startedVisibility;
@@ -84,6 +113,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Instantiates new PlayOffScheduleViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
         public PlayOffScheduleViewModel(NavigationStore navigationStore)
         {
             Ns = navigationStore;
@@ -100,6 +133,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads all available not yet selected teams.
+        /// </summary>
         private void LoadNotSelectedTeams()
         {
             NotSelectedTeams = new ObservableCollection<Team>();
@@ -143,6 +179,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Deletes the play-off from the database with all its matches.
+        /// </summary>
         private void Delete()
         {
             MessageBoxResult messageBoxResult = MessageBox.Show("Do you really want to delete whole play-off? All play-off matches will be deleted.", "Delete play-off", MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -196,6 +235,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Starts the play-off for this season, locking the previous part of the season, if any. If enabled, automatically seeds the competitors.
+        /// </summary>
         private void StartPlayOff()
         {
             MessageBoxResult messageBoxResult = MessageBox.Show("After start of play-off modification of previous matches will not be possible unless play-off will be deleted with all of its matches.", "Play-off start", MessageBoxButton.OKCancel, MessageBoxImage.Information);
@@ -428,6 +470,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads the play-off bracket from the database.
+        /// </summary>
         private void LoadBracket()
         {
             CurrentBracket = new Bracket(SportsData.NOID, "Play-off", SportsData.SEASON.ID, SportsData.SEASON.PlayOffRounds);

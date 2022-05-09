@@ -16,6 +16,9 @@ namespace SportsManager.ViewModels
     public class TemplateEditViewModel<T> : NotifyPropertyChanged where T : IHasImage, IEntity
     {
         private T entity;
+        /// <summary>
+        /// Currently selected entity.
+        /// </summary>
         public T Entity
         {
             get => entity;
@@ -29,6 +32,9 @@ namespace SportsManager.ViewModels
         private string imageFolderPath;
 
         private BitmapImage bitmap;
+        /// <summary>
+        /// Bitmap of currently selected logo or photo image of the entity.
+        /// </summary>
         public BitmapImage Bitmap
         {
             get => bitmap;
@@ -40,6 +46,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand loadImageCommand;
+        /// <summary>
+        /// Command that loads an image to bitmap after executing it.
+        /// </summary>
         public ICommand LoadImageCommand
         {
             get
@@ -53,6 +62,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand removeImageCommand;
+        /// <summary>
+        /// Command that clears the bitmap after executing it.
+        /// </summary>
         public ICommand RemoveImageCommand
         {
             get
@@ -66,6 +78,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand saveCommand;
+        /// <summary>
+        /// Command that saves the entity after executing it.
+        /// </summary>
         public ICommand SaveCommand
         {
             get
@@ -78,6 +93,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Command that navigates to the previous viewmodel after executing it after saving the entity into the database.
+        /// </summary>
         public ICommand NavigateBackCommand { get; protected set; }
 
         /// <summary>

@@ -3,6 +3,9 @@ using System;
 
 namespace SportsManager.Others
 {
+    /// <summary>
+    /// Contains methods for working with the database.
+    /// </summary>
     public static class DatabaseHandler
     {
         /// <summary>

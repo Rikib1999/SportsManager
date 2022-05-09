@@ -11,14 +11,24 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for viewing all goaltenders and theirs statistics in one sortable table with filtering. Serves for navigating to a goaltender detail viewmodel.
+    /// </summary>
     public class GoaliesSelectionViewModel : TemplateSelectionDataGridViewModel<Player>
     {
+        /// <summary>
+        /// Instantiates new GoaliesSelectionViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
         public GoaliesSelectionViewModel(NavigationStore navigationStore)
         {
             NavigateEntityCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new PlayerViewModel(navigationStore, SelectedEntity)));
             LoadData();
         }
 
+        /// <summary>
+        /// Loads the goaltenders with their statistics from the database.
+        /// </summary>
         protected override void LoadData()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);

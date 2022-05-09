@@ -12,8 +12,14 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for group stage schedule.
+    /// </summary>
     class GroupsScheduleViewModel : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Representation of the match overview as a stat.
+        /// </summary>
         public class MatchStats : IStats
         {
             public string Overview { get; set; }
@@ -22,11 +28,17 @@ namespace SportsManager.ViewModels
             public string Datetime { get; set; }
         }
 
+        /// <summary>
+        /// Current instance of the NavigationStore.
+        /// </summary>
         private readonly NavigationStore ns;
 
         private readonly object roundsLock = new();
 
         private ObservableCollection<Round> rounds;
+        /// <summary>
+        /// Collection of all rounds of the group stage of the current season.
+        /// </summary>
         public ObservableCollection<Round> Rounds
         {
             get => rounds;
@@ -38,6 +50,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand deleteRoundCommand;
+        /// <summary>
+        /// When executed, it deletes the selected round.
+        /// </summary>
         public ICommand DeleteRoundCommand
         {
             get
@@ -51,6 +66,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand matchDetailCommand;
+        /// <summary>
+        /// Command that navigates to the selected match detail viewmodel after execution.
+        /// </summary>
         public ICommand MatchDetailCommand
         {
             get
@@ -64,6 +82,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addMatchCommand;
+        /// <summary>
+        /// Command that navigates to viewmodel for adding a new match to the selected serie after execution.
+        /// </summary>
         public ICommand AddMatchCommand
         {
             get
@@ -77,6 +98,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand addRoundCommand;
+        /// <summary>
+        /// Command that creates a new round after execution.
+        /// </summary>
         public ICommand AddRoundCommand
         {
             get
@@ -89,8 +113,15 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// True if the editing of the rounds is allowed, otherwise false.
+        /// </summary>
         public bool IsEnabled { get; private set; } = true;
 
+        /// <summary>
+        /// Instantiates the new GroupsScheduleViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
         public GroupsScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;
@@ -98,6 +129,9 @@ namespace SportsManager.ViewModels
             LoadRounds();
         }
 
+        /// <summary>
+        /// Loads all the rounds of the current season from the database.
+        /// </summary>
         private void LoadRounds()
         {
             Rounds = new ObservableCollection<Round>();
@@ -196,6 +230,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Deletes round and all its matches from the database.
+        /// </summary>
+        /// <param name="r">Instance of the round to delete.</param>
         private void DeleteRound(Round r)
         {
             MessageBoxResult msgResult = MessageBox.Show("Do you really want to delete " + r.Name + "?.", "Delete round", MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -292,16 +330,27 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Navigates to a viewmodel of match detail.
+        /// </summary>
+        /// <param name="m">Instance of the selected match.</param>
         private void MatchDetail(Match m)
         {
             new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new MatchViewModel(ns, m, new GroupsScheduleViewModel(ns)))).Execute(null);
         }
 
-        private void AddMatch(int id)
+        /// <summary>
+        /// Navigates to a viewmodel for adding a new match.
+        /// </summary>
+        /// <param name="roundID">Identification number of the round in which the match will be added.</param>
+        private void AddMatch(int roundID)
         {
-            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, id))).Execute(null);
+            new NavigateCommand<SportViewModel>(ns, () => new SportViewModel(ns, new AddMatchViewModel(ns, roundID))).Execute(null);
         }
 
+        /// <summary>
+        /// Creates new round and saves it to the database.
+        /// </summary>
         private void AddRound()
         {
             Round r = new();

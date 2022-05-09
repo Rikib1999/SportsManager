@@ -2,9 +2,15 @@
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Class for representing a players position. For example "left-wing", "goaltender" or "defenseman".
+    /// </summary>
     public class Position : NotifyPropertyChanged
     {
         private string name = "";
+        /// <summary>
+        /// Name of the position.
+        /// </summary>
         public string Name
         {
             get => name;
@@ -16,6 +22,9 @@ namespace SportsManager.Models
         }
 
         private string code;
+        /// <summary>
+        /// Abbreviation of the position.
+        /// </summary>
         public string Code
         {
             get => code;

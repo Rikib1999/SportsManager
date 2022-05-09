@@ -15,9 +15,15 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Class for representing an event in a match.
+    /// </summary>
     public class MatchEvent : NotifyPropertyChanged, IComparable
     {
         private int period;
+        /// <summary>
+        /// Period number in which the event happened.
+        /// </summary>
         public int Period
         {
             get => period;
@@ -28,6 +34,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Time of the period when the event happend in seconds.
+        /// </summary>
         private int timeInSeconds;
         public int TimeInSeconds
         {
@@ -39,11 +48,20 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Order in match at which the event happend compared to others.
+        /// </summary>
         public int orderInMatch;
 
+        /// <summary>
+        /// Time of the event in period in format "mm:ss".
+        /// </summary>
         public string Time => (timeInSeconds / 60) + ":" + (timeInSeconds % 60).ToString("00");
 
         private string homeEvent = "";
+        /// <summary>
+        /// Name and description of the event if it was done by the home team.
+        /// </summary>
         public string HomeEvent
         {
             get => homeEvent;
@@ -55,6 +73,9 @@ namespace SportsManager.ViewModels
         }
 
         private string awayEvent = "";
+        /// <summary>
+        /// Name and description of the event if it was done by the away team.
+        /// </summary>
         public string AwayEvent
         {
             get => awayEvent;
@@ -65,6 +86,11 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Order match events by theirs orderInMatch numbers in ascending order.
+        /// </summary>
+        /// <param name="obj">MatchEvent to compare with.</param>
+        /// <returns>-1 if current event happend earlier, 0 if they happend at the same time, 1 if the other event happend earlier.</returns>
         public int CompareTo(object obj)
         {
             int otherOrder = ((MatchEvent)obj).orderInMatch;
@@ -83,11 +109,20 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing one shootout attempt of the match.
+    /// </summary>
     public class ShootoutEvent : NotifyPropertyChanged, IComparable
     {
+        /// <summary>
+        /// Order number of the attempt.
+        /// </summary>
         public int number;
 
         private string result = "";
+        /// <summary>
+        /// Result of the attempt. "GOAL" or "MISS".
+        /// </summary>
         public string Result
         {
             get => result;
@@ -99,6 +134,9 @@ namespace SportsManager.ViewModels
         }
 
         private string homeEvent = "";
+        /// <summary>
+        /// Name of the attacking player, if it was attempt for the home team.
+        /// </summary>
         public string HomeEvent
         {
             get => homeEvent;
@@ -110,6 +148,9 @@ namespace SportsManager.ViewModels
         }
 
         private string awayEvent = "";
+        /// <summary>
+        /// Name of the attacking player, if it was attempt for the away team.
+        /// </summary>
         public string AwayEvent
         {
             get => awayEvent;
@@ -120,6 +161,11 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Orders ShootoutEvents by theirs numbers in ascending order.
+        /// </summary>
+        /// <param name="obj">ShootoutEvent to compare with.</param>
+        /// <returns>-1 if current event happend earlier, 0 if they happend at the same time, 1 if the other event happend earlier.</returns>
         public int CompareTo(object obj)
         {
             int otherOrder = ((ShootoutEvent)obj).number;
@@ -138,9 +184,15 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Class representing all match events in one of his periods.
+    /// </summary>
     public class PeriodEvents : NotifyPropertyChanged
     {
         private int period;
+        /// <summary>
+        /// Period number of the match from which the events are.
+        /// </summary>
         public int Period
         {
             get => period;
@@ -152,6 +204,9 @@ namespace SportsManager.ViewModels
         }
 
         private string periodName;
+        /// <summary>
+        /// Period name of the match from which the events are.
+        /// </summary>
         public string PeriodName
         {
             get => periodName;
@@ -163,6 +218,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<MatchEvent> events = new();
+        /// <summary>
+        /// Period events of the match.
+        /// </summary>
         public ObservableCollection<MatchEvent> Events
         {
             get => events;
@@ -174,10 +232,16 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Viewmodel for detail of a match.
+    /// </summary>
     public class MatchViewModel : NotifyPropertyChanged
     {
         #region Data
         private Match match;
+        /// <summary>
+        /// Current instance of the match.
+        /// </summary>
         public Match Match
         {
             get => match;
@@ -189,6 +253,9 @@ namespace SportsManager.ViewModels
         }
 
         private string periodScores;
+        /// <summary>
+        /// Score of the match by periods in string format.
+        /// </summary>
         public string PeriodScores
         {
             get => periodScores;
@@ -200,6 +267,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<string> homeRoster;
+        /// <summary>
+        /// Collection of home team roster. Players number, name and position.
+        /// </summary>
         public ObservableCollection<string> HomeRoster
         {
             get => homeRoster;
@@ -211,6 +281,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<string> awayRoster;
+        /// <summary>
+        /// Collection of away team roster. Players number, name and position.
+        /// </summary>
         public ObservableCollection<string> AwayRoster
         {
             get => awayRoster;
@@ -222,6 +295,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PenaltyReason> penaltyReasons;
+        /// <summary>
+        /// Collection of all penalty reasons from database.
+        /// </summary>
         public ObservableCollection<PenaltyReason> PenaltyReasons
         {
             get => penaltyReasons;
@@ -233,6 +309,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PenaltyType> penaltyTypes;
+        /// <summary>
+        /// Collection of all penalty types from database.
+        /// </summary>
         public ObservableCollection<PenaltyType> PenaltyTypes
         {
             get => penaltyTypes;
@@ -244,6 +323,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<PeriodEvents> periodEvents;
+        /// <summary>
+        /// Collection of all period events in the match.
+        /// </summary>
         public ObservableCollection<PeriodEvents> PeriodEvents
         {
             get => periodEvents;
@@ -255,6 +337,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<ShootoutEvent> shootoutEvents;
+        /// <summary>
+        /// Collection of all shootout attempts in the match.
+        /// </summary>
         public ObservableCollection<ShootoutEvent> ShootoutEvents
         {
             get => shootoutEvents;
@@ -265,6 +350,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Abbreviation of the match result. "ff" for forfeit, "so" for shootout, "ot" for overtime and "" for normal result.
+        /// </summary>
         public string GameType
         {
             get
@@ -285,6 +373,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Score of the home team.
+        /// </summary>
         public string HomeScore
         {
             get
@@ -297,6 +388,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Score of the away team.
+        /// </summary>
         public string AwayScore
         {
             get
@@ -312,6 +406,9 @@ namespace SportsManager.ViewModels
 
         #region Visibilities
         private Visibility shootoutVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Visibility for the shootout part of the match. Visible only if shootout was played.
+        /// </summary>
         public Visibility ShootoutVisibility
         {
             get => shootoutVisibility;
@@ -325,6 +422,9 @@ namespace SportsManager.ViewModels
 
         #region Commands
         private ICommand exportCommand;
+        /// <summary>
+        /// When executed, calls the Export() method for exporting the match summary into PDF.
+        /// </summary>
         public ICommand ExportCommand
         {
             get
@@ -338,6 +438,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand editCommand;
+        /// <summary>
+        /// When executed, calls the Edit() method for navigating the viewmodel for editing the match.
+        /// </summary>
         public ICommand EditCommand
         {
             get
@@ -351,6 +454,9 @@ namespace SportsManager.ViewModels
         }
 
         private ICommand deleteCommand;
+        /// <summary>
+        /// When executed, calls the Delete() method for deleting the match
+        /// </summary>
         public ICommand DeleteCommand
         {
             get
@@ -364,16 +470,46 @@ namespace SportsManager.ViewModels
         }
         #endregion
 
+        /// <summary>
+        /// Current instance of the NavigationStore.
+        /// </summary>
         public NavigationStore ns;
+        /// <summary>
+        /// Instance of a schedule viewmodel which will be navigated after match deletion.
+        /// </summary>
         public NotifyPropertyChanged scheduleToReturnVM;
+        /// <summary>
+        /// If true, match can be edited, otherwise not.
+        /// </summary>
         public bool IsEditable = true;
 
+        /// <summary>
+        /// Identification number of the qualififcation that match is part of.
+        /// </summary>
         public int qualificationID;
+        /// <summary>
+        /// Index of a round in which the match is played.
+        /// </summary>
         public int round;
+        /// <summary>
+        /// Index of a bracket, the match is played in.
+        /// </summary>
         public int bracketIndex;
+        /// <summary>
+        /// True, if the serie in which the match is part of already has a winner, otherwise false.
+        /// </summary>
         public bool hasWinner;
+        /// <summary>
+        /// True, if the play-off of this season has already started.
+        /// </summary>
         public bool isPlayOffStarted;
 
+        /// <summary>
+        /// Instantiates a new MatchViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
+        /// <param name="m">Instance of the match, for which detailed viewmodel should be created.</param>
+        /// <param name="scheduleToReturnVM">Instance of a schedule viewmodel which will be navigated after match deletion.</param>
         public MatchViewModel(NavigationStore navigationStore, Match m, NotifyPropertyChanged scheduleToReturnVM)
         {
             this.scheduleToReturnVM = scheduleToReturnVM;
@@ -389,6 +525,9 @@ namespace SportsManager.ViewModels
             LoadShootout();
         }
 
+        /// <summary>
+        /// Checks, if the current match can be edited. Sets the IsEditable field.
+        /// </summary>
         private void CanBeEdited()
         {
             if (hasWinner)
@@ -461,6 +600,13 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Creates a list of tuples (round index, serie index) representing the advancing path in the bracket if team keeps on winning.
+        /// </summary>
+        /// <param name="round">Index of the current round from which the path should be calculated.</param>
+        /// <param name="index">Index of the current serie from which the path should be calculated.</param>
+        /// <param name="lastRound">Index of the last round in the bracket.</param>
+        /// <returns>List of tuples (round index, serie index) representing the advancing path in the bracket if team keeps on winning.</returns>
         private List<(int, int)> CreateBracketPath(int round, int index, int lastRound)
         {
             List<(int, int)> path = new();
@@ -477,6 +623,10 @@ namespace SportsManager.ViewModels
             return path;
         }
 
+        /// <summary>
+        /// Loads all match data from the database.
+        /// </summary>
+        /// <param name="m">Instance of the match, for which data should be loaded.</param>
         private void LoadMatch(Match m)
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -564,6 +714,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads the match score by periods from the database.
+        /// </summary>
         private void LoadPeriodScore()
         {
             PeriodEvents = new ObservableCollection<PeriodEvents>();
@@ -622,6 +775,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads roster of a team for current match from the database.
+        /// </summary>
+        /// <param name="side"></param>
         private void LoadRoster(string side)
         {
             ObservableCollection<string> roster = new(); ;
@@ -684,6 +841,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads all match events except the shootout from the database and saves them sorted in PeriodEvents property.
+        /// </summary>
         private void LoadEvents()
         {
             //load penalties
@@ -901,6 +1061,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads the shootout attempts from the database.
+        /// </summary>
         private void LoadShootout()
         {
             ShootoutEvents = new ObservableCollection<ShootoutEvent>();
@@ -957,6 +1120,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Exports match summary in PDF format. Opens up a file dialog window.
+        /// </summary>
         private void Export()
         {
             //load excel file
@@ -1232,6 +1398,9 @@ namespace SportsManager.ViewModels
             File.Delete(tempPath);
         }
 
+        /// <summary>
+        /// Navigates to a viewmodel for editing this match, if editing is allowed.
+        /// </summary>
         private void Edit()
         {
             if (IsEditable)
@@ -1244,6 +1413,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Deletes the current match from database, if editing is allowed.
+        /// </summary>
         private void Delete()
         {
             if (IsEditable)

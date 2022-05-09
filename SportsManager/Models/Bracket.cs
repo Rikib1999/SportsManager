@@ -6,11 +6,21 @@ using System.Windows;
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Bracket implementation. Used in qualification and play-off.
+    /// </summary>
     public class Bracket : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Identification number of bracket.
+        /// </summary>
         public int ID { get; set; } = SportsData.NOID;
 
         private string name = "";
+        /// <summary>
+        /// Brackets name.
+        /// </summary>
+        /// <example>Qualification 1, Play-off</example>
         public string Name
         {
             get => name;
@@ -22,6 +32,9 @@ namespace SportsManager.Models
         }
 
         private int seasonID;
+        /// <summary>
+        /// Identification number of the season in which the current bracket is.
+        /// </summary>
         public int SeasonID
         {
             get => seasonID;
@@ -46,6 +59,13 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Instantiates new bracket with provided data.
+        /// </summary>
+        /// <param name="id">Identification number of the bracket.</param>
+        /// <param name="name">Name of the bracket.</param>
+        /// <param name="seasonID">Identification number of the season in which the bracket is.</param>
+        /// <param name="rounds">Number of rounds of the bracket.</param>
         public Bracket(int id, string name, int seasonID, int rounds)
         {
             ID = id;
@@ -55,11 +75,19 @@ namespace SportsManager.Models
             CreateBracket(rounds);
         }
 
+        /// <summary>
+        /// Instantiates new bracket without identification number and name.
+        /// </summary>
+        /// <param name="rounds">Number of rounds of the bracket.</param>
         public Bracket(int rounds)
         {
             CreateBracket(rounds);
         }
 
+        /// <summary>
+        /// Creates bracket from rounds. For each round, series are created.
+        /// </summary>
+        /// <param name="rounds">Number of rounds of the bracket.</param>
         private void CreateBracket(int rounds)
         {
             Series = new ObservableCollection<List<Serie>>();
@@ -85,6 +113,12 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Returns the position of the serie in current bracket.
+        /// </summary>
+        /// <param name="s">Instance of the serie.</param>
+        /// <returns>Tuple of round index and serie index in that round, in that order.
+        /// If bracket does not contain given serie, returns (-1, -1).</returns>
         public (int, int) GetSerieRoundIndex(Serie s)
         {
             for (int i = 0; i < Series.Count; i++)
@@ -101,6 +135,12 @@ namespace SportsManager.Models
         }
 
         #region Setting matches
+        /// <summary>
+        /// Checks wheter there is a competitor in the following serie or not.
+        /// </summary>
+        /// <param name="round">Current round index.</param>
+        /// <param name="index">Index of the serie in the round.</param>
+        /// <returns>True if there is a competitor in the following serie.</returns>
         public bool IsThereNextCompetitor(int round, int index)
         {
             if (round < Series.Count - 1)
@@ -124,6 +164,12 @@ namespace SportsManager.Models
             return true;
         }
 
+        /// <summary>
+        /// Checks if the serie in provided round at provided index has a winner.
+        /// </summary>
+        /// <param name="round">Index of round of the serie.</param>
+        /// <param name="index">Index of the serie in the round.</param>
+        /// <returns>True if there is a winner.</returns>
         public bool HasWinner(int round, int index)
         {
             if (round < Series.Count)
@@ -152,6 +198,9 @@ namespace SportsManager.Models
             return false;
         }
 
+        /// <summary>
+        /// Seeds winners of the series into the following ones.
+        /// </summary>
         public void PrepareSeries()
         {
             //for each round
@@ -235,7 +284,12 @@ namespace SportsManager.Models
             CollapseAllRemoveButton(round - 1, (index * 2) + 1);
         }
 
-        //sets advancing team of the serie after serie modification
+        /// <summary>
+        /// Resets the advancing team of the serie after serie modification.
+        /// </summary>
+        /// <param name="round">Index of the round of the serie.</param>
+        /// <param name="index">Index of the serie in the round.</param>
+        /// <param name="position">1 for first team or 2 for second team of the serie.</param>
         public void ResetSeriesAdvanced(int round, int index, int position)
         {
             if (round == Series.Count) { return; }
@@ -260,6 +314,13 @@ namespace SportsManager.Models
         #endregion
 
         #region Setting teams
+        /// <summary>
+        /// Recursively checks bracket branches from the provided position and locks or unlocks them for modification after insertion or deletion of a team to the provided position.
+        /// </summary>
+        /// <param name="round">Index of the round of the serie.</param>
+        /// <param name="index">Index of the serie in the round.</param>
+        /// <param name="position">1 for first team or 2 for second team of the serie.</param>
+        /// <param name="lockChange">1 if team was inserted or -1 if team was removed.</param>
         public void IsEnabledTreeAfterInsertionAt(int round, int index, int position, int lockChange)
         {
             if (round != 0)

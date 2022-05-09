@@ -453,6 +453,9 @@ namespace SportsManager.ViewModels
         }
     }
 
+    /// <summary>
+    /// Viewmodel for seasons group stage standings.
+    /// </summary>
     public class StandingsViewModel : NotifyPropertyChanged
     {
         #region Visibilities
@@ -673,6 +676,9 @@ namespace SportsManager.ViewModels
 
         #region Data
         private ObservableCollection<Group> groups = new();
+        /// <summary>
+        /// Collection of all groups in the group stage.
+        /// </summary>
         public ObservableCollection<Group> Groups
         {
             get => groups;
@@ -684,6 +690,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Team> enlistedTeams = new();
+        /// <summary>
+        /// Collection of all enlisted teams in the season.
+        /// </summary>
         public ObservableCollection<Team> EnlistedTeams
         {
             get => enlistedTeams;
@@ -695,6 +704,9 @@ namespace SportsManager.ViewModels
         }
 
         private Team winner = new();
+        /// <summary>
+        /// Instance of the seasons winner team.
+        /// </summary>
         public Team Winner
         {
             get => winner;
@@ -706,6 +718,9 @@ namespace SportsManager.ViewModels
         }
 
         private ObservableCollection<Round> rounds = new();
+        /// <summary>
+        /// Collection of all the seasons group stage rounds.
+        /// </summary>
         public ObservableCollection<Round> Rounds
         {
             get => rounds;
@@ -717,6 +732,9 @@ namespace SportsManager.ViewModels
         }
 
         private Round lastRound;
+        /// <summary>
+        /// The round until which standings should be calculated. When changed, all data are reloaded and recalculated.
+        /// </summary>
         public Round LastRound
         {
             get => lastRound;
@@ -734,9 +752,16 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Current instance of the NavigationStore.
+        /// </summary>
         public NavigationStore ns;
         #endregion
 
+        /// <summary>
+        /// Instantiates a new StandingsViewModel.
+        /// </summary>
+        /// <param name="ns">Current instance of the NavigationStore.</param>
         public StandingsViewModel(NavigationStore ns)
         {
             this.ns = ns;
@@ -752,6 +777,9 @@ namespace SportsManager.ViewModels
             LoadEnlistedTeams();
         }
 
+        /// <summary>
+        /// Loads all teams enlisted in the current season.
+        /// </summary>
         private void LoadEnlistedTeams()
         {
             MySqlConnection connection = new(SportsData.ConnectionStringSport);
@@ -785,6 +813,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Declares the winner for the season and blocks all future editing.
+        /// </summary>
         private void DeclareWinner()
         {
             if (Winner.ID < 1) { return; }
@@ -815,6 +846,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Removes the winner of the season.
+        /// </summary>
         private void DeleteWinner()
         {
             //update database
@@ -843,11 +877,18 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Sorts the group.
+        /// </summary>
+        /// <param name="g">Group to sort.</param>
         private void SortGroup(Group g)
         {
             g.Teams = MergeSort(g.Teams, true);
         }
 
+        /// <summary>
+        /// Sorts all the groups.
+        /// </summary>
         private void SortGroups()
         {
             foreach (Group g in Groups)
@@ -908,6 +949,12 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Recursively divides and sorts the collection of teams by merging it together again.
+        /// </summary>
+        /// <param name="unsorted">Unsorted collection of teams.</param>
+        /// <param name="onlyPoints">Sort only by points.</param>
+        /// <returns></returns>
         private ObservableCollection<Team> MergeSort(ObservableCollection<Team> unsorted, bool onlyPoints)
         {
             if (unsorted.Count <= 1) { return unsorted; }
@@ -930,6 +977,13 @@ namespace SportsManager.ViewModels
             return Merge(left, right, onlyPoints);
         }
 
+        /// <summary>
+        /// Merges two collection of teams and sorts them.
+        /// </summary>
+        /// <param name="left">First collection of teams to merge.</param>
+        /// <param name="right">Second collection of teams to merge.</param>
+        /// <param name="onlyPoints">Sort only by points.</param>
+        /// <returns>Sorted collection of teams.</returns>
         private ObservableCollection<Team> Merge(ObservableCollection<Team> left, ObservableCollection<Team> right, bool onlyPoints)
         {
             ObservableCollection<Team> result = new();
@@ -964,6 +1018,9 @@ namespace SportsManager.ViewModels
             return result;
         }
 
+        /// <summary>
+        /// Loads all groups of the season groups stage.
+        /// </summary>
         private void LoadGroups()
         {
             Groups = new ObservableCollection<Group>();
@@ -1022,6 +1079,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads all rounds of the seasons group stage.
+        /// </summary>
         private void LoadRounds()
         {
             Rounds = new ObservableCollection<Round>();
@@ -1064,6 +1124,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads data for the pie charts.
+        /// </summary>
         private void LoadPieChartsSeries()
         {
             GoalsSeries = new SeriesCollection();
@@ -1102,6 +1165,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads data for the scatter graph representing team goals and goals against.
+        /// </summary>
         private void LoadGoalsScatterSeries()
         {
             GoalsScatterSeries = new SeriesCollection();
@@ -1255,6 +1321,9 @@ namespace SportsManager.ViewModels
             });
         }
 
+        /// <summary>
+        /// Loads data for the scatter graph representing team goals with and without assists.
+        /// </summary>
         private void LoadAssistsScatterSeries()
         {
             AssistsScatterSeries = new SeriesCollection();
@@ -1408,6 +1477,9 @@ namespace SportsManager.ViewModels
             });
         }
 
+        /// <summary>
+        /// Loads data for the scatter graph representing team penalty minutes recieved and opponent penalty minutes recieved.
+        /// </summary>
         private void LoadPenaltiesScatterSeries()
         {
             PenaltiesScatterSeries = new SeriesCollection();

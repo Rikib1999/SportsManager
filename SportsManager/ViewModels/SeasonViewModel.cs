@@ -12,10 +12,20 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for season detail.
+    /// </summary>
     public class SeasonViewModel : TemplateEntityViewModel
     {
+        /// <summary>
+        /// Current season.
+        /// </summary>
         public Season Season { get; set; }
 
+        /// <summary>
+        /// Instantiates new SeasonViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
         public SeasonViewModel(NavigationStore navigationStore)
         {
             Season = SportsData.SEASON;
@@ -32,6 +42,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Deletes season from the database.
+        /// </summary>
         protected override void Delete()
         {
             MessageBoxResult msgResult = MessageBox.Show("Do you really want to delete this season? All matches will be deleted.", "Delete season", MessageBoxButton.YesNo, MessageBoxImage.Warning);

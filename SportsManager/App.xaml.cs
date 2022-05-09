@@ -12,6 +12,10 @@ namespace SportsManager
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// Overriden startup of the application. Checks for required databases and folders. If something is missing, creates it.
+        /// </summary>
+        /// <param name="e">Startuo event arguments.</param>
         protected override void OnStartup(StartupEventArgs e)
         {
             //create folders for images, if they do not exist

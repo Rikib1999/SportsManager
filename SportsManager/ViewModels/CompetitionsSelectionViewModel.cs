@@ -10,12 +10,21 @@ using System.Windows.Input;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for selecting a competition from the existing list of competitions.
+    /// </summary>
     public class CompetitionsSelectionViewModel : NotifyPropertyChanged
     {
         public ICommand NavigateCompetitionCommand { get; }
+        /// <summary>
+        /// Command navigates to viewmodel for adding a new competition after executing it.
+        /// </summary>
         public ICommand NavigateAddCompetitionCommand { get; }
 
         private ICommand checkNavigateCompetitionCommand;
+        /// <summary>
+        /// Command executes CheckNavigateCompetition() for checking if a competition is selected.
+        /// </summary>
         public ICommand CheckNavigateCompetitionCommand
         {
             get
@@ -28,8 +37,15 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Collection of available competitions. First in the list is placeholder for button of adding a new competition.
+        /// </summary>
         public ObservableCollection<Competition> Competitions { get; set; }
 
+        /// <summary>
+        /// Instantiates new CompetitionsSelectionViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
         public CompetitionsSelectionViewModel(NavigationStore navigationStore)
         {
             NavigateCompetitionCommand = new NavigateCommand<SportViewModel>(navigationStore, () => new SportViewModel(navigationStore, new CompetitionViewModel(navigationStore)));

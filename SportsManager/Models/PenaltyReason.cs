@@ -2,9 +2,15 @@
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Class for representing a penalty reason.
+    /// </summary>
     public class PenaltyReason : NotifyPropertyChanged
     {
         private string name = "";
+        /// <summary>
+        /// Name of the penalty reason.
+        /// </summary>
         public string Name
         {
             get => name;
@@ -16,6 +22,9 @@ namespace SportsManager.Models
         }
 
         private string code;
+        /// <summary>
+        /// Code of the penalty reason.
+        /// </summary>
         public string Code
         {
             get => code;

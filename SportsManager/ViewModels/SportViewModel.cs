@@ -4,14 +4,29 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for the currently selected sport. Contains navigation bar and currently selected viewmodel.
+    /// </summary>
     public class SportViewModel : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Currently selected viewmodel.
+        /// </summary>
         public NotifyPropertyChanged CurrentViewModel { get; set; }
 
+        /// <summary>
+        /// Navigation bar viewmodel.
+        /// </summary>
         public NotifyPropertyChanged NavBarViewModel { get; set; }
 
+        /// <summary>
+        /// Current header of the view.
+        /// </summary>
         public string Header { get; set; }
 
+        /// <summary>
+        /// Updates header with the currenlty selected sport, competition and season names.
+        /// </summary>
         public void UpdateHeader()
         {
             Header = SportsData.SPORT.FormattedName;
@@ -26,6 +41,11 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Instantiates new SportViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
+        /// <param name="newViewModel">Instance of the new subviewmodel.</param>
         public SportViewModel(NavigationStore navigationStore, NotifyPropertyChanged newViewModel)
         {
             UpdateHeader();

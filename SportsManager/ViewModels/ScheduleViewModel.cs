@@ -3,13 +3,25 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for seasons schedule containing viewmodels for qualification, group stage and play-off.
+    /// </summary>
     class ScheduleViewModel : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Current instance of the NavigationStore.
+        /// </summary>
         private readonly NavigationStore ns;
 
+        /// <summary>
+        /// Currently selected viewmodel of the schedule for specific part of the season.
+        /// </summary>
         public NotifyPropertyChanged CurrentViewModel { get; set; }
 
         private bool qualififcationSet;
+        /// <summary>
+        /// Sets the qualification schedule viewmodel. Returns true if qualification is selected.
+        /// </summary>
         public bool QualificationSet
         {
             get => qualififcationSet;
@@ -27,6 +39,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool groupsSet;
+        /// <summary>
+        /// Sets the group stage schedule viewmodel. Returns true if group stage is selected.
+        /// </summary>
         public bool GroupsSet
         {
             get => groupsSet;
@@ -44,6 +59,9 @@ namespace SportsManager.ViewModels
         }
 
         private bool playOffSet;
+        /// <summary>
+        /// Sets the play-off schedule viewmodel. Returns true if play-off is selected.
+        /// </summary>
         public bool PlayOffSet
         {
             get => playOffSet;
@@ -61,6 +79,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility qualificationVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Qualification radio button visibility.
+        /// </summary>
         public Visibility QualificationVisibility
         {
             get => qualificationVisibility;
@@ -72,6 +93,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility groupsVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Group stage radio button visibility.
+        /// </summary>
         public Visibility GroupsVisibility
         {
             get => groupsVisibility;
@@ -83,6 +107,9 @@ namespace SportsManager.ViewModels
         }
 
         private Visibility playOffVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Play-off radio button visibility.
+        /// </summary>
         public Visibility PlayOffVisibility
         {
             get => playOffVisibility;
@@ -93,6 +120,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Instantiates a new ScheduleViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of the NavigationStore.</param>
         public ScheduleViewModel(NavigationStore navigationStore)
         {
             ns = navigationStore;

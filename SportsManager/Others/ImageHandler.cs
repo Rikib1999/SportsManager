@@ -47,8 +47,14 @@ namespace SportsManager.Others
         }
     }
 
+    /// <summary>
+    /// Interface representing that object has an image assigned to it.
+    /// </summary>
     public interface IHasImage
     {
+        /// <summary>
+        /// Path to the image.
+        /// </summary>
         public string ImagePath { get; set; }
     }
 }

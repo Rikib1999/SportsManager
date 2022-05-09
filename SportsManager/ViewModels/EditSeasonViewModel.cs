@@ -8,8 +8,14 @@ using System.Windows;
 
 namespace SportsManager.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for editing a season.
+    /// </summary>
     public class EditSeasonViewModel : TemplateEditViewModel<Season>
     {
+        /// <summary>
+        /// Current season insatnce.
+        /// </summary>
         public Season Season
         {
             get => Entity;
@@ -20,6 +26,10 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Instantiates new EditSeasonViewModel.
+        /// </summary>
+        /// <param name="navigationStore">Current instance of NavigationStore.</param>
         public EditSeasonViewModel(NavigationStore navigationStore)
         {
             Season = SportsData.SEASON;
@@ -36,6 +46,9 @@ namespace SportsManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves the season into database.
+        /// </summary>
         protected override void Save()
         {
             if (string.IsNullOrWhiteSpace(Season.Name))

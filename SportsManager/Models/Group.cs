@@ -3,11 +3,20 @@ using System.Collections.ObjectModel;
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Class for representing a group of teams in the group stage of the season.
+    /// </summary>
     public class Group : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Identification number of the group.
+        /// </summary>
         public int ID { get; set; } = SportsData.NOID;
 
         private string name = "";
+        /// <summary>
+        /// Name of the group.
+        /// </summary>
         public string Name
         {
             get => name;
@@ -19,6 +28,9 @@ namespace SportsManager.Models
         }
 
         private int seasonID;
+        /// <summary>
+        /// Identification number of the season in which the group is.
+        /// </summary>
         public int SeasonID
         {
             get => seasonID;
@@ -30,6 +42,9 @@ namespace SportsManager.Models
         }
 
         private ObservableCollection<Team> teams;
+        /// <summary>
+        /// Collection of all teams that belongs to this group.
+        /// </summary>
         public ObservableCollection<Team> Teams
         {
             get => teams;

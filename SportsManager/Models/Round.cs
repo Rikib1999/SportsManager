@@ -6,10 +6,19 @@ using System.Windows.Input;
 
 namespace SportsManager.Models
 {
+    /// <summary>
+    /// Class for representing a round of matches in a group stage of a season.
+    /// </summary>
     public class Round : NotifyPropertyChanged
     {
+        /// <summary>
+        /// Identification number of the round.
+        /// </summary>
         public int ID { get; set; } = SportsData.NOID;
 
+        /// <summary>
+        /// Name of the round.
+        /// </summary>
         private string name = "";
         public string Name
         {
@@ -22,6 +31,9 @@ namespace SportsManager.Models
         }
 
         private int seasonID;
+        /// <summary>
+        /// Identification number of the season that the round is part of.
+        /// </summary>
         public int SeasonID
         {
             get => seasonID;
@@ -33,6 +45,9 @@ namespace SportsManager.Models
         }
 
         private Visibility roundVisibility = Visibility.Visible;
+        /// <summary>
+        /// Visibility of the round in the view.
+        /// </summary>
         public Visibility RoundVisibility
         {
             get => roundVisibility;
@@ -44,6 +59,9 @@ namespace SportsManager.Models
         }
 
         private ICommand setRoundVisibilityCommand;
+        /// <summary>
+        /// Command for switching the round visibility.
+        /// </summary>
         public ICommand SetRoundVisibilityCommand
         {
             get
@@ -56,6 +74,9 @@ namespace SportsManager.Models
             }
         }
 
+        /// <summary>
+        /// Switches the round visibility.
+        /// </summary>
         private void SetRoundVisibility()
         {
             RoundVisibility = RoundVisibility == Visibility.Visible
@@ -64,7 +85,9 @@ namespace SportsManager.Models
         }
 
         private ObservableCollection<Match> matches;
-
+        /// <summary>
+        /// Collection of all matches played in the round.
+        /// </summary>
         public ObservableCollection<Match> Matches
         {
             get => matches;
